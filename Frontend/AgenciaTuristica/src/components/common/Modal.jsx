@@ -1,11 +1,23 @@
+import PropTypes from "prop-types";
 import styles from "./Modal.module.css";
 
-function Modal({ isOpen, title, children, onClose }) {
+function Modal({
+  isOpen,
+  title,
+  children,
+  onClose,
+}) {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+    <div
+      className={styles.overlay}
+      onClick={onClose}
+    >
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.header}>
           <h3>{title}</h3>
 
@@ -13,7 +25,7 @@ function Modal({ isOpen, title, children, onClose }) {
             className={styles.closeButton}
             onClick={onClose}
           >
-            X
+            ✕
           </button>
         </div>
 
@@ -24,5 +36,12 @@ function Modal({ isOpen, title, children, onClose }) {
     </div>
   );
 }
+
+Modal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 export default Modal;

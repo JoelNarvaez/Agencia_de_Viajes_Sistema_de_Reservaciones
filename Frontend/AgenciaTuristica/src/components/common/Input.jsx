@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import styles from "./Input.module.css";
 
 function Input({
@@ -8,6 +9,8 @@ function Input({
   onChange,
   placeholder,
   error,
+  required = false,
+  disabled = false,
 }) {
   return (
     <div className={styles.container}>
@@ -24,6 +27,8 @@ function Input({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        required={required}
+        disabled={disabled}
       />
 
       {error && (
@@ -34,5 +39,17 @@ function Input({
     </div>
   );
 }
+
+Input.propTypes = {
+  label: PropTypes.string,
+  type: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  error: PropTypes.string,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
+};
 
 export default Input;

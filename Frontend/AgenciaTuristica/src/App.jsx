@@ -3,12 +3,25 @@ import Input from "./components/common/Input";
 import Loader from "./components/common/Loader";
 import { useState } from "react";
 import Modal from "./components/common/Modal";
+import Footer from "./components/common/Footer";
+import Navbar from "./components/common/Navbar";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <div style={{ padding: "20px" }}>
+      <Navbar />
+
+      <ProtectedRoute
+  isAuthenticated={true}
+  role="admin"
+  allowedRoles={["user"]}
+>
+  <h1>Panel de Administración</h1>
+</ProtectedRoute>
+
       <h1>Prueba de Componentes</h1>
 
       <h2>Botones</h2>
@@ -77,6 +90,8 @@ function App() {
 >
   <p>¿Deseas continuar?</p>
 </Modal>
+
+<Footer />
     </div>
   );
 }

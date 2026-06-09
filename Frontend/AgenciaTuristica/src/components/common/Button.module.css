@@ -5,11 +5,15 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.button:hover {
-  transform: translateY(-1px);
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .primary {
@@ -17,14 +21,26 @@
   color: white;
 }
 
+.primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
 .secondary {
   background-color: #6b7280;
   color: white;
 }
 
+.secondary:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
 .danger {
   background-color: #dc2626;
   color: white;
+}
+
+.danger:hover:not(:disabled) {
+  background-color: #b91c1c;
 }
 
 .button:disabled {

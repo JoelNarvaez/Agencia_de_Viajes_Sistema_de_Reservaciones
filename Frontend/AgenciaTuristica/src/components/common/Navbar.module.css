@@ -1,44 +1,246 @@
 .navbar {
-  background-color: #2563eb;
-  padding: 1rem 2rem;
-  color: white;
+  width: 100%;
+  background: #ffffff;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .container {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 220px 1fr 300px;
   align-items: center;
+  padding: 0 30px;
 }
 
+/* LOGO */
 .logo {
-  font-size: 1.4rem;
-  font-weight: bold;
+  width: 180px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+
+  color: #6b7280;
+  font-weight: 600;
 }
 
+/* LINKS */
 .links {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
+  gap: 35px;
 }
 
 .link {
   text-decoration: none;
-  color: white;
+  color: #374151;
+
+  font-size: 15px;
   font-weight: 500;
-  transition: opacity 0.2s ease;
+
+  position: relative;
+
+  transition: all 0.3s ease;
 }
 
 .link:hover {
-  opacity: 0.8;
+  color: #0f4c81;
 }
 
-@media (max-width: 768px) {
+.link::after {
+  content: "";
+
+  position: absolute;
+
+  width: 0;
+  height: 2px;
+
+  bottom: -5px;
+  left: 0;
+
+  background: #0f4c81;
+
+  transition: 0.3s;
+}
+
+.link:hover::after {
+  width: 100%;
+}
+
+/* BOTONES */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.loginButton {
+  padding: 10px 20px;
+
+  border: 2px solid #0f4c81;
+  border-radius: 30px;
+
+  background: white;
+  color: #0f4c81;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.loginButton:hover {
+  background: #0f4c81;
+  color: white;
+}
+
+.reserveButton {
+  padding: 10px 22px;
+
+  border: none;
+  border-radius: 30px;
+
+  background: linear-gradient(
+    135deg,
+    #06b6d4,
+    #0891b2
+  );
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  box-shadow: 0 5px 15px rgba(8, 145, 178, 0.3);
+}
+
+.reserveButton:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(8, 145, 178, 0.45);
+}
+
+/* MENÚ USUARIO */
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  color: #374151;
+  gap: 8px;
+}
+
+.userButton svg {
+  font-size: 30px;
+  color: #0f4c81;
+}
+
+.arrow {
+  font-size: 8px;
+  display: inline-block;
+
+  transition: transform 0.3s ease;
+}
+
+.arrowOpen {
+  transform: rotate(90deg);
+}
+
+/* DROPDOWN */
+.dropdown {
+  position: absolute;
+
+  top: 55px;
+  right: 0;
+
+  width: 230px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+  overflow: hidden;
+
+  z-index: 1000;
+}
+
+.dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 18px;
+
+  text-decoration: none;
+
+  color: #374151;
+
+  transition: 0.2s;
+}
+
+.dropdown a:hover {
+  background: #f3f4f6;
+}
+
+.active {
+  color: #0f4c81;
+}
+
+.active::after {
+  width: 100%;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
   .container {
-    flex-direction: column;
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 15px;
+
+    padding: 15px;
+  }
+
+  .navbar {
+    height: auto;
   }
 
   .links {
     flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .actions {
     justify-content: center;
   }
 }

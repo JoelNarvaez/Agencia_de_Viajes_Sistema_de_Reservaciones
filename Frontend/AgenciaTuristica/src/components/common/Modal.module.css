@@ -1,59 +1,159 @@
 .overlay {
   position: fixed;
   inset: 0;
+
   background: rgba(0, 0, 0, 0.55);
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  z-index: 1000;
+  backdrop-filter: blur(4px);
+
+  z-index: 9999;
+
+  animation: fadeIn 0.25s ease;
 }
 
 .modal {
-  width: 90%;
-  max-width: 450px;
+  background: white;
 
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 18px;
 
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 
-  animation: modalAppear 0.2s ease;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.15);
+
+  animation: slideUp 0.3s ease;
 }
+
+/* TAMAÑOS */
+
+.sm {
+  width: 90%;
+  max-width: 400px;
+}
+
+.md {
+  width: 90%;
+  max-width: 550px;
+}
+
+.lg {
+  width: 90%;
+  max-width: 800px;
+}
+
+/* HEADER */
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.header h3 {
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleContainer h2 {
   margin: 0;
+
+  font-size: 22px;
   color: #111827;
 }
 
+/* ICONOS */
+
+.icon {
+  font-size: 24px;
+}
+
+.success {
+  color: #22c55e;
+}
+
+.error {
+  color: #ef4444;
+}
+
+.warning {
+  color: #f59e0b;
+}
+
+.info {
+  color: #3b82f6;
+}
+
+/* BOTÓN CERRAR */
+
 .closeButton {
-  background: transparent;
+  width: 38px;
+  height: 38px;
+
   border: none;
-  font-size: 20px;
+  border-radius: 50%;
+
+  background: #f3f4f6;
+
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.3s;
 }
 
 .closeButton:hover {
-  color: #dc2626;
+  background: #e5e7eb;
+  transform: rotate(90deg);
 }
 
-.content {
-  margin-top: 15px;
-  color: #374151;
+/* BODY */
+
+.body {
+  padding: 24px;
+
+  color: #4b5563;
+  line-height: 1.6;
 }
 
-@keyframes modalAppear {
+/* FOOTER */
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 20px 24px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ANIMACIONES */
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
   }
 
   to {

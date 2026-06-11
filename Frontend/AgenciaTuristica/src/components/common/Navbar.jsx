@@ -1,73 +1,179 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
+
+import {
+  FaUserCircle,
+  FaUser,
+  FaCalendarAlt,
+  FaSignOutAlt,
+  FaChevronDown,
+} from "react-icons/fa";
+
 import styles from "./Navbar.module.css";
 
 function Navbar({
-  brand = "NovaTrips",
+  brand = "LOGO",
   isAuthenticated = false,
   role = null,
+  userName = "Usuario",
 }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
+        {/* LOGO */}
         <div className={styles.logo}>
           {brand}
         </div>
 
+        {/* LINKS */}
         <div className={styles.links}>
-          <a href="#" className={styles.link}>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive
+                ? `${styles.link} ${styles.active}`
+                : styles.link
+            }
+          >
             Inicio
-          </a>
+          </NavLink>
 
-          <a href="#" className={styles.link}>
+          <NavLink
+            to="/destinations"
+            className={({ isActive }) =>
+              isActive
+                ? `${styles.link} ${styles.active}`
+                : styles.link
+            }
+          >
             Destinos
-          </a>
+          </NavLink>
 
-          <a href="#" className={styles.link}>
+          <NavLink
+            to="/packages"
+            className={({ isActive }) =>
+              isActive
+                ? `${styles.link} ${styles.active}`
+                : styles.link
+            }
+          >
             Paquetes
-          </a>
+          </NavLink>
+        </div>
 
+        {/* ACCIONES */}
+        <div className={styles.actions}>
           {!isAuthenticated && (
             <>
-              <a href="#" className={styles.link}>
-                Iniciar Sesión
-              </a>
+              <NavLink to="/login">
+                <button className={styles.loginButton}>
+                  Ingresar
+                </button>
+              </NavLink>
 
-              <a href="#" className={styles.link}>
-                Registro
-              </a>
+              <NavLink to="/register">
+                <button className={styles.reserveButton}>
+                  Registrarse
+                </button>
+              </NavLink>
             </>
           )}
 
+          {/* USUARIO */}
           {isAuthenticated && role === "user" && (
-            <>
-              <a href="#" className={styles.link}>
-                Mis Reservaciones
-              </a>
+            <div className={styles.userMenu}>
+              <button
+                className={styles.userButton}
+                onClick={() =>
+                  setIsMenuOpen(!isMenuOpen)
+                }
+              >
+                <FaUserCircle />
 
-              <a href="#" className={styles.link}>
-                Perfil
-              </a>
+                <span>{userName}</span>
 
-              <a href="#" className={styles.link}>
-                Cerrar Sesión
-              </a>
-            </>
+                <FaChevronDown
+                  size={10}
+                  className={`${styles.arrow} ${
+                    isMenuOpen
+                      ? styles.arrowOpen
+                      : ""
+                  }`}
+                />
+              </button>
+
+              {isMenuOpen && (
+                <div className={styles.dropdown}>
+                  <NavLink to="/profile">
+                    <FaUser />
+                    Mi Perfil
+                  </NavLink>
+
+                  <NavLink to="/reservations">
+                    <FaCalendarAlt />
+                    Mis Reservaciones
+                  </NavLink>
+
+                  <NavLink to="/">
+                    <FaSignOutAlt />
+                    Cerrar Sesión
+                  </NavLink>
+                </div>
+              )}
+            </div>
           )}
 
+          {/* ADMIN */}
           {isAuthenticated && role === "admin" && (
-            <>
-              <a href="#" className={styles.link}>
-                Dashboard
-              </a>
+            <div className={styles.userMenu}>
+              <button
+                className={styles.userButton}
+                onClick={() =>
+                  setIsMenuOpen(!isMenuOpen)
+                }
+              >
+                <FaUserCircle />
 
-              <a href="#" className={styles.link}>
-                Usuarios
-              </a>
+                <span>{userName}</span>
 
-              <a href="#" className={styles.link}>
-                Cerrar Sesión
-              </a>
-            </>
+                <FaChevronDown
+                  size={10}
+                  className={`${styles.arrow} ${
+                    isMenuOpen
+                      ? styles.arrowOpen
+                      : ""
+                  }`}
+                />
+              </button>
+
+              {isMenuOpen && (
+                <div className={styles.dropdown}>
+                  <NavLink to="/admin">
+                    Dashboard
+                  </NavLink>
+
+                  <NavLink to="/admin/users">
+                    Usuarios
+                  </NavLink>
+
+                  <NavLink to="/admin/packages">
+                    Paquetes
+                  </NavLink>
+
+                  <NavLink to="/admin/reservations">
+                    Reservaciones
+                  </NavLink>
+
+                  <NavLink to="/">
+                    <FaSignOutAlt />
+                    Cerrar Sesión
+                  </NavLink>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -83,6 +189,7 @@ Navbar.propTypes = {
     "admin",
     null,
   ]),
+  userName: PropTypes.string,
 };
 
 export default Navbar;

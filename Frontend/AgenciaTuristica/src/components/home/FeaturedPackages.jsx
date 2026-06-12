@@ -1,4 +1,6 @@
+import PropTypes from 'prop-types'
 import styles from './FeaturedPackages.module.css'
+import { packagePropType } from '../../utils/homePropTypes'
 
 function FeaturedPackages({ packages }) {
   return (
@@ -47,6 +49,10 @@ function FeaturedPackages({ packages }) {
       </div>
     </section>
   )
+}
+
+FeaturedPackages.propTypes = {
+  packages: PropTypes.arrayOf(packagePropType).isRequired,
 }
 
 export default FeaturedPackages

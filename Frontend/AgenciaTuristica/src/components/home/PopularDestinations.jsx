@@ -1,4 +1,6 @@
+import PropTypes from 'prop-types'
 import styles from './PopularDestinations.module.css'
+import { destinationPropType } from '../../utils/homePropTypes'
 
 function PopularDestinations({ destinations }) {
   const topDestinations = destinations.slice(0, 2)
@@ -73,6 +75,10 @@ function PopularDestinations({ destinations }) {
       </div>
     </section>
   )
+}
+
+PopularDestinations.propTypes = {
+  destinations: PropTypes.arrayOf(destinationPropType).isRequired,
 }
 
 export default PopularDestinations

@@ -1,4 +1,6 @@
+import PropTypes from 'prop-types'
 import styles from './HomeFAQ.module.css'
+import { faqPropType } from '../../utils/homePropTypes'
 
 function HomeFAQ({ items }) {
   return (
@@ -27,6 +29,10 @@ function HomeFAQ({ items }) {
       </div>
     </section>
   )
+}
+
+HomeFAQ.propTypes = {
+  items: PropTypes.arrayOf(faqPropType).isRequired,
 }
 
 export default HomeFAQ

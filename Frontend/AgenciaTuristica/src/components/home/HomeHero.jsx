@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import DestinationCarousel from './DestinationCarousel.jsx'
 import styles from './HomeHero.module.css'
+import { destinationPropType } from '../../utils/homePropTypes'
 
 function HomeHero({ destinations }) {
   const [activeIndex, setActiveIndex] = useState(null)
@@ -91,6 +93,10 @@ function HomeHero({ destinations }) {
       </div>
     </section>
   )
+}
+
+HomeHero.propTypes = {
+  destinations: PropTypes.arrayOf(destinationPropType).isRequired,
 }
 
 export default HomeHero

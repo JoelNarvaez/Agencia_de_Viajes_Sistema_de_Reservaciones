@@ -1,4 +1,6 @@
+import PropTypes from 'prop-types'
 import styles from './HomeTestimonials.module.css'
+import { testimonialPropType } from '../../utils/homePropTypes'
 
 function HomeTestimonials({ testimonials }) {
   return (
@@ -27,6 +29,10 @@ function HomeTestimonials({ testimonials }) {
       </div>
     </section>
   )
+}
+
+HomeTestimonials.propTypes = {
+  testimonials: PropTypes.arrayOf(testimonialPropType).isRequired,
 }
 
 export default HomeTestimonials

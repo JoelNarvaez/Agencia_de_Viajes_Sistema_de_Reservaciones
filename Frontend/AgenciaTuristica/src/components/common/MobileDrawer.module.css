@@ -1,0 +1,222 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(5px);
+  z-index: 1998;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  max-width: 85vw;
+  height: 100vh;
+  background: rgba(10, 15, 22, 0.55);
+  backdrop-filter: blur(20px);
+  z-index: 1999;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.closeButton {
+  align-self: flex-end;
+
+  border: none;
+  background: none;
+
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* PERFIL */
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 25px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid rgba(
+    255,
+    255,
+    255,
+    0.12
+  );
+}
+
+.avatar {
+  font-size: 55px;
+  color: white;
+}
+
+.accountButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: none;
+  border: none;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+/* LINKS PRINCIPALES */
+
+.links {
+  display: flex;
+  flex-direction: column;
+}
+
+.links a {
+  color: white;
+  text-decoration: none;
+
+  padding: 14px 0;
+
+  font-size: 16px;
+  font-weight: 500;
+
+  transition: 0.25s;
+}
+
+.links a:hover {
+  color: #f8b229;
+}
+
+/* SUBMENU USUARIO / ADMIN */
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(
+    255,
+    255,
+    255,
+    0.12
+  );
+}
+
+.submenu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  transition: 0.25s;
+}
+
+.submenu a:hover {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.08
+  );
+
+  color: #f8b229;
+}
+
+/* INVITADO */
+.guestActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-top: auto;
+  padding-bottom: 50px;
+}
+
+.loginButton {
+  min-width: 180px;
+
+  padding: 13px 24px;
+
+  border-radius: 999px;
+
+  border: 2px solid rgba(
+    255,
+    255,
+    255,
+    0.85
+  );
+
+  background: transparent;
+
+  color: white;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.loginButton:hover {
+  background: white;
+  color: #152016;
+
+  transform: translateY(-2px);
+}
+
+.registerButton {
+  min-width: 180px;
+
+  padding: 13px 24px;
+
+  border: none;
+
+  border-radius: 999px;
+
+  background: #f8b229;
+
+  color: #152016;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.registerButton:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(
+    248,
+    178,
+    41,
+    0.35
+  );
+}

@@ -14,7 +14,11 @@ function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${styles.button} ${styles[variant]} ${className}`}
+      className={`
+        ${styles.button}
+        ${styles[variant]}
+        ${className}
+      `}
     >
       {text}
     </button>
@@ -23,11 +27,16 @@ function Button({
 
 Button.propTypes = {
   text: PropTypes.string.isRequired,
-  type: PropTypes.string,
+  type: PropTypes.oneOf([
+    "button",
+    "submit",
+    "reset",
+  ]),
   onClick: PropTypes.func,
   variant: PropTypes.oneOf([
     "primary",
     "secondary",
+    "dark",
     "danger",
   ]),
   disabled: PropTypes.bool,

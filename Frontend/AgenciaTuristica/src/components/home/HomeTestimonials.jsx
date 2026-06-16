@@ -6,7 +6,6 @@ function HomeTestimonials({ testimonials }) {
   return (
     <section className={styles.section} aria-labelledby="home-testimonials-title">
       <div className={styles.header}>
-        <span>Testimonios</span>
         <h2 id="home-testimonials-title">Viajeros que ya encontraron su siguiente historia</h2>
       </div>
 
@@ -15,10 +14,9 @@ function HomeTestimonials({ testimonials }) {
           <article className={styles.card} key={testimonial.name}>
             <div className={styles.rating}>
               <strong>{testimonial.rating}</strong>
-              <span>Experiencia recomendada</span>
             </div>
 
-            <p>“{testimonial.quote}”</p>
+            <p>"{testimonial.quote}"</p>
 
             <footer>
               <strong>{testimonial.name}</strong>

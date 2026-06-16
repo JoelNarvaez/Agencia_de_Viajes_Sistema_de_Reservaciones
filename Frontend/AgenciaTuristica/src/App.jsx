@@ -1,8 +1,7 @@
-import Home from './pages/public/Home.jsx'
+import AppRoutes from './routes/AppRoutes.jsx'
 
 function App() {
-  
-  return <Home />
+  return <AppRoutes />
 }
 
 export default App

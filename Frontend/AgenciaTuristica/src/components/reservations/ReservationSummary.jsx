@@ -14,6 +14,7 @@ function ReservationSummary({
     people * pricePerPerson + insurance;
 
   return (
+
     <div className={styles.card}>
       <h2 className={styles.title}>
         Resumen de Reserva
@@ -74,8 +75,7 @@ ReservationSummary.propTypes = {
   date: PropTypes.string,
   people: PropTypes.number,
   pricePerPerson: PropTypes.number,
-  extras: PropTypes.string,
-  total: PropTypes.number,
+  insurance: PropTypes.number,
 };
 
 export default ReservationSummary;

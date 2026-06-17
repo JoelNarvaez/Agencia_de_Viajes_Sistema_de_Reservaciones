@@ -209,7 +209,7 @@ function Home() {
   return (
     <main className={styles.page}>
       <HomeHero destinations={featuredDestinations} />
-      <PopularDestinations destinations={featuredDestinations.slice(0, 6)} />
+      <PopularDestinations destinations={featuredDestinations.slice(0, 7)} />
       <FeaturedPackages packages={featuredPackages} />
       <HomeTestimonials testimonials={testimonials} />
       <HomeFAQ items={frequentlyAskedQuestions} />

@@ -1,16 +1,13 @@
+import PropTypes from 'prop-types'
 import styles from './HomeFAQ.module.css'
+import { faqPropType } from '../../utils/homePropTypes'
 
 function HomeFAQ({ items }) {
   return (
     <section className={styles.section} aria-labelledby="home-faq-title">
       <div className={styles.layout}>
         <div className={styles.intro}>
-          <span>Preguntas frecuentes</span>
-          <h2 id="home-faq-title">Antes de reservar, resuelve lo importante</h2>
-          <p>
-            Estas son las dudas mas comunes antes de elegir destino, paquete o
-            fecha de viaje.
-          </p>
+          <h2 id="home-faq-title">Preguntas frecuentes</h2>
         </div>
 
         <div className={styles.list}>
@@ -27,6 +24,10 @@ function HomeFAQ({ items }) {
       </div>
     </section>
   )
+}
+
+HomeFAQ.propTypes = {
+  items: PropTypes.arrayOf(faqPropType).isRequired,
 }
 
 export default HomeFAQ

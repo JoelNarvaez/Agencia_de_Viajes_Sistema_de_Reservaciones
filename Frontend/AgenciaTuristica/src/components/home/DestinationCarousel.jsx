@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import DestinationCard from './DestinationCard.jsx'
 import styles from './DestinationCarousel.module.css'
+import { destinationPropType } from '../../utils/homePropTypes'
 
 function DestinationCarousel({ activeIndex, destinations, onSelectDestination }) {
   const cardRefs = useRef([])
@@ -36,6 +38,12 @@ function DestinationCarousel({ activeIndex, destinations, onSelectDestination })
       ))}
     </div>
   )
+}
+
+DestinationCarousel.propTypes = {
+  activeIndex: PropTypes.number,
+  destinations: PropTypes.arrayOf(destinationPropType).isRequired,
+  onSelectDestination: PropTypes.func.isRequired,
 }
 
 export default DestinationCarousel

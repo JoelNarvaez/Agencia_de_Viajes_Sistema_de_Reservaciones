@@ -32,14 +32,13 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(340px, 560px) minmax(720px, 1fr);
+  display: flex;
   align-items: end;
-  gap: 54px;
-  padding: 104px 14px 112px 28px;
+  padding: 104px 34px 112px;
 }
 
 .copy {
+  max-width: 720px;
   color: #fff;
   text-align: left;
   animation: copyReveal 0.45s ease both;
@@ -47,7 +46,7 @@
 
 .eyebrow {
   margin: 0 0 12px;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.82);
   text-transform: uppercase;
@@ -57,8 +56,8 @@
   max-width: 640px;
   margin: 0;
   color: #fff;
-  font-size: clamp(56px, 8vw, 112px);
-  line-height: 0.86;
+  font-size: clamp(44px, 6.6vw, 86px);
+  line-height: 0.92;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -160,8 +159,8 @@
 
 @media (max-width: 1180px) {
   .content {
-    grid-template-columns: minmax(320px, 500px) minmax(560px, 1fr);
-    gap: 36px;
+    padding-right: 28px;
+    padding-left: 28px;
   }
 }
 
@@ -175,9 +174,7 @@
   }
 
   .content {
-    grid-template-columns: 1fr;
     align-items: start;
-    gap: 34px;
     padding: 96px 22px 128px;
   }
 
@@ -193,7 +190,7 @@
   }
 
   .copy h1 {
-    font-size: 48px;
+    font-size: 40px;
   }
 
   .footerControls {

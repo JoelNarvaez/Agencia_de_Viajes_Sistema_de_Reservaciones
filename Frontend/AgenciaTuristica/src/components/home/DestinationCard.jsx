@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import styles from './DestinationCard.module.css'
 
 function DestinationCard({ image, isActive, location, onClick, title }) {
@@ -15,6 +16,14 @@ function DestinationCard({ image, isActive, location, onClick, title }) {
       </div>
     </button>
   )
+}
+
+DestinationCard.propTypes = {
+  image: PropTypes.string.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  location: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
 }
 
 export default DestinationCard

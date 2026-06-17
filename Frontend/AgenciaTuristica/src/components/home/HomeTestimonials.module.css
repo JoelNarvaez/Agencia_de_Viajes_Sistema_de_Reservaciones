@@ -1,31 +1,21 @@
 .section {
-  padding: 96px 28px 106px;
-  background: #f4f0e8;
+  padding: 86px 28px 56px;
+  background: #f8fafc;
   color: #101712;
 }
 
 .header {
   width: min(1220px, 100%);
-  margin: 0 auto 36px;
-  text-align: left;
-}
-
-.header span {
-  display: block;
-  margin-bottom: 10px;
-  color: #b66f12;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin: 0 auto 34px;
+  text-align: center;
 }
 
 .header h2 {
-  max-width: 900px;
-  margin: 0;
+  max-width: 700px;
+  margin: 0 auto;
   color: #101712;
-  font-size: clamp(44px, 5vw, 78px);
-  line-height: 0.9;
+  font-size: clamp(23px, 2.3vw, 30px);
+  line-height: 1.05;
   font-weight: 700;
 }
 
@@ -38,43 +28,44 @@
 }
 
 .card {
-  min-height: 360px;
+  min-height: 310px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border: 1px solid rgba(20, 33, 27, 0.12);
+  border-top: 4px solid #f8b229;
   border-radius: 8px;
-  padding: 28px;
-  background: #101712;
-  color: #fff;
+  padding: 26px;
+  background: linear-gradient(180deg, #fff 0%, #f7faf8 100%);
+  color: #101712;
   text-align: left;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.14);
 }
 
 .rating {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  justify-content: flex-start;
 }
 
 .rating strong {
-  color: #f8b229;
-  font-size: 42px;
+  color: #101712;
+  font-size: 32px;
   line-height: 1;
 }
 
-.rating span {
-  max-width: 150px;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: right;
-  text-transform: uppercase;
-}
-
 .card p {
-  margin: 34px 0;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 22px;
+  margin: 30px 0;
+  color: #33443b;
+  font-size: 17px;
   line-height: 1.45;
 }
 
@@ -84,20 +75,20 @@
 }
 
 .card footer strong {
-  color: #fff;
-  font-size: 20px;
+  color: #14211b;
+  font-size: 19px;
 }
 
 .card footer span {
-  color: #f8b229;
-  font-size: 14px;
+  color: #b66f12;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 @media (max-width: 900px) {
   .section {
-    padding: 74px 22px 82px;
+    padding: 74px 22px 48px;
   }
 
   .grid {
@@ -105,6 +96,6 @@
   }
 
   .card {
-    min-height: 300px;
+    min-height: 280px;
   }
 }

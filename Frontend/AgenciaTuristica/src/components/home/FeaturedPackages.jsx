@@ -1,14 +1,14 @@
+import PropTypes from 'prop-types'
 import styles from './FeaturedPackages.module.css'
+import { packagePropType } from '../../utils/homePropTypes'
 
 function FeaturedPackages({ packages }) {
   return (
     <section className={styles.section} aria-labelledby="featured-packages-title">
       <div className={styles.header}>
-        <span>Paquetes</span>
         <h2 id="featured-packages-title">Viajes armados para reservar sin vueltas</h2>
         <p>
-          Elige experiencias completas con hospedaje, traslados y actividades
-          pensadas para aprovechar mejor cada destino.
+          Elige  tus experiencias completas.
         </p>
       </div>
 
@@ -45,8 +45,16 @@ function FeaturedPackages({ packages }) {
           </article>
         ))}
       </div>
+
+      <div className={styles.actions}>
+        <a href="/packages">Explorar paquetes</a>
+      </div>
     </section>
   )
+}
+
+FeaturedPackages.propTypes = {
+  packages: PropTypes.arrayOf(packagePropType).isRequired,
 }
 
 export default FeaturedPackages

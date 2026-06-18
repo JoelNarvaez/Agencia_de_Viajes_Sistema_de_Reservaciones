@@ -16,6 +16,11 @@ const initialFilters = {
 
 const includeOptions = ['Hospedaje', 'Transporte', 'Tours guiados', 'Comidas', 'Guia local']
 
+const getDurationBasis = (travelPackage) =>
+  travelPackage.bookingMode === 'nightly'
+    ? travelPackage.minimumNights ?? 1
+    : travelPackage.days ?? 1
+
 function formatCurrency(value) {
   return `$${new Intl.NumberFormat('es-MX').format(value)}`
 }
@@ -56,9 +61,11 @@ function Packages() {
 
   const filteredPackages = useMemo(() => {
     const matchesDuration = (travelPackage) => {
-      if (filters.duration === 'weekend') return travelPackage.days <= 3
-      if (filters.duration === 'medium') return travelPackage.days >= 3 && travelPackage.days <= 4
-      if (filters.duration === 'long') return travelPackage.days >= 5
+      const durationBasis = getDurationBasis(travelPackage)
+
+      if (filters.duration === 'weekend') return durationBasis <= 3
+      if (filters.duration === 'medium') return durationBasis >= 3 && durationBasis <= 4
+      if (filters.duration === 'long') return durationBasis >= 5
 
       return true
     }
@@ -90,8 +97,12 @@ function Packages() {
       .sort((firstPackage, secondPackage) => {
         if (filters.sortBy === 'price-asc') return firstPackage.priceAmount - secondPackage.priceAmount
         if (filters.sortBy === 'price-desc') return secondPackage.priceAmount - firstPackage.priceAmount
-        if (filters.sortBy === 'duration-asc') return firstPackage.days - secondPackage.days
-        if (filters.sortBy === 'duration-desc') return secondPackage.days - firstPackage.days
+        if (filters.sortBy === 'duration-asc') {
+          return getDurationBasis(firstPackage) - getDurationBasis(secondPackage)
+        }
+        if (filters.sortBy === 'duration-desc') {
+          return getDurationBasis(secondPackage) - getDurationBasis(firstPackage)
+        }
 
         return 0
       })
@@ -161,7 +172,7 @@ function Packages() {
 
           <div className={styles.filterGroup}>
             <h2>Rango de precios</h2>
-            <p>Precio del paquete por persona.</p>
+            <p>Precio base del paquete o alojamiento.</p>
 
             <div className={styles.histogram} aria-hidden="true">
               {Array.from({ length: 32 }).map((_, index) => (
@@ -193,12 +204,12 @@ function Packages() {
           </div>
 
           <div className={styles.filterGroup}>
-            <h2>Duracion</h2>
+            <h2>Duracion / estancia</h2>
             {[
               ['all', 'Cualquier duracion'],
-              ['weekend', 'Fin de semana'],
-              ['medium', '3 a 4 dias'],
-              ['long', '5 dias o mas'],
+              ['weekend', 'Fin de semana o estancia corta'],
+              ['medium', '3 a 4 dias/noches'],
+              ['long', '5 dias/noches o mas'],
             ].map(([value, label]) => (
               <label className={styles.radioRow} key={value}>
                 <input

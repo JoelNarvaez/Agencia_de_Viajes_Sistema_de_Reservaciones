@@ -7,6 +7,9 @@ import styles from './PackageMap.module.css'
 
 const mexicoCenter = [23.6345, -102.5528]
 
+const getPackageCoordinates = (travelPackage) =>
+  travelPackage.accommodation?.coordinates ?? travelPackage.coordinates
+
 function PackageMap({ packages }) {
   const mapElementRef = useRef(null)
   const mapInstanceRef = useRef(null)
@@ -46,13 +49,15 @@ function PackageMap({ packages }) {
 
     markersLayer.clearLayers()
 
-    const markerCoordinates = packages.map((travelPackage) => [
-      travelPackage.coordinates.lat,
-      travelPackage.coordinates.lng,
-    ])
+    const markerCoordinates = packages.map((travelPackage) => {
+      const coordinates = getPackageCoordinates(travelPackage)
+
+      return [coordinates.lat, coordinates.lng]
+    })
 
     packages.forEach((travelPackage) => {
-      const marker = L.marker([travelPackage.coordinates.lat, travelPackage.coordinates.lng], {
+      const coordinates = getPackageCoordinates(travelPackage)
+      const marker = L.marker([coordinates.lat, coordinates.lng], {
         icon: L.divIcon({
           className: styles.priceMarker,
           html: `<span>${travelPackage.price}</span>`,
@@ -62,7 +67,7 @@ function PackageMap({ packages }) {
 
       marker.bindPopup(`
         <strong>${travelPackage.title}</strong><br />
-        ${travelPackage.destination}<br />
+        ${travelPackage.accommodation?.name ?? travelPackage.destination}<br />
         ${travelPackage.price}
       `)
 

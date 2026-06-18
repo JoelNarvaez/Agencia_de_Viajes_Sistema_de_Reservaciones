@@ -3,6 +3,15 @@ import { packagePropType } from '../../utils/homePropTypes'
 import styles from './PackageCard.module.css'
 
 function PackageCard({ travelPackage }) {
+  const isNightly = travelPackage.bookingMode === 'nightly'
+  const capacityText = `Hasta ${travelPackage.maxGuests} huespedes`
+  const detailText = isNightly
+    ? `Fechas flexibles · ${capacityText}`
+    : `${travelPackage.duration} · ${travelPackage.groupSize}`
+  const priceText = isNightly
+    ? `${travelPackage.price} por noche`
+    : `${travelPackage.price} en total`
+
   return (
     <article className={styles.card}>
       <Link className={styles.imageLink} to={travelPackage.href} aria-label={`Ver ${travelPackage.title}`}>
@@ -16,17 +25,18 @@ function PackageCard({ travelPackage }) {
 
         <div className={styles.meta}>
           <span>{travelPackage.experienceType}</span>
+          <span>{isNightly ? 'Por noche' : 'Salida fija'}</span>
         </div>
 
         <h2>{travelPackage.title}</h2>
         <p>
           {travelPackage.destination}
           <br />
-          {travelPackage.duration} · {travelPackage.groupSize}
+          {detailText}
         </p>
 
         <div className={styles.footer}>
-          <strong>{travelPackage.price} en total</strong>
+          <strong>{priceText}</strong>
           <span>★ 4.8 (209)</span>
           <Link to={travelPackage.href}>Ver paquete</Link>
         </div>

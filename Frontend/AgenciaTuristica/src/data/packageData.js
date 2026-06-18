@@ -8,9 +8,25 @@ export const travelPackages = [
       lat: 21.9833,
       lng: -99.0167,
     },
+    accommodation: {
+      name: 'Hotel Boutique Huasteca',
+      type: 'Hotel',
+      address: 'Centro, Ciudad Valles, San Luis Potosi',
+      coordinates: {
+        lat: 21.9858,
+        lng: -99.0161,
+      },
+    },
     days: 5,
     experienceType: 'Aventura',
     groupSize: '2 a 8 viajeros',
+    bookingMode: 'fixed-date',
+    maxGuests: 8,
+    priceUnit: 'por salida',
+    departures: [
+      { id: 'huasteca-jul-10', startDate: '2026-07-10', endDate: '2026-07-14', availableSpots: 8 },
+      { id: 'huasteca-jul-24', startDate: '2026-07-24', endDate: '2026-07-28', availableSpots: 5 },
+    ],
     description:
       'Rios turquesa, cascadas y traslados organizados para vivir una aventura completa sin complicarte.',
     longDescription:
@@ -36,9 +52,25 @@ export const travelPackages = [
       lat: 30.8406,
       lng: -115.2838,
     },
+    accommodation: {
+      name: 'Eco Lodge Baja Desert',
+      type: 'Lodge',
+      address: 'San Felipe, Baja California',
+      coordinates: {
+        lat: 31.0246,
+        lng: -114.8392,
+      },
+    },
     days: 4,
     experienceType: 'Naturaleza',
     groupSize: '2 a 6 viajeros',
+    bookingMode: 'fixed-date',
+    maxGuests: 6,
+    priceUnit: 'por salida',
+    departures: [
+      { id: 'baja-ago-08', startDate: '2026-08-08', endDate: '2026-08-11', availableSpots: 6 },
+      { id: 'baja-ago-22', startDate: '2026-08-22', endDate: '2026-08-25', availableSpots: 4 },
+    ],
     description:
       'Atardeceres en dunas, miradores naturales y experiencias locales para viajeros que buscan paisajes amplios.',
     longDescription:
@@ -64,9 +96,25 @@ export const travelPackages = [
       lat: 20.9144,
       lng: -100.7452,
     },
+    accommodation: {
+      name: 'Hotel Boutique Centro Historico',
+      type: 'Hotel boutique',
+      address: 'Zona Centro, San Miguel de Allende, Guanajuato',
+      coordinates: {
+        lat: 20.9149,
+        lng: -100.7437,
+      },
+    },
     days: 3,
     experienceType: 'Cultura',
     groupSize: '2 a 10 viajeros',
+    bookingMode: 'fixed-date',
+    maxGuests: 10,
+    priceUnit: 'por salida',
+    departures: [
+      { id: 'colonial-jul-18', startDate: '2026-07-18', endDate: '2026-07-20', availableSpots: 10 },
+      { id: 'colonial-ago-01', startDate: '2026-08-01', endDate: '2026-08-03', availableSpots: 7 },
+    ],
     description:
       'Calles historicas, terrazas, gastronomia y recorridos culturales para una salida tranquila y bien planeada.',
     longDescription:
@@ -87,14 +135,27 @@ export const travelPackages = [
     id: 'costa-esmeralda-relax',
     title: 'Costa Esmeralda Relax',
     destination: 'Veracruz',
-    duration: '3 dias / 2 noches',
+    duration: 'Fechas flexibles',
     coordinates: {
-      lat: 20.7286,
-      lng: -96.8686,
+      lat: 20.3206,
+      lng: -96.9178,
     },
-    days: 3,
+    accommodation: {
+      name: 'Hotel Costa Esmeralda Frente al Mar',
+      type: 'Hotel',
+      address: 'Costa Esmeralda, Veracruz',
+      coordinates: {
+        lat: 20.3206,
+        lng: -96.9178,
+      },
+    },
+    days: null,
+    minimumNights: 1,
     experienceType: 'Playa',
     groupSize: '2 a 8 viajeros',
+    bookingMode: 'nightly',
+    maxGuests: 8,
+    priceUnit: 'por noche',
     description:
       'Playas tranquilas, comida costera y hospedaje cerca del mar para desconectarte un fin de semana.',
     longDescription:
@@ -115,14 +176,27 @@ export const travelPackages = [
     id: 'bosque-nublado-oaxaca',
     title: 'Bosque Nublado Oaxaca',
     destination: 'Oaxaca',
-    duration: '4 dias / 3 noches',
+    duration: 'Fechas flexibles',
     coordinates: {
       lat: 17.0732,
       lng: -96.7266,
     },
-    days: 4,
+    accommodation: {
+      name: 'Cabanas Bosque Nublado',
+      type: 'Cabanas',
+      address: 'Sierra Norte, Oaxaca',
+      coordinates: {
+        lat: 17.1049,
+        lng: -96.5917,
+      },
+    },
+    days: null,
+    minimumNights: 1,
     experienceType: 'Naturaleza',
     groupSize: '2 a 7 viajeros',
+    bookingMode: 'nightly',
+    maxGuests: 7,
+    priceUnit: 'por noche',
     description:
       'Senderos frescos, miradores verdes y comunidades serranas con sabores tradicionales.',
     longDescription:
@@ -148,9 +222,25 @@ export const travelPackages = [
       lat: 21.6086,
       lng: -88.1576,
     },
+    accommodation: {
+      name: 'Hotel Natural Rio Lagartos',
+      type: 'Hotel',
+      address: 'Rio Lagartos, Yucatan',
+      coordinates: {
+        lat: 21.5964,
+        lng: -88.1573,
+      },
+    },
     days: 4,
     experienceType: 'Relax',
     groupSize: '2 a 8 viajeros',
+    bookingMode: 'fixed-date',
+    maxGuests: 8,
+    priceUnit: 'por salida',
+    departures: [
+      { id: 'yucatan-sep-05', startDate: '2026-09-05', endDate: '2026-09-08', availableSpots: 8 },
+      { id: 'yucatan-sep-19', startDate: '2026-09-19', endDate: '2026-09-22', availableSpots: 6 },
+    ],
     description:
       'Paisajes salinos, aves migratorias y rutas cercanas a la costa yucateca.',
     longDescription:

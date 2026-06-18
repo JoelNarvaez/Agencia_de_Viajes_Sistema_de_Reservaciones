@@ -7,11 +7,13 @@ function ReservationSummary({
   date,
   people,
   pricePerPerson,
+  priceLabel = "Precio por persona",
+  totalAmount,
   insurance = 0,
 }) {
 
   const total =
-    people * pricePerPerson + insurance;
+    totalAmount ?? people * pricePerPerson + insurance;
 
   return (
 
@@ -41,9 +43,7 @@ function ReservationSummary({
       </div>
 
       <div className={styles.row}>
-        <span>
-          Precio por persona
-        </span>
+        <span>{priceLabel}</span>
 
         <strong>
           ${pricePerPerson.toLocaleString()}
@@ -74,7 +74,9 @@ ReservationSummary.propTypes = {
   destination: PropTypes.string,
   date: PropTypes.string,
   people: PropTypes.number,
+  priceLabel: PropTypes.string,
   pricePerPerson: PropTypes.number,
+  totalAmount: PropTypes.number,
   insurance: PropTypes.number,
 };
 

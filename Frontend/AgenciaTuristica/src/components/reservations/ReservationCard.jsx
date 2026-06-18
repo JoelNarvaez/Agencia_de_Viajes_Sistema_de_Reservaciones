@@ -6,6 +6,7 @@ function ReservationCard({
   destination,
   packageName,
   travelDate,
+  people,
   total,
   status,
   image,
@@ -42,6 +43,10 @@ function ReservationCard({
 
         <p className={styles.description}>
           Viaje programado para {travelDate}.
+        </p>
+
+        <p className={styles.people}>
+          {people} {people === 1 ? "huesped" : "huespedes"}
         </p>
 
         <div className={styles.total}>

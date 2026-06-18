@@ -1,0 +1,236 @@
+.page {
+  min-height: calc(100vh - 75px);
+  min-height: calc(100dvh - 75px);
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(20, 33, 27, 0.06), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  color: #14211b;
+}
+
+.panel {
+  width: min(100%, 590px);
+  margin: 0 auto;
+}
+
+.formShell {
+  width: 100%;
+  padding: 30px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.07);
+  text-align: left;
+}
+
+.loginText a {
+  color: #14211b;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.header {
+  margin-bottom: 34px;
+  text-align: center;
+}
+
+.header span {
+  display: block;
+  margin-bottom: 8px;
+  color: #c98b08;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  display: inline-block;
+  margin: 0;
+  color: #14211b;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1;
+  font-weight: 900;
+  border-bottom: 4px solid #f8b229;
+  padding-bottom: 8px;
+}
+
+.header p {
+  max-width: 340px;
+  margin: 8px auto 0;
+  color: #657068;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 490px);
+  margin: 0 auto;
+}
+
+.form label {
+  display: grid;
+  gap: 7px;
+}
+
+.form label > span {
+  color: #3f4741;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(20, 33, 27, 0.18);
+  border-radius: 8px;
+  padding: 0 16px;
+  color: #14211b;
+  background: #fff;
+  font: inherit;
+}
+
+.form input:focus {
+  border-color: #f8b229;
+  outline: 3px solid rgba(248, 178, 41, 0.24);
+}
+
+.passwordGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.checkbox input {
+  width: 17px;
+  height: 17px;
+  min-height: auto;
+  margin-top: 3px;
+  accent-color: #f8b229;
+}
+
+.checkbox span {
+  color: #657068;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.termsButton {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: #14211b;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+.termsBox {
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid #f8b229;
+  background: transparent;
+  color: #3f4741;
+}
+
+.termsBox h2 {
+  margin: 0 0 6px;
+  color: #14211b;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.termsBox ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.termsBox li {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.errorMessage {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #7a1f1f;
+  background: #ffe2df;
+  font-size: 14px;
+}
+
+.submitButton {
+  margin-top: 8px;
+  min-height: 46px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: #14211b;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.submitButton:hover:not(:disabled),
+.submitButton:focus-visible:not(:disabled) {
+  background: #23352d;
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.loginText {
+  margin-top: 18px;
+  color: #657068;
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .page {
+    min-height: calc(100vh - 75px);
+    min-height: calc(100dvh - 75px);
+    overflow: visible;
+    padding: 18px 16px;
+  }
+
+  .formShell {
+    padding: 22px 20px;
+  }
+
+  .form {
+    width: 100%;
+  }
+
+  .passwordGrid {
+    grid-template-columns: 1fr;
+  }
+}

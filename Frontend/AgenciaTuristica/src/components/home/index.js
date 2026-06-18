@@ -1,0 +1,7 @@
+export { default as DestinationCard } from './DestinationCard.jsx'
+export { default as DestinationCarousel } from './DestinationCarousel.jsx'
+export { default as FeaturedPackages } from './FeaturedPackages.jsx'
+export { default as HomeFAQ } from './HomeFAQ.jsx'
+export { default as HomeHero } from './HomeHero.jsx'
+export { default as HomeTestimonials } from './HomeTestimonials.jsx'
+export { default as PopularDestinations } from './PopularDestinations.jsx'

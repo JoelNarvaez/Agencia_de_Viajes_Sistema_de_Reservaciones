@@ -1,4 +1,8 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom'
+import Home from '../pages/public/Home.jsx'
+import Login from '../pages/public/Login.jsx'
+import NotFound from '../pages/public/NotFound.jsx'
+import Register from '../pages/public/Register.jsx'
 import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashBoard';
 import AdminDestinations from '../pages/admin/AdminDestinations';
@@ -11,6 +15,11 @@ import AdminUsers from '../pages/admin/AdminUsers';
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="*" element={<NotFound />} />
+
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
@@ -23,8 +32,9 @@ function AppRoutes() {
         <Route path="reservaciones" element={<AdminReservations />} />
         <Route path="usuarios" element={<AdminUsers />} />
       </Route>
+
     </Routes>
-  );
+  )
 }
 
 export default AppRoutes;

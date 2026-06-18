@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
+import useAuth from '../../hooks/useAuth'
 import styles from './NotFound.module.css'
 
 function NotFound() {
+  const { isAuthenticated } = useAuth()
+
   return (
     <main className={styles.page}>
       <section className={styles.card} aria-labelledby="not-found-title">
@@ -17,9 +20,11 @@ function NotFound() {
             <Link className={styles.primaryAction} to="/">
               Volver al inicio
             </Link>
-            <Link className={styles.secondaryAction} to="/login">
-              Iniciar sesion
-            </Link>
+            {!isAuthenticated && (
+              <Link className={styles.secondaryAction} to="/login">
+                Iniciar sesion
+              </Link>
+            )}
           </div>
         </div>
 

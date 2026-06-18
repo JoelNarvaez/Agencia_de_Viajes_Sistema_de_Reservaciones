@@ -27,9 +27,9 @@ function PopularDestinations({ destinations }) {
           <div className={styles.carousel} ref={carouselRef}>
             {carouselDestinations.map((destination) => (
               <article className={styles.card} key={destination.title}>
-                <a className={styles.imageLink} href={destination.href} aria-label={`Ver ${destination.title}`}>
+                <div className={styles.imageLink} aria-label={destination.title}>
                   <img src={destination.image} alt="" />
-                </a>
+                </div>
 
                 <div className={styles.cardBody}>
                   <h3>{destination.title}</h3>
@@ -42,7 +42,7 @@ function PopularDestinations({ destinations }) {
                       <span className={styles.priceLabel}>Desde</span>
                       <strong>{destination.priceFrom}</strong>
                     </div>
-                    <a className={styles.cardLink} href={destination.href} aria-label={`Ver ${destination.title}`}>
+                    <a className={styles.cardLink} href="/packages" aria-label="Ver paquetes">
                       <span aria-hidden="true">&gt;</span>
                     </a>
                   </div>
@@ -51,19 +51,19 @@ function PopularDestinations({ destinations }) {
             ))}
           </div>
 
-          <div className={styles.controls} aria-label="Navegar destinos">
-            <button type="button" onClick={() => scrollCarousel(-1)} aria-label="Destinos anteriores">
+          <div className={styles.controls} aria-label="Navegar experiencias">
+            <button type="button" onClick={() => scrollCarousel(-1)} aria-label="Experiencias anteriores">
               &lt;
             </button>
-            <button type="button" onClick={() => scrollCarousel(1)} aria-label="Destinos siguientes">
+            <button type="button" onClick={() => scrollCarousel(1)} aria-label="Experiencias siguientes">
               &gt;
             </button>
           </div>
         </div>
 
         <div className={styles.closing}>
-          <h3>Encuentra el destino que encaja con tu forma de viajar</h3>
-          <a href="/destinations">Explorar destinos</a>
+          <h3>Encuentra la experiencia que encaja con tu forma de viajar</h3>
+          <a href="/packages">Explorar paquetes</a>
         </div>
       </div>
     </section>

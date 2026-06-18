@@ -6,7 +6,10 @@ import { AuthContext } from './authContextValue'
 
 const getStoredAuth = () => {
   try {
-    const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY)
+    const storedAuth =
+      localStorage.getItem(AUTH_STORAGE_KEY) ??
+      sessionStorage.getItem(AUTH_STORAGE_KEY)
+
     return storedAuth ? JSON.parse(storedAuth) : null
   } catch {
     return null
@@ -18,11 +21,19 @@ function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const persistAuth = (authData) => {
+  const clearStoredAuth = () => {
+    localStorage.removeItem(AUTH_STORAGE_KEY)
+    sessionStorage.removeItem(AUTH_STORAGE_KEY)
+  }
+
+  const persistAuth = (authData, rememberSession = true) => {
     if (!authData?.token) return
 
     setAuthState(authData)
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData))
+    clearStoredAuth()
+
+    const storage = rememberSession ? localStorage : sessionStorage
+    storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData))
   }
 
   const login = async (credentials) => {
@@ -31,7 +42,7 @@ function AuthProvider({ children }) {
 
     try {
       const authData = await authService.login(credentials)
-      persistAuth(authData)
+      persistAuth(authData, credentials.rememberSession)
       return authData
     } catch (loginError) {
       const message =
@@ -66,7 +77,7 @@ function AuthProvider({ children }) {
   const logout = () => {
     setAuthState(null)
     setError('')
-    localStorage.removeItem(AUTH_STORAGE_KEY)
+    clearStoredAuth()
   }
 
   const value = {

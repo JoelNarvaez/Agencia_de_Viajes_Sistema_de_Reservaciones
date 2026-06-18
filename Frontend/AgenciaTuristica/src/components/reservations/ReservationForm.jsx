@@ -6,7 +6,7 @@ import {
   FaUsers,
   FaPlane,
   FaShieldAlt,
-} from "react-icons/fa";
+} from "../../icons/fa";
 
 import Button from "../common/Button";
 import styles from "./ReservationForm.module.css";

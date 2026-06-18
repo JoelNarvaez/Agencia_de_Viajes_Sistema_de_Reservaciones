@@ -6,7 +6,7 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
   FaTimesCircle,
-} from "react-icons/fa";
+} from "../../icons/fa";
 
 import styles from "./Modal.module.css";
 

@@ -79,18 +79,18 @@ function HomeHero({ destinations }) {
               {activeDestination?.description ??
                 'Viajes curados para descubrir montanas, playas, selvas y pueblos con reservas simples y acompanamiento local.'}
             </p>
-            <a className={styles.cta} href={activeDestination?.href ?? '/destinations'}>
-              Ver destino
+            <a className={styles.cta} href="/packages">
+              Ver paquetes
             </a>
           </div>
         </div>
 
         <div className={styles.footerControls}>
-          <div className={styles.arrows} aria-label="Navegar destinos">
-            <button type="button" onClick={goToPrevious} aria-label="Destino anterior">
+          <div className={styles.arrows} aria-label="Navegar experiencias">
+            <button type="button" onClick={goToPrevious} aria-label="Experiencia anterior">
               <span aria-hidden="true">&lt;</span>
             </button>
-            <button type="button" onClick={goToNext} aria-label="Destino siguiente">
+            <button type="button" onClick={goToNext} aria-label="Experiencia siguiente">
               <span aria-hidden="true">&gt;</span>
             </button>
           </div>

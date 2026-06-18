@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import Loader from '../../components/common/Loader'
 import styles from './Register.module.css'
 
 const initialFormData = {
@@ -18,6 +19,7 @@ function Register({ onRegisterSuccess }) {
   const { error: authError, isLoading, register } = useAuth()
   const [formData, setFormData] = useState(initialFormData)
   const [formError, setFormError] = useState('')
+  const [showTerms, setShowTerms] = useState(false)
 
   const handleChange = (event) => {
     const { checked, name, type, value } = event.target
@@ -76,14 +78,9 @@ function Register({ onRegisterSuccess }) {
     <main className={styles.page}>
       <section className={styles.panel} aria-labelledby="register-title">
         <div className={styles.formShell}>
-          <a className={styles.backLink} href="/">
-            Volver al inicio
-          </a>
-
           <div className={styles.header}>
             <span>Crear cuenta</span>
             <h1 id="register-title">Registrarse</h1>
-            <p>Completa tus datos para empezar a organizar tus viajes.</p>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -157,15 +154,41 @@ function Register({ onRegisterSuccess }) {
                 onChange={handleChange}
                 type="checkbox"
               />
-              <span>Acepto terminos, condiciones y politicas de privacidad.</span>
+              <span>
+                Acepto los terminos, condiciones y politicas de privacidad.
+              </span>
             </label>
+
+            <button
+              className={styles.termsButton}
+              onClick={() => setShowTerms((currentValue) => !currentValue)}
+              type="button"
+            >
+              {showTerms ? 'Ocultar condiciones' : 'Ver condiciones'}
+            </button>
+
+            {showTerms && (
+              <div className={styles.termsBox}>
+                <h2>Terminos y condiciones</h2>
+                <ul>
+                  <li>La informacion registrada debe ser real y estar actualizada.</li>
+                  <li>El usuario es responsable de mantener segura su cuenta.</li>
+                  <li>Las reservaciones estan sujetas a disponibilidad del servicio.</li>
+                  <li>Los cambios o cancelaciones pueden depender de cada paquete.</li>
+                  <li>
+                    Los datos personales se usaran solo para gestionar la cuenta,
+                    reservaciones y comunicacion del servicio.
+                  </li>
+                </ul>
+              </div>
+            )}
 
             {(formError || authError) && (
               <p className={styles.errorMessage}>{formError || authError}</p>
             )}
 
             <button className={styles.submitButton} disabled={isLoading} type="submit">
-              {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
+              {isLoading ? <Loader text="Creando cuenta..." variant="inline" /> : 'Crear cuenta'}
             </button>
           </form>
 

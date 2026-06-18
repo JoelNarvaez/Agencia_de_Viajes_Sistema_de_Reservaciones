@@ -5,7 +5,7 @@ import {
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaEnvelope,
-} from "react-icons/fa";
+} from "../../icons/fa";
 import PropTypes from "prop-types";
 import styles from "./Footer.module.css";
 
@@ -23,7 +23,7 @@ function Footer({
           </div>
 
           <p className={styles.description}>
-            Descubre destinos increíbles y crea
+            Descubre nuevas experiencias y crea
             experiencias inolvidables con nosotros.
           </p>
         </div>
@@ -32,7 +32,6 @@ function Footer({
           <h3>NAVEGACIÓN</h3>
 
           <a href="#">Inicio</a>
-          <a href="#">Destinos</a>
           <a href="#">Paquetes</a>
           <a href="#">Promociones</a>
           <a href="#">Contacto</a>

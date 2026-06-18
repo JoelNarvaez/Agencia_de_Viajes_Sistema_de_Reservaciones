@@ -1,24 +1,41 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import DestinationCarousel from './DestinationCarousel.jsx'
 import styles from './HomeHero.module.css'
 import { destinationPropType } from '../../utils/homePropTypes'
 
 function HomeHero({ destinations }) {
-  const [activeIndex, setActiveIndex] = useState(null)
-  const activeDestination =
-    activeIndex === null ? null : destinations[activeIndex]
+  const [activeIndex, setActiveIndex] = useState(0)
+  const activeDestination = destinations[activeIndex] ?? destinations[0]
   const heroImage =
     activeDestination?.heroImage ??
     activeDestination?.image ??
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85'
   const progressWidth =
-    activeIndex === null ? '12%' : `${((activeIndex + 1) / destinations.length) * 100}%`
+    destinations.length > 0 ? `${((activeIndex + 1) / destinations.length) * 100}%` : '0%'
   const contentKey = activeDestination?.title ?? 'default'
-  const displayIndex = activeIndex === null ? 1 : activeIndex + 1
+  const displayIndex = activeIndex + 1
+
+  useEffect(() => {
+    if (destinations.length <= 1) return undefined
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => {
+        if (currentIndex >= destinations.length - 1) {
+          return 0
+        }
+
+        return currentIndex + 1
+      })
+    }, 5000)
+
+    return () => window.clearInterval(intervalId)
+  }, [destinations.length])
+
   const goToPrevious = () => {
+    if (destinations.length === 0) return
+
     setActiveIndex((currentIndex) => {
-      if (currentIndex === null || currentIndex === 0) {
+      if (currentIndex === 0) {
         return destinations.length - 1
       }
 
@@ -26,8 +43,10 @@ function HomeHero({ destinations }) {
     })
   }
   const goToNext = () => {
+    if (destinations.length === 0) return
+
     setActiveIndex((currentIndex) => {
-      if (currentIndex === null || currentIndex === destinations.length - 1) {
+      if (currentIndex === destinations.length - 1) {
         return 0
       }
 
@@ -61,15 +80,9 @@ function HomeHero({ destinations }) {
                 'Viajes curados para descubrir montanas, playas, selvas y pueblos con reservas simples y acompanamiento local.'}
             </p>
             <a className={styles.cta} href={activeDestination?.href ?? '/destinations'}>
-              {activeDestination ? 'Ver destino' : 'Ver destinos'}
+              Ver destino
             </a>
           </div>
-
-          <DestinationCarousel
-            activeIndex={activeIndex}
-            destinations={destinations}
-            onSelectDestination={setActiveIndex}
-          />
         </div>
 
         <div className={styles.footerControls}>

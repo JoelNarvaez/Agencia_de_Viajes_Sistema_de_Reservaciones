@@ -6,8 +6,8 @@
   padding: 16px;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(248, 178, 41, 0.12), transparent 32%),
-    #f6f2ea;
+    radial-gradient(circle at top left, rgba(20, 33, 27, 0.06), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   color: #14211b;
 }
 
@@ -18,10 +18,10 @@
 .formShell {
   width: 100%;
   padding: 30px 40px;
-  border: 1px solid rgba(20, 33, 27, 0.1);
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(20, 33, 27, 0.1);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.07);
   text-align: left;
 }
 

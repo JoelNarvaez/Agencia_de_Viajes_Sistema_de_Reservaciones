@@ -1,0 +1,202 @@
+.footer {
+  background: #152016;
+  color: white;
+
+  margin-top: 80px;
+
+  border-top: 1px solid rgba(
+    255,
+    255,
+    255,
+    0.08
+  );
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 50px;
+
+  padding: 70px 80px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  width: 180px;
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px dashed rgba(
+    255,
+    255,
+    255,
+    0.25
+  );
+
+  border-radius: 12px;
+
+  margin-bottom: 22px;
+
+  font-weight: 700;
+  color: white;
+}
+
+.description {
+  color: rgba(
+    255,
+    255,
+    255,
+    0.72
+  );
+
+  line-height: 1.8;
+}
+
+.column h3 {
+  color: #f8b229;
+
+  margin-bottom: 24px;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.column a {
+  color: rgba(
+    255,
+    255,
+    255,
+    0.78
+  );
+
+  text-decoration: none;
+
+  margin-bottom: 14px;
+
+  transition: all 0.25s ease;
+}
+
+.column a:hover {
+  color: #f8b229;
+
+  transform: translateX(4px);
+}
+
+.column p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 16px;
+
+  color: rgba(
+    255,
+    255,
+    255,
+    0.78
+  );
+}
+
+.icon {
+  color: #f8b229;
+  font-size: 15px;
+}
+
+.socials {
+  display: flex;
+  gap: 14px;
+
+  margin-top: 24px;
+}
+
+.socials a {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(
+    255,
+    255,
+    255,
+    0.15
+  );
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.05
+  );
+
+  color: white;
+
+  text-decoration: none;
+
+  transition: all 0.3s ease;
+}
+
+.socials a:hover {
+  background: #f8b229;
+  color: #152016;
+
+  transform: translateY(-4px);
+
+  box-shadow: 0 8px 18px rgba(
+    248,
+    178,
+    41,
+    0.3
+  );
+}
+
+.bottomBar {
+  text-align: center;
+
+  padding: 22px;
+
+  border-top: 1px solid rgba(
+    255,
+    255,
+    255,
+    0.08
+  );
+
+  color: rgba(
+    255,
+    255,
+    255,
+    0.55
+  );
+
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+
+    gap: 40px;
+
+    padding: 50px 25px;
+  }
+
+  .logo {
+    width: 160px;
+  }
+}

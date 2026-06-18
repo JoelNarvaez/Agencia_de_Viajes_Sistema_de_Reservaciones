@@ -5,7 +5,9 @@
   place-items: center;
   padding: 20px;
   overflow: hidden;
-  background: #f6f2ea;
+  background:
+    radial-gradient(circle at top left, rgba(20, 33, 27, 0.06), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   color: #14211b;
 }
 
@@ -16,10 +18,10 @@
 .formShell {
   width: 100%;
   padding: 30px 34px;
-  border: 1px solid rgba(20, 33, 27, 0.1);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 22px 60px rgba(20, 33, 27, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 58px rgba(15, 23, 42, 0.07);
   text-align: left;
 }
 

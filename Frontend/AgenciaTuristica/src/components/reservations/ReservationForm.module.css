@@ -1,0 +1,180 @@
+.wrapper{
+  width:100%;
+  padding:40px 20px;
+  display:flex;
+  justify-content:center;
+}
+
+.card{
+  width:100%;
+  max-width:900px;
+  padding:40px;
+  border-radius:24px;
+  background:#f3efe9;
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.10);
+}
+
+.subtitle{
+  display:block;
+  margin-bottom:10px;
+  color:#f8b229;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.title{
+  margin:0;
+  color:#152016;
+  font-size:42px;
+  line-height:1;
+  font-weight:700;
+  text-transform:uppercase;
+}
+
+.description{
+  margin:18px 0 35px;
+  color:#5f6670;
+  line-height:1.8;
+}
+
+.formGrid{
+  display:grid;
+  grid-template-columns:
+    repeat(2,1fr);
+  gap:22px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.field label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#374151;
+  font-size:16px;
+  font-weight:700;
+}
+
+.field input,
+.field select{
+  height:58px;
+  border:none;
+  border-radius:16px;
+  background:white;
+  padding:0 18px;
+  font-size:16px;
+  color:#152016;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.04);
+}
+
+.field input:focus,
+.field select:focus{
+  outline:none;
+  box-shadow:
+    0 0 0 3px rgba(248,178,41,.25);
+}
+
+.fullWidth{
+  grid-column:1 / -1;
+}
+
+.insuranceSection{
+  margin-top:30px;
+}
+
+.insuranceLabel{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:15px;
+  color:#5f6670;
+  font-size:14px;
+  font-weight:700;
+}
+
+.options {
+  display: flex;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 6px;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  width: 70%;
+  height: 30px;
+  flex-wrap: wrap;
+}
+
+.option {
+  flex: 1;
+  min-width: 140px;
+  height: 50;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.option:hover {
+  background: rgba(248, 178, 41, 0.08);
+  color: #152016;
+}
+
+.optionActive {
+  background: rgba(248, 178, 41, 0.18);
+  color: #152016;
+  border: 1px solid rgba(248, 178, 41, 0.35);
+  box-shadow: none;
+}
+
+.actions{
+  margin-top:35px;
+  display:flex;
+  justify-content:center;
+}
+
+
+@media (max-width: 768px) {
+
+  .card {
+    padding: 24px 18px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fullWidth {
+    grid-column: auto;
+  }
+
+  .options {
+    flex-direction: column;
+  }
+
+  .option {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .field input,
+  .field select {
+    height: 52px;
+  }
+}

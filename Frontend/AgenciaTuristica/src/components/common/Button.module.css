@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 999px;
+
+  font-family: Manrope;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.button:hover:not(:disabled),
+.button:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.primary {
+  color: #152016;
+  background: #f8b229;
+}
+
+.primary:hover:not(:disabled) {
+  background: #ffbf3f;
+}
+
+
+.secondary {
+  color: #ffffff;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.16
+  );
+
+  backdrop-filter: blur(10px);
+}
+
+.secondary:hover:not(:disabled) {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.28
+  );
+}
+
+.dark {
+  color: #ffffff;
+  background: #101712;
+}
+
+.dark:hover:not(:disabled) {
+  background: #1a241d;
+}
+
+.danger {
+  color: #ffffff;
+  background: #c96b3c;
+}
+
+.danger:hover:not(:disabled) {
+  background: #b55d31;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

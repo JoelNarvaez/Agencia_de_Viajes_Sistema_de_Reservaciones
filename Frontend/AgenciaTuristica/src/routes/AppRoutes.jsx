@@ -11,6 +11,7 @@ import Profile from '../pages/users/Profile.jsx'
 import ReservationDetail from '../pages/users/ReservationDetail.jsx'
 import ReservationSuccess from '../pages/users/ReservationSuccess.jsx'
 import UserDashboard from '../pages/users/UserDashboard.jsx'
+import About from '../pages/public/About.jsx'
 
 function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ function AppRoutes() {
       <Route path="/reservations/success" element={<ReservationSuccess />} />
       <Route path="/reservations/:reservationId" element={<ReservationDetail />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/about" element={<About />} />
     </Routes>
   )
 }

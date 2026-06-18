@@ -14,7 +14,6 @@ const featuredDestinations = [
     description:
       'Camina entre cascadas, pueblos llenos de color y senderos rodeados por vegetacion tropical.',
     duration: '4 dias',
-    href: '/destinations/selva-maya',
     image:
       'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -27,7 +26,6 @@ const featuredDestinations = [
     description:
       'Recorre paisajes deserticos, miradores naturales y atardeceres que cambian todo el horizonte.',
     duration: '3 dias',
-    href: '/destinations/dunas-doradas',
     image:
       'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -40,7 +38,6 @@ const featuredDestinations = [
     description:
       'Descubre rios turquesa, saltos de agua y rutas perfectas para una escapada de aventura.',
     duration: '5 dias',
-    href: '/destinations/cascada-azul',
     image:
       'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -53,7 +50,6 @@ const featuredDestinations = [
     description:
       'Vive caminos de altura, pueblos remotos y panoramas de montana pensados para viajeros curiosos.',
     duration: '6 dias',
-    href: '/destinations/cumbres-andinas',
     image:
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -66,7 +62,6 @@ const featuredDestinations = [
     description:
       'Playas tranquilas, gastronomia costera y recorridos relajados frente al Golfo de Mexico.',
     duration: '3 dias',
-    href: '/destinations/costa-esmeralda',
     image:
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -79,7 +74,6 @@ const featuredDestinations = [
     description:
       'Calles coloniales, terrazas con vista y experiencias culturales para viajar con calma.',
     duration: '2 dias',
-    href: '/destinations/pueblo-magico',
     image:
       'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -92,7 +86,6 @@ const featuredDestinations = [
     description:
       'Un paisaje salino de tonos rosados, aves migratorias y rutas cercanas a la costa yucateca.',
     duration: '4 dias',
-    href: '/destinations/laguna-rosa',
     image:
       'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=500&q=80',
     heroImage:
@@ -105,7 +98,6 @@ const featuredDestinations = [
     description:
       'Senderos frescos, miradores verdes y comunidades serranas con sabores tradicionales.',
     duration: '4 dias',
-    href: '/destinations/bosque-nublado',
     image:
       'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=500&q=80',
     heroImage:

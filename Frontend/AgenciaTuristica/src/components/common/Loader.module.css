@@ -8,6 +8,17 @@
   padding: 24px;
 }
 
+.block {
+  justify-content: center;
+}
+
+.inline {
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+}
+
 .spinner {
   width: 48px;
   height: 48px;
@@ -26,6 +37,14 @@
   animation: spin 0.8s linear infinite;
 }
 
+.inline .spinner {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.32);
+  border-top-color: currentColor;
+}
+
 .container p {
   margin: 0;
 
@@ -38,6 +57,13 @@
   letter-spacing: 0.5px;
 
   text-transform: uppercase;
+}
+
+.inline p {
+  color: currentColor;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
 @keyframes spin {

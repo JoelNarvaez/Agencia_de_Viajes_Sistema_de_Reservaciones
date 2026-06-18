@@ -4,7 +4,7 @@ export const destinationPropType = PropTypes.shape({
   description: PropTypes.string.isRequired,
   duration: PropTypes.string,
   heroImage: PropTypes.string,
-  href: PropTypes.string.isRequired,
+  href: PropTypes.string,
   id: PropTypes.string,
   image: PropTypes.string.isRequired,
   location: PropTypes.string.isRequired,

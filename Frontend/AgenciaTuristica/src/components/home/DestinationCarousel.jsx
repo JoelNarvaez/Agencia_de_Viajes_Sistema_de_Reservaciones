@@ -18,7 +18,7 @@ function DestinationCarousel({ activeIndex, destinations, onSelectDestination })
   }, [activeIndex])
 
   return (
-    <div className={styles.carousel} aria-label="Destinos populares">
+    <div className={styles.carousel} aria-label="Experiencias populares">
       {destinations.map((destination, index) => (
         <div
           className={styles.item}

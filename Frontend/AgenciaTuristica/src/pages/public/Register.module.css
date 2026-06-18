@@ -1,9 +1,10 @@
 .page {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - 75px);
+  min-height: calc(100dvh - 75px);
+  box-sizing: border-box;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 24px 16px;
   overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(20, 33, 27, 0.06), transparent 34%),
@@ -13,6 +14,7 @@
 
 .panel {
   width: min(100%, 590px);
+  margin: 0 auto;
 }
 
 .formShell {
@@ -25,7 +27,6 @@
   text-align: left;
 }
 
-.backLink,
 .loginText a {
   color: #14211b;
   font-size: 14px;
@@ -33,20 +34,15 @@
   text-decoration: none;
 }
 
-.backLink {
-  display: inline-flex;
-  margin-bottom: 22px;
-}
-
 .header {
-  margin-bottom: 22px;
+  margin-bottom: 34px;
   text-align: center;
 }
 
 .header span {
   display: block;
   margin-bottom: 8px;
-  color: #657068;
+  color: #c98b08;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -54,11 +50,14 @@
 }
 
 .header h1 {
+  display: inline-block;
   margin: 0;
   color: #14211b;
   font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 900;
+  border-bottom: 4px solid #f8b229;
+  padding-bottom: 8px;
 }
 
 .header p {
@@ -89,6 +88,7 @@
 }
 
 .form input {
+  box-sizing: border-box;
   width: 100%;
   min-height: 44px;
   border: 1px solid rgba(20, 33, 27, 0.18);
@@ -132,6 +132,46 @@
   text-transform: none;
 }
 
+.termsButton {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: #14211b;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+.termsBox {
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid #f8b229;
+  background: transparent;
+  color: #3f4741;
+}
+
+.termsBox h2 {
+  margin: 0 0 6px;
+  color: #14211b;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.termsBox ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.termsBox li {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .errorMessage {
   padding: 10px 12px;
   border-radius: 8px;
@@ -141,6 +181,7 @@
 }
 
 .submitButton {
+  margin-top: 8px;
   min-height: 46px;
   border: 0;
   border-radius: 8px;
@@ -175,9 +216,10 @@
 
 @media (max-width: 620px) {
   .page {
-    min-height: auto;
+    min-height: calc(100vh - 75px);
+    min-height: calc(100dvh - 75px);
     overflow: visible;
-    padding: 16px;
+    padding: 18px 16px;
   }
 
   .formShell {

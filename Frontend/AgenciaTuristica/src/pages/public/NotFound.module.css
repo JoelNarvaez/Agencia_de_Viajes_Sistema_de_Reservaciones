@@ -1,19 +1,18 @@
 .page {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - 75px);
+  min-height: calc(100dvh - 75px);
+  box-sizing: border-box;
   display: grid;
   place-items: center;
   padding: 34px;
-  background:
-    radial-gradient(circle at 16% 18%, rgba(248, 178, 41, 0.18), transparent 28%),
-    linear-gradient(135deg, #f7f2e8 0%, #ffffff 58%, #eef3ef 100%);
+  background: linear-gradient(135deg, #f7f2e8 0%, #ffffff 58%, #eef3ef 100%);
   color: #14211b;
 }
 
 .card {
   position: relative;
   width: min(100%, 1120px);
-  min-height: min(720px, calc(100dvh - 68px));
+  min-height: min(640px, calc(100dvh - 143px));
   display: grid;
   grid-template-columns: minmax(0, 0.82fr) minmax(360px, 1fr);
   align-items: center;

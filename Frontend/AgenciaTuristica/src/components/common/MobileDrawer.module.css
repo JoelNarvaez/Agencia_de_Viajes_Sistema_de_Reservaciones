@@ -119,19 +119,25 @@
   );
 }
 
-.submenu a {
+.submenu a,
+.submenu button {
   display: flex;
   align-items: center;
   gap: 12px;
 
   padding: 14px;
+  border: 0;
   border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
   text-decoration: none;
   color: white;
   transition: 0.25s;
 }
 
-.submenu a:hover {
+.submenu a:hover,
+.submenu button:hover {
   background: rgba(
     255,
     255,

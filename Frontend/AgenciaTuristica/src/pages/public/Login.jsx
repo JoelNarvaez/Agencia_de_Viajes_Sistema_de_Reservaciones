@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import Loader from '../../components/common/Loader'
 import styles from './Login.module.css'
@@ -13,6 +13,7 @@ const initialFormData = {
 
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { error: authError, isLoading, login } = useAuth()
   const [formData, setFormData] = useState(initialFormData)
   const [formError, setFormError] = useState('')
@@ -44,7 +45,7 @@ function Login({ onLoginSuccess }) {
       })
 
       onLoginSuccess?.(authData)
-      navigate('/', { replace: true })
+      navigate(location.state?.from ?? '/', { replace: true })
     } catch {
       // AuthContext already exposes the API error for the UI.
     }

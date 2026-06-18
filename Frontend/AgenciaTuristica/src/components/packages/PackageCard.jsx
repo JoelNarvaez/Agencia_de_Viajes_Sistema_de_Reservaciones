@@ -1,0 +1,52 @@
+import { Link } from 'react-router-dom'
+import { packagePropType } from '../../utils/homePropTypes'
+import styles from './PackageCard.module.css'
+
+function PackageCard({ travelPackage }) {
+  const isNightly = travelPackage.bookingMode === 'nightly'
+  const capacityText = `Hasta ${travelPackage.maxGuests} huespedes`
+  const detailText = isNightly
+    ? `Fechas flexibles · ${capacityText}`
+    : `${travelPackage.duration} · ${travelPackage.groupSize}`
+  const priceText = isNightly
+    ? `${travelPackage.price} por noche`
+    : `${travelPackage.price} en total`
+
+  return (
+    <article className={styles.card}>
+      <Link className={styles.imageLink} to={travelPackage.href} aria-label={`Ver ${travelPackage.title}`}>
+        <img src={travelPackage.image} alt="" />
+      </Link>
+
+      <div className={styles.content}>
+        <button type="button" aria-label={`Guardar ${travelPackage.title}`}>
+          &#9825;
+        </button>
+
+        <div className={styles.meta}>
+          <span>{travelPackage.experienceType}</span>
+          <span>{isNightly ? 'Por noche' : 'Salida fija'}</span>
+        </div>
+
+        <h2>{travelPackage.title}</h2>
+        <p>
+          {travelPackage.destination}
+          <br />
+          {detailText}
+        </p>
+
+        <div className={styles.footer}>
+          <strong>{priceText}</strong>
+          <span>★ 4.8 (209)</span>
+          <Link to={travelPackage.href}>Ver paquete</Link>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+PackageCard.propTypes = {
+  travelPackage: packagePropType.isRequired,
+}
+
+export default PackageCard

@@ -10,6 +10,18 @@ const generarToken = (usuario) =>
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
 
+// ──────────────────────────────────────────────
+// POST /api/auth/logout  — Requiere token válido
+// ──────────────────────────────────────────────
+// Los JWT son stateless: el servidor no puede invalidar
+// un token ya emitido. El logout real ocurre en el
+// frontend al borrar el token del localStorage.
+// Este endpoint confirma la acción y sirve como
+// ejemplo de ruta protegida con verificarToken.
+export const logout = (req, res) => {
+  res.status(200).json({ message: "Sesión cerrada correctamente" });
+};
+
 export const registro = async (req, res) => {
   // El front puede enviar fullName (nombre completo) o nombre+apellido por separado
   let { nombre, apellido, fullName, email, telefono, phone, password } = req.body;

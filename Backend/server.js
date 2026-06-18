@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import authRoutes from "./src/routes/auth.routes.js";
 import usuariosRoutes from "./src/routes/usuarios.routes.js";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 

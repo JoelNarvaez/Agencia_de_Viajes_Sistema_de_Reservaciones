@@ -1,57 +1,41 @@
-import { API_BASE_URL } from '../config/api'
+import { apiRequest } from './apiClient'
 
-const authHeaders = (token) => ({
-  'Content-Type': 'application/json',
-  ...(token ? { Authorization: `Bearer ${token}` } : {}),
-})
-
-const parseResponse = async (response, fallbackMessage) => {
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message ?? data.error ?? fallbackMessage)
-  }
-
-  return data
-}
-
-// Estados válidos según admin.reservaciones.controller.js — en minúsculas,
-// sin tilde. El frontend debe usar exactamente estos valores al filtrar
-// o al hacer PATCH del estado, o el backend los rechaza con 400.
+// El backend espera estos estados exactos en filtros y cambios de estado.
 export const ESTADOS_RESERVACION = ['pendiente', 'confirmada', 'cancelada', 'pagada']
 
-// GET /api/admin/reservaciones?estado=pendiente (estado es opcional)
-// Regresa { reservaciones: [...], total }
+// Trae todas las reservaciones para el panel admin.
+// Si se manda "estado", el backend filtra por pendiente/confirmada/cancelada/pagada.
 const getReservaciones = async (token, estado) => {
+  // Si estado viene vacio se consultan todas; si viene, se manda como query param.
   const query = estado ? `?estado=${estado}` : ''
-  const response = await fetch(`${API_BASE_URL}/admin/reservaciones${query}`, {
-    headers: authHeaders(token),
+
+  return apiRequest(`/admin/reservaciones${query}`, {
+    fallbackMessage: 'No se pudieron obtener las reservaciones.',
+    token,
   })
-  return parseResponse(response, 'No se pudieron obtener las reservaciones.')
 }
 
-// GET /api/admin/reservaciones/:id
-// Regresa { reservacion: {...} } con detalle completo (huéspedes, salida, etc.)
-const getReservacionDetalle = async (id, token) => {
-  const response = await fetch(`${API_BASE_URL}/admin/reservaciones/${id}`, {
-    headers: authHeaders(token),
+// Trae una sola reservacion con informacion mas completa para el modal de detalle.
+// Recibe el id de la reservacion y el token de administrador.
+const getReservacionDetalle = async (id, token) =>
+  apiRequest(`/admin/reservaciones/${id}`, {
+    fallbackMessage: 'No se pudo obtener el detalle de la reservacion.',
+    token,
   })
-  return parseResponse(response, 'No se pudo obtener el detalle de la reservación.')
-}
 
-// PATCH /api/admin/reservaciones/:id/estado
-// body: { estado, motivo? } — motivo solo aplica al cancelar
-const cambiarEstadoReservacion = async (id, estado, token, motivo) => {
-  const response = await fetch(`${API_BASE_URL}/admin/reservaciones/${id}/estado`, {
+// Cambia el estado de una reservacion desde admin.
+// Cuando se cancela, puede mandar un motivo opcional en el body.
+const cambiarEstadoReservacion = async (id, estado, token, motivo) =>
+  apiRequest(`/admin/reservaciones/${id}/estado`, {
+    body: motivo ? { estado, motivo } : { estado },
+    fallbackMessage: 'No se pudo actualizar el estado de la reservacion.',
     method: 'PATCH',
-    headers: authHeaders(token),
-    body: JSON.stringify(motivo ? { estado, motivo } : { estado }),
+    token,
   })
-  return parseResponse(response, 'No se pudo actualizar el estado de la reservación.')
-}
 
+// Objeto que importan las paginas admin para no usar las funciones sueltas.
 export const adminReservationService = {
-  getReservaciones,
-  getReservacionDetalle,
   cambiarEstadoReservacion,
+  getReservacionDetalle,
+  getReservaciones,
 }

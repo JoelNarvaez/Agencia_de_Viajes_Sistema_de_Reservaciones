@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config/api'
+import { apiRequest } from './apiClient'
 import { formatDisplayDate, getDaysBetween, toDateInput } from '../utils/formatDate'
 import {
   formatGuestBreakdown,
@@ -8,27 +8,8 @@ import {
   normalizeGuestCounts,
 } from '../utils/pricing'
 
-const getToken = (token) => token ?? ''
-
-const request = async (path, { body, method = 'GET', token } = {}) => {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-      Authorization: `Bearer ${getToken(token)}`,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  })
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message ?? 'No se pudo completar la solicitud de reservacion.')
-  }
-
-  return data
-}
-
 const normalizeStatus = (status) => {
+  // Convierte estados de BD a etiquetas consistentes para la UI.
   const normalizedStatus = String(status ?? 'pendiente').toLowerCase()
   if (normalizedStatus === 'cancelada') return 'Cancelada'
   if (normalizedStatus === 'pagada') return 'Pagada'
@@ -37,6 +18,7 @@ const normalizeStatus = (status) => {
 }
 
 const normalizePayment = (status, payment = {}) => {
+  // El pago es simulado; su estado se deriva del estado real de la reservacion.
   const normalizedStatus = normalizeStatus(status)
 
   return {
@@ -48,6 +30,7 @@ const normalizePayment = (status, payment = {}) => {
 }
 
 export const normalizeReservation = (reservation) => {
+  // Adapta la respuesta de MySQL/API al modelo que usan Mis reservaciones y Detalle.
   const arrivalDate = toDateInput(reservation.fecha_llegada ?? reservation.arrivalDate)
   const departureDate = toDateInput(reservation.fecha_salida ?? reservation.departureDate)
   const guests = normalizeGuestCounts({
@@ -97,6 +80,7 @@ export const normalizeReservation = (reservation) => {
 }
 
 export const createReservation = async ({ payment, reservation, token }) => {
+  // Crea la reservacion en backend; el pago viaja como parte de la solicitud.
   const packageBackendId = reservation.packageBackendId
   if (!packageBackendId) {
     throw new Error('Este paquete no esta vinculado con la base de datos.')
@@ -104,7 +88,7 @@ export const createReservation = async ({ payment, reservation, token }) => {
 
   const departureId = reservation.departureId ?? null
 
-  const response = await request('/reservaciones', {
+  const response = await apiRequest('/reservaciones', {
     body: {
       arrivalDate: reservation.arrivalDate,
       departureDate: reservation.departureDate,
@@ -113,6 +97,7 @@ export const createReservation = async ({ payment, reservation, token }) => {
       payment,
       packageId: packageBackendId,
     },
+    fallbackMessage: 'No se pudo completar la solicitud de reservacion.',
     method: 'POST',
     token,
   })
@@ -121,18 +106,28 @@ export const createReservation = async ({ payment, reservation, token }) => {
 }
 
 export const getMyReservations = async (token) => {
-  const response = await request('/reservaciones/mis-reservaciones', { token })
+  // Reservaciones del usuario autenticado.
+  const response = await apiRequest('/reservaciones/mis-reservaciones', {
+    fallbackMessage: 'No se pudo completar la solicitud de reservacion.',
+    token,
+  })
   return (response.reservaciones ?? []).map(normalizeReservation)
 }
 
 export const getReservation = async (reservationId, token) => {
-  const response = await request(`/reservaciones/${reservationId}`, { token })
+  // Detalle individual, usado por la vista de reserva y pantalla de exito.
+  const response = await apiRequest(`/reservaciones/${reservationId}`, {
+    fallbackMessage: 'No se pudo completar la solicitud de reservacion.',
+    token,
+  })
   return normalizeReservation(response.reservacion)
 }
 
 export const cancelReservation = async ({ reason, reservationId, token }) => {
-  await request(`/reservaciones/${reservationId}/cancelar`, {
+  // Cancela en backend y vuelve a consultar para regresar el estado actualizado.
+  await apiRequest(`/reservaciones/${reservationId}/cancelar`, {
     body: { reason },
+    fallbackMessage: 'No se pudo completar la solicitud de reservacion.',
     method: 'PATCH',
     token,
   })
@@ -141,7 +136,11 @@ export const cancelReservation = async ({ reason, reservationId, token }) => {
 }
 
 export const getAdminReservations = async (token) => {
-  const response = await request('/admin/reservaciones', { token })
+  // Vista administrativa reutiliza el mismo normalizador para mantener formato comun.
+  const response = await apiRequest('/admin/reservaciones', {
+    fallbackMessage: 'No se pudo completar la solicitud de reservacion.',
+    token,
+  })
   return (response.reservaciones ?? []).map(normalizeReservation)
 }
 

@@ -52,7 +52,9 @@ function AdminReservations() {
   }
 
   useEffect(() => {
-    cargarReservaciones(filtro)
+    queueMicrotask(() => {
+      cargarReservaciones(filtro)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro])
 

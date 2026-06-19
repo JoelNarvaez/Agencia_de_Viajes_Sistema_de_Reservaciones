@@ -43,10 +43,11 @@ function AppRoutes() {
         {/* ── Admin protegido ── */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/admin">
-            <Route index element={<AdminDashBoard />} />
+            <Route index element={<Navigate to="/admin/layout/metricas" replace />} />
           </Route>
           <Route path="/admin/layout" element={<AdminLayout />}>
-            <Route index element={<Navigate to="paquetes" replace />} />
+            <Route index element={<Navigate to="metricas" replace />} />
+            <Route path="metricas"              element={<AdminDashBoard />} />
             <Route path="paquetes"               element={<AdminPackages />} />
             <Route path="paquetes/nuevo"         element={<PackageForm />} />
             <Route path="paquetes/editar/:slug"  element={<PackageForm />} />

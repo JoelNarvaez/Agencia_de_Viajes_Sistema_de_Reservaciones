@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 
+// Contrato para tarjetas o secciones de destinos en home.
 export const destinationPropType = PropTypes.shape({
   description: PropTypes.string.isRequired,
   duration: PropTypes.string,
@@ -12,6 +13,7 @@ export const destinationPropType = PropTypes.shape({
   title: PropTypes.string.isRequired,
 })
 
+// Contrato principal de un paquete turistico despues de normalizarlo desde la API.
 export const packagePropType = PropTypes.shape({
   accommodation: PropTypes.shape({
     address: PropTypes.string.isRequired,
@@ -46,11 +48,13 @@ export const packagePropType = PropTypes.shape({
   title: PropTypes.string.isRequired,
 })
 
+// Contrato para preguntas frecuentes.
 export const faqPropType = PropTypes.shape({
   answer: PropTypes.string.isRequired,
   question: PropTypes.string.isRequired,
 })
 
+// Contrato para testimonios mostrados en landing/home.
 export const testimonialPropType = PropTypes.shape({
   name: PropTypes.string.isRequired,
   quote: PropTypes.string.isRequired,

@@ -15,6 +15,7 @@ import {
 
 const DEFAULT_CANCELLATION_DAYS = 14
 
+// Indica si una reserva todavia puede cancelarse desde la app.
 export const canCancelReservation = (reservation) => {
   if (!reservation || reservation.status === 'Cancelada') return false
 
@@ -25,10 +26,13 @@ export const canCancelReservation = (reservation) => {
   return today <= deadline
 }
 
+// Separa reservas pasadas de activas usando la fecha de salida.
 export const isReservationPast = (reservation) => {
   return isPastDate(reservation?.departureDate)
 }
 
+// Construye una reserva temporal a partir de la seleccion del detalle del paquete.
+// No guarda en localStorage; solo arma el objeto que usa Checkout antes de enviarlo a la API.
 export const buildReservationFromSelection = ({ selection, travelPackage, user }) => {
   if (!travelPackage) return null
 

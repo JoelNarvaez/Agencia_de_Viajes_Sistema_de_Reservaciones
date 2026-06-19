@@ -142,6 +142,10 @@ export const toast = {
 }
 
 /** Confirmación genérica — devuelve true si el usuario confirmó */
+/** Mensaje breve cuando el inicio de sesion o registro fue correcto */
+export const mostrarLoginExitoso = (nombre = 'usuario', mensaje = 'Bienvenido') =>
+  toast.success(`${mensaje}, ${nombre}.`)
+
 export const confirmar = async ({
   titulo,
   texto,
@@ -191,6 +195,16 @@ export const confirmarToggle = (nombre, activoActual) =>
   })
 
 /** Pide el motivo de cancelación de una reservación — devuelve el string o null si canceló */
+/** Confirma antes de cerrar la sesion actual */
+export const confirmarCerrarSesion = () =>
+  confirmar({
+    titulo: 'Cerrar sesion',
+    texto: 'Tu sesion actual se cerrara en este dispositivo.',
+    textoConfirmar: 'Cerrar sesion',
+    textoCancelar: 'Cancelar',
+    variante: 'red',
+  })
+
 export const pedirMotivoCancel = async () => {
   const result = await base.fire({
     title:             'Cancelar reservación',

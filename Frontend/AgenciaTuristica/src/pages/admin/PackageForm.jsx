@@ -65,6 +65,31 @@ function validate(form, isEdit) {
   return e
 }
 
+const FieldError = ({ error }) =>
+  error ? <span className={styles.fieldError}>{error}</span> : null
+
+const SelectField = ({ error, label, name, onChange, options, required, value }) => (
+  <div className={styles.field}>
+    <label className={styles.label}>{label}{required ? ' *' : ''}</label>
+    <select
+      className={styles.select}
+      name={name}
+      value={value}
+      onChange={onChange}
+    >
+      <option value="">Selecciona...</option>
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option.charAt(0).toUpperCase() + option.slice(1)}
+        </option>
+      ))}
+    </select>
+    <div className={styles.errorSlot}>
+      <FieldError error={error} />
+    </div>
+  </div>
+)
+
 function PackageForm() {
   const { slug }  = useParams()
   const navigate  = useNavigate()
@@ -78,7 +103,7 @@ function PackageForm() {
   const [paqueteId, setPaqueteId]     = useState(null)
 
   useEffect(() => {
-    if (!isEdit) { setLoadingData(false); return }
+    if (!isEdit) return
 
     const cargarPaquete = async () => {
       try {
@@ -171,31 +196,6 @@ function PackageForm() {
     return <div className={styles.page}><p className={styles.loading}>Cargando paquete...</p></div>
   }
 
-  const FieldError = ({ name }) =>
-    errors[name] ? <span className={styles.fieldError}>{errors[name]}</span> : null
-
-  const SelectField = ({ name, label, options, required }) => (
-    <div className={styles.field}>
-      <label className={styles.label}>{label}{required ? ' *' : ''}</label>
-      <select
-        className={styles.select}
-        name={name}
-        value={form[name]}
-        onChange={handleChange}
-      >
-        <option value="">Selecciona...</option>
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o.charAt(0).toUpperCase() + o.slice(1)}
-          </option>
-        ))}
-      </select>
-      <div className={styles.errorSlot}>
-        <FieldError name={name} />
-      </div>
-    </div>
-  )
-
   return (
     <div className={styles.page}>
       <div className={styles.card}>
@@ -230,6 +230,9 @@ function PackageForm() {
               name="tipo_experiencia"
               label="Tipo de experiencia"
               options={TIPOS_EXPERIENCIA}
+              value={form.tipo_experiencia}
+              error={errors.tipo_experiencia}
+              onChange={handleChange}
               required
             />
 

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config/api'
+import { apiRequest } from './apiClient'
 import { formatCurrency } from '../utils/formatCurrency'
 
 const toNumber = (value, fallback) => {
@@ -13,6 +13,7 @@ const toDateInput = (value) => {
 }
 
 const normalizeDepartures = (apiPackage, localPackage) => {
+  // Salidas programadas: convierten cupos, fechas y precio al formato del frontend.
   const apiDepartures = apiPackage.salidas ?? apiPackage.departures
   if (!Array.isArray(apiDepartures) || apiDepartures.length === 0) {
     return localPackage.departures ?? []
@@ -29,6 +30,7 @@ const normalizeDepartures = (apiPackage, localPackage) => {
 }
 
 const normalizeGalleryImages = (apiPackage, localPackage) => {
+  // La API puede mandar imagenes como objetos o strings; la UI solo necesita URLs.
   const apiImages = apiPackage.imagenes ?? apiPackage.images
 
   if (!Array.isArray(apiImages) || apiImages.length === 0) {
@@ -54,6 +56,7 @@ const includeTypeLabels = {
 }
 
 const normalizeIncludes = (apiPackage, localPackage) => {
+  // Traduce lo incluido por el paquete a etiquetas y elementos visibles.
   const apiIncludes = apiPackage.incluidos ?? apiPackage.includes
 
   if (!Array.isArray(apiIncludes) || apiIncludes.length === 0) {
@@ -80,6 +83,7 @@ const normalizeIncludes = (apiPackage, localPackage) => {
 }
 
 export const normalizePackage = (apiPackage) => {
+  // Une nombres de campos del backend con el modelo que usan las tarjetas y el detalle.
   const localPackage = {}
   const slug = apiPackage.slug ?? localPackage.id ?? String(apiPackage.id)
   const priceAmount = toNumber(apiPackage.precio ?? apiPackage.priceAmount, localPackage.priceAmount ?? 0)
@@ -146,23 +150,20 @@ export const normalizePackage = (apiPackage) => {
   }
 }
 
-const request = async (path) => {
-  const response = await fetch(`${API_BASE_URL}${path}`)
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message ?? 'No se pudieron cargar los paquetes.')
-  }
-
-  return data
-}
-
 export const getPublicPackages = async () => {
-  const packages = await request('/paquetes')
+  // Listado publico de paquetes para home/filtros/lista.
+  const packages = await apiRequest('/paquetes', {
+    fallbackMessage: 'No se pudieron cargar los paquetes.',
+  })
   return Array.isArray(packages) ? packages.map(normalizePackage) : []
 }
 
-export const getPublicPackageBySlug = async (slug) => normalizePackage(await request(`/paquetes/${slug}`))
+export const getPublicPackageBySlug = async (slug) => normalizePackage(
+  // Detalle publico de un paquete por slug.
+  await apiRequest(`/paquetes/${slug}`, {
+    fallbackMessage: 'No se pudieron cargar los paquetes.',
+  }),
+)
 
 export const packageService = {
   getBySlug: getPublicPackageBySlug,

@@ -5,10 +5,13 @@ import {
   FaCalendarAlt,
   FaSignOutAlt,
   FaPlane,
+  FaTachometerAlt,
 } from '../../icons/fa'
+import { confirmarCerrarSesion } from '../../utils/swal'
 import styles from './AdminSideBar.module.css'
 
 const NAV_ITEMS = [
+  { to: '/admin/layout/metricas',      label: 'Metricas',      Icon: FaTachometerAlt },
   { to: '/admin/layout/paquetes',      label: 'Paquetes',      Icon: FaBoxOpen     },
   { to: '/admin/layout/reservaciones', label: 'Reservaciones', Icon: FaCalendarAlt },
 ]
@@ -17,7 +20,10 @@ function AdminSideBar() {
   const navigate = useNavigate()
   const { logout } = useAuth()
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const confirmado = await confirmarCerrarSesion()
+    if (!confirmado) return
+
     logout()
     navigate('/login')
   }

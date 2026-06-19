@@ -30,7 +30,9 @@ function AdminPackages() {
   }
 
   useEffect(() => {
-    cargarPaquetes()
+    queueMicrotask(() => {
+      cargarPaquetes()
+    })
   }, [])
 
   const toggleActivo = async (paquete) => {

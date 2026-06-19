@@ -11,6 +11,7 @@ import {
 
 import MobileDrawer from "./MobileDrawer";
 import useAuth from "../../hooks/useAuth";
+import { confirmarCerrarSesion } from "../../utils/swal";
 import styles from "./Navbar.module.css";
 
 function Navbar() {
@@ -31,7 +32,10 @@ function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const confirmado = await confirmarCerrarSesion();
+    if (!confirmado) return;
+
     logout();
     setIsMenuOpen(false);
     setIsMobileMenuOpen(false);
@@ -103,9 +107,7 @@ function Navbar() {
 
                   {role === "admin" && (
                     <>
-                      <NavLink to="/admin" onClick={closeUserMenu}>Dashboard</NavLink>
-                      <NavLink to="/admin/layout/paquetes" onClick={closeUserMenu}>Paquetes</NavLink>
-                      <NavLink to="/admin/layout/reservaciones" onClick={closeUserMenu}>Reservaciones</NavLink>
+                      <NavLink to="/admin/layout/metricas" onClick={closeUserMenu}>Dashboard</NavLink>
                       <div className={styles.divider}></div>
                     </>
                   )}

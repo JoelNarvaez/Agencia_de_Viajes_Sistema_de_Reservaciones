@@ -2,7 +2,6 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
-  FaBoxOpen,
   FaCalendarAlt,
   FaChevronDown,
   FaSignOutAlt,
@@ -74,17 +73,9 @@ function MobileDrawer({ isAuthenticated, role, userName, onClose, onLogout }) {
 
         {isAuthenticated && role === "admin" && showMenu && (
           <div className={styles.submenu}>
-            <NavLink to="/admin" onClick={onClose}>
+            <NavLink to="/admin/layout/metricas" onClick={onClose}>
               <FaTachometerAlt />
               Dashboard
-            </NavLink>
-            <NavLink to="/admin/packages" onClick={onClose}>
-              <FaBoxOpen />
-              Paquetes
-            </NavLink>
-            <NavLink to="/admin/reservations" onClick={onClose}>
-              <FaCalendarAlt />
-              Reservaciones
             </NavLink>
             <div className={styles.divider}></div>
             <button type="button" onClick={onLogout}>

@@ -59,18 +59,25 @@ function ReservationDetail() {
           <p>Consulta el estado, fechas, huespedes y politica de cancelacion.</p>
         </header>
 
-        <div className={styles.summaryGrid}>
-          <article className={styles.card}>
-            <span className={styles.status}>{reservation.status}</span>
+        <div className={styles.reservationDetailGrid}>
+          <article className={styles.detailPanel}>
+            <div className={styles.detailPanelHeader}>
+              <div>
+                <span
+                  className={`${styles.status} ${
+                    reservation.status === 'Cancelada' ? styles.statusCancelled : ''
+                  }`}
+                >
+                  {reservation.status}
+                </span>
+                <h2>{reservation.packageName}</h2>
+                <p>{reservation.destination}</p>
+              </div>
+              <strong>${reservation.totalAmount.toLocaleString()} MXN</strong>
+            </div>
+
+            <h3>Datos de la reservacion</h3>
             <ul className={styles.detailList}>
-              <li>
-                <span>Paquete</span>
-                <strong>{reservation.packageName}</strong>
-              </li>
-              <li>
-                <span>Destino</span>
-                <strong>{reservation.destination}</strong>
-              </li>
               <li>
                 <span>Fecha</span>
                 <strong>{reservation.travelDate}</strong>
@@ -83,6 +90,10 @@ function ReservationDetail() {
                 <span>Total</span>
                 <strong>${reservation.totalAmount.toLocaleString()} MXN</strong>
               </li>
+            </ul>
+
+            <h3>Pago</h3>
+            <ul className={styles.detailList}>
               <li>
                 <span>Pago</span>
                 <strong>{reservation.payment?.status ?? 'Pendiente'}</strong>
@@ -113,7 +124,7 @@ function ReservationDetail() {
             </div>
           </article>
 
-          <aside className={styles.card}>
+          <aside className={styles.detailPanel}>
             <h2>Cancelacion</h2>
             {reservation.status === 'Cancelada' ? (
               <p>Esta reservacion fue cancelada.</p>

@@ -37,6 +37,10 @@ function Navbar({ brand = "LOGO" }) {
     setIsMobileMenuOpen(false);
   };
 
+  const closeUserMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav
       className={`${styles.navbar} ${isLandingPage ? styles.transparent : ""}`}
@@ -82,11 +86,11 @@ function Navbar({ brand = "LOGO" }) {
                 <div className={styles.dropdown}>
                   {role === "user" && (
                     <>
-                      <NavLink to="/profile">
+                      <NavLink to="/profile" onClick={closeUserMenu}>
                         <FaUser />
                         Mi Perfil
                       </NavLink>
-                      <NavLink to="/reservations">
+                      <NavLink to="/reservations" onClick={closeUserMenu}>
                         <FaCalendarAlt />
                         Mis Reservaciones
                       </NavLink>
@@ -96,10 +100,9 @@ function Navbar({ brand = "LOGO" }) {
 
                   {role === "admin" && (
                     <>
-                      <NavLink to="/admin">Dashboard</NavLink>
-                      <NavLink to="/admin/users">Usuarios</NavLink>
-                      <NavLink to="/admin/packages">Paquetes</NavLink>
-                      <NavLink to="/admin/reservations">Reservaciones</NavLink>
+                      <NavLink to="/admin" onClick={closeUserMenu}>Dashboard</NavLink>
+                      <NavLink to="/admin/packages" onClick={closeUserMenu}>Paquetes</NavLink>
+                      <NavLink to="/admin/reservations" onClick={closeUserMenu}>Reservaciones</NavLink>
                       <div className={styles.divider}></div>
                     </>
                   )}

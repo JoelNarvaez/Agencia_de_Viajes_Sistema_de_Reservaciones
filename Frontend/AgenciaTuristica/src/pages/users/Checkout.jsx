@@ -48,20 +48,10 @@ function Checkout() {
     }))
   }
 
-  const selectPaymentMethod = (method) => {
-    setPaymentData((currentData) => ({
-      ...currentData,
-      method,
-    }))
-    setPaymentError('')
-  }
-
   const validatePayment = () => {
     const cardDigits = getDigits(paymentData.cardNumber)
     const cvcDigits = getDigits(paymentData.cvc)
     const expiryIsValid = /^(0[1-9]|1[0-2])\/\d{2}$/.test(paymentData.expiry)
-
-    if (paymentData.method !== 'card') return ''
 
     if (!paymentData.cardName.trim()) return 'Ingresa el nombre del titular.'
     if (cardDigits.length !== 16) return 'La tarjeta simulada debe tener 16 digitos.'
@@ -243,7 +233,7 @@ function Checkout() {
                         <input
                           checked={paymentData.method === 'card'}
                           name="method"
-                          onChange={() => selectPaymentMethod('card')}
+                          readOnly
                           type="radio"
                         />
                       </label>
@@ -323,28 +313,6 @@ function Checkout() {
                         </div>
                       )}
                     </section>
-
-                    <label className={styles.walletMethod}>
-                      <span className={styles.paypalMark}>P</span>
-                      <strong>PayPal</strong>
-                      <input
-                        checked={paymentData.method === 'paypal'}
-                        name="method"
-                        onChange={() => selectPaymentMethod('paypal')}
-                        type="radio"
-                      />
-                    </label>
-
-                    <label className={styles.walletMethod}>
-                      <span className={styles.googlePayMark}>G Pay</span>
-                      <strong>Google Pay</strong>
-                      <input
-                        checked={paymentData.method === 'google-pay'}
-                        name="method"
-                        onChange={() => selectPaymentMethod('google-pay')}
-                        type="radio"
-                      />
-                    </label>
                   </div>
                   {paymentError && <p className={styles.error}>{paymentError}</p>}
                   <div className={styles.stepActions}>
@@ -369,13 +337,7 @@ function Checkout() {
                     </li>
                     <li>
                       <span>Metodo</span>
-                      <strong>
-                        {paymentData.method === 'card'
-                          ? `Tarjeta **** ${getDigits(paymentData.cardNumber).slice(-4)}`
-                          : paymentData.method === 'paypal'
-                            ? 'PayPal'
-                            : 'Google Pay'}
-                      </strong>
+                      <strong>Tarjeta **** {getDigits(paymentData.cardNumber).slice(-4)}</strong>
                     </li>
                     <li>
                       <span>Total</span>
@@ -444,7 +406,6 @@ function Checkout() {
             </section>
           </aside>
 
-          <p className={styles.priceNotice}>El precio esta por debajo del promedio para 60 dias.</p>
         </div>
       </section>
     </main>

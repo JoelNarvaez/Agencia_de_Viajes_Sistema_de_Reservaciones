@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import AdminDashBoard from '../pages/admin/AdminDashBoard.jsx'
 import Home from '../pages/public/Home.jsx'
 import Login from '../pages/public/Login.jsx'
 import NotFound from '../pages/public/NotFound.jsx'
@@ -21,6 +22,7 @@ function AppRoutes() {
       <Route path="/packages/:packageId" element={<PackageDetail />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/admin" element={<AdminDashBoard />} />
       <Route path="/user" element={<UserDashboard />} />
       <Route path="/reservations" element={<MyReservations />} />
       <Route path="/reservations/checkout" element={<Checkout />} />

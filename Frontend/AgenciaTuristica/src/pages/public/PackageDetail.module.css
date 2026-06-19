@@ -557,6 +557,11 @@
   text-transform: uppercase;
 }
 
+.reserveButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .bookingCard small {
   text-align: center;
 }

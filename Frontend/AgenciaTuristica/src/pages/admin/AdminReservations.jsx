@@ -1,64 +1,172 @@
 import { useState, useEffect } from 'react'
 import AdminTable from '../../components/admin/AdminTable'
 import Button from '../../components/common/Button'
+import useAuth from '../../hooks/useAuth'
+import { adminReservationService, ESTADOS_RESERVACION } from '../../services/adminReservationService'
+import { toast, confirmarEstado, pedirMotivoCancel } from '../../utils/swal'
 import styles from './admin.module.css'
 
-const MOCK_RESERVACIONES = [
-  { id: 1, usuario: 'Ana García',    paquete: 'Cancún Premium',   destino: 'Cancún',      fecha: '2026-07-15', personas: 2, total: '$29,600', estado: 'Confirmada' },
-  { id: 2, usuario: 'Luis Martínez', paquete: 'Europa Clásica',   destino: 'Roma / París', fecha: '2026-08-01', personas: 1, total: '$52,000', estado: 'Pendiente'  },
-  { id: 3, usuario: 'María López',   paquete: 'Caribe Express',   destino: 'Cancún',      fecha: '2026-07-20', personas: 3, total: '$24,600', estado: 'Pagada'     },
-  { id: 4, usuario: 'Carlos Ruiz',   paquete: 'Los Cabos Relax',  destino: 'Los Cabos',   fecha: '2026-07-28', personas: 2, total: '$23,600', estado: 'Pendiente'  },
-  { id: 5, usuario: 'Sofía Torres',  paquete: 'Roma & Florencia', destino: 'Roma',        fecha: '2026-09-10', personas: 2, total: '$61,200', estado: 'Cancelada'  },
-  { id: 6, usuario: 'Roberto Díaz',  paquete: 'Tulum Aventura',   destino: 'Tulum',       fecha: '2026-10-10', personas: 4, total: '$37,600', estado: 'Confirmada' },
-]
+const ESTADOS_FILTRO = ['todos', ...ESTADOS_RESERVACION]
 
-const ESTADOS_FILTRO = ['Todos', 'Pendiente', 'Confirmada', 'Pagada', 'Cancelada']
-
-const BADGE_MAP = {
-  Confirmada: styles.badgeConfirmed,
-  Pendiente:  styles.badgePending,
-  Pagada:     styles.badgePaid,
-  Cancelada:  styles.badgeCancelled,
+const ESTADO_LABEL = {
+  pendiente:  'Pendiente',
+  confirmada: 'Confirmada',
+  cancelada:  'Cancelada',
+  pagada:     'Pagada',
+  todos:      'Todos',
 }
 
+const BADGE_MAP = {
+  confirmada: styles.badgeConfirmed,
+  pendiente:  styles.badgePending,
+  pagada:     styles.badgePaid,
+  cancelada:  styles.badgeCancelled,
+}
+
+const formatFecha = (iso) => (iso ? new Date(iso).toLocaleDateString('es-MX') : '—')
+const formatMonto = (monto) => `$${Number(monto ?? 0).toLocaleString('es-MX')}`
+
 function AdminReservations() {
+  const { token } = useAuth()
+
   const [reservaciones, setReservaciones] = useState([])
   const [loading, setLoading]             = useState(true)
-  const [filtro, setFiltro]               = useState('Todos')
+  const [filtro, setFiltro]               = useState('todos')
   const [modal, setModal]                 = useState(null)
+  const [modalLoading, setModalLoading]   = useState(false)
+  const [pageError, setPageError]         = useState('')
+
+  const cargarReservaciones = async (estadoFiltro) => {
+    setLoading(true)
+    setPageError('')
+    try {
+      const estadoParam = estadoFiltro === 'todos' ? undefined : estadoFiltro
+      const data = await adminReservationService.getReservaciones(token, estadoParam)
+      setReservaciones(data.reservaciones ?? [])
+    } catch (err) {
+      setPageError(err.message)
+      toast.error('No se pudieron cargar las reservaciones.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const t = setTimeout(() => { setReservaciones(MOCK_RESERVACIONES); setLoading(false) }, 500)
-    return () => clearTimeout(t)
-  }, [])
+    cargarReservaciones(filtro)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro])
 
-  const cambiarEstado = (id, nuevoEstado) =>
-    setReservaciones((prev) => prev.map((r) => r.id === id ? { ...r, estado: nuevoEstado } : r))
+  const cambiarEstado = async (id, nuevoEstado) => {
+    // Cancelación: pedir motivo con SweetAlert2
+    if (nuevoEstado === 'cancelada') {
+      const motivo = await pedirMotivoCancel()
+      // null significa que el usuario cerró el diálogo sin confirmar
+      if (motivo === null) return
 
-  const datos = filtro === 'Todos' ? reservaciones : reservaciones.filter((r) => r.estado === filtro)
+      try {
+        await adminReservationService.cambiarEstadoReservacion(id, nuevoEstado, token, motivo)
+        setReservaciones((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, estado: nuevoEstado } : r))
+        )
+        toast.success('Reservación cancelada.')
+      } catch (err) {
+        toast.error(err.message)
+      }
+      return
+    }
+
+    // Confirmar / marcar pagada: pedir confirmación
+    const confirmado = await confirmarEstado(nuevoEstado)
+    if (!confirmado) return
+
+    try {
+      await adminReservationService.cambiarEstadoReservacion(id, nuevoEstado, token)
+      setReservaciones((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, estado: nuevoEstado } : r))
+      )
+      const mensajes = {
+        confirmada: 'Reservación confirmada.',
+        pagada:     'Reservación marcada como pagada.',
+      }
+      toast.success(mensajes[nuevoEstado] ?? 'Estado actualizado.')
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
+  const verDetalle = async (row) => {
+    setModal({ id: row.id })
+    setModalLoading(true)
+    try {
+      const data = await adminReservationService.getReservacionDetalle(row.id, token)
+      setModal(data.reservacion)
+    } catch (err) {
+      toast.error(err.message)
+      setModal(null)
+    } finally {
+      setModalLoading(false)
+    }
+  }
 
   const columns = [
-    { key: 'id',       label: '#'        },
-    { key: 'usuario',  label: 'Usuario'  },
-    { key: 'paquete',  label: 'Paquete'  },
-    { key: 'destino',  label: 'Destino'  },
-    { key: 'fecha',    label: 'Fecha'    },
-    { key: 'personas', label: 'Personas' },
-    { key: 'total',    label: 'Total'    },
+    { key: 'id', label: '#' },
+    {
+      key: 'usuario', label: 'Usuario',
+      render: (row) => `${row.nombre ?? ''} ${row.apellido ?? ''}`.trim() || '—',
+    },
+    { key: 'paquete_titulo', label: 'Paquete' },
+    { key: 'destino',        label: 'Destino' },
+    {
+      key: 'fechas', label: 'Fechas',
+      render: (row) => `${formatFecha(row.fecha_llegada)} → ${formatFecha(row.fecha_salida)}`,
+    },
+    { key: 'total_huespedes', label: 'Huéspedes' },
+    {
+      key: 'monto_total', label: 'Total',
+      render: (row) => formatMonto(row.monto_total),
+    },
     {
       key: 'estado', label: 'Estado',
       render: (row) => (
-        <span className={`${styles.badge} ${BADGE_MAP[row.estado] ?? ''}`}>{row.estado}</span>
+        <span className={`${styles.badge} ${BADGE_MAP[row.estado] ?? ''}`}>
+          {ESTADO_LABEL[row.estado] ?? row.estado}
+        </span>
       ),
     },
     {
       key: 'acciones', label: 'Acciones',
       render: (row) => (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px' }}>
-          {row.estado === 'Pendiente'  && <button className={`${styles.actionBtn} ${styles.btnConfirm}`} onClick={() => cambiarEstado(row.id, 'Confirmada')}>Confirmar</button>}
-          {(row.estado === 'Pendiente' || row.estado === 'Confirmada') && <button className={`${styles.actionBtn} ${styles.btnCancel}`} onClick={() => cambiarEstado(row.id, 'Cancelada')}>Cancelar</button>}
-          {row.estado === 'Confirmada' && <button className={`${styles.actionBtn} ${styles.btnPay}`}    onClick={() => cambiarEstado(row.id, 'Pagada')}>Marcar pagada</button>}
-          <button className={`${styles.actionBtn} ${styles.btnView}`} onClick={() => setModal(row)}>Ver detalle</button>
+          {row.estado === 'pendiente' && (
+            <button
+              className={`${styles.actionBtn} ${styles.btnConfirm}`}
+              onClick={() => cambiarEstado(row.id, 'confirmada')}
+            >
+              Confirmar
+            </button>
+          )}
+          {(row.estado === 'pendiente' || row.estado === 'confirmada') && (
+            <button
+              className={`${styles.actionBtn} ${styles.btnCancel}`}
+              onClick={() => cambiarEstado(row.id, 'cancelada')}
+            >
+              Cancelar
+            </button>
+          )}
+          {row.estado === 'confirmada' && (
+            <button
+              className={`${styles.actionBtn} ${styles.btnPay}`}
+              onClick={() => cambiarEstado(row.id, 'pagada')}
+            >
+              Marcar pagada
+            </button>
+          )}
+          <button
+            className={`${styles.actionBtn} ${styles.btnView}`}
+            onClick={() => verDetalle(row)}
+          >
+            Ver detalle
+          </button>
         </div>
       ),
     },
@@ -73,35 +181,72 @@ function AdminReservations() {
         </div>
       </div>
 
-      {/* Filtro */}
+      {pageError && <p className={styles.formError}>{pageError}</p>}
+
       <div className={styles.filterRow}>
         <span className={styles.filterLabel}>Filtrar por estado:</span>
-        <select className={styles.filterSelect} value={filtro} onChange={(e) => setFiltro(e.target.value)}>
-          {ESTADOS_FILTRO.map((e) => <option key={e} value={e}>{e}</option>)}
+        <select
+          className={styles.filterSelect}
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+        >
+          {ESTADOS_FILTRO.map((e) => (
+            <option key={e} value={e}>{ESTADO_LABEL[e]}</option>
+          ))}
         </select>
       </div>
 
-      <AdminTable columns={columns} data={datos} loading={loading} emptyMessage="No hay reservaciones con este estado." />
+      <AdminTable
+        columns={columns}
+        data={reservaciones}
+        loading={loading}
+        emptyMessage="No hay reservaciones con este estado."
+      />
 
       {/* Modal detalle */}
       {modal && (
         <div className={styles.modalOverlay} onClick={() => setModal(null)}>
           <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>Reservación #{modal.id}</h3>
-            {[
-              ['Usuario',  modal.usuario],
-              ['Paquete',  modal.paquete],
-              ['Destino',  modal.destino],
-              ['Fecha',    modal.fecha],
-              ['Personas', modal.personas],
-              ['Total',    modal.total],
-              ['Estado',   modal.estado],
-            ].map(([k, v]) => (
-              <div key={k} className={styles.modalRow}>
-                <span className={styles.modalKey}>{k}</span>
-                <span className={styles.modalVal}>{v}</span>
-              </div>
-            ))}
+
+            {modalLoading ? (
+              <p className={styles.subheading}>Cargando detalle...</p>
+            ) : (
+              <>
+                {[
+                  ['Usuario',    `${modal.nombre ?? ''} ${modal.apellido ?? ''}`.trim()],
+                  ['Correo',     modal.email],
+                  ['Teléfono',   modal.telefono],
+                  ['Paquete',    modal.paquete_titulo],
+                  ['Destino',    modal.destino],
+                  ['Llegada',    formatFecha(modal.fecha_llegada)],
+                  ['Salida',     formatFecha(modal.fecha_salida)],
+                  ['Adultos',    modal.adultos],
+                  ['Niños',      modal.ninos],
+                  ['Bebés',      modal.bebes],
+                  ['Total huéspedes', modal.total_huespedes],
+                  ['Monto total', formatMonto(modal.monto_total)],
+                  ['Estado',     ESTADO_LABEL[modal.estado] ?? modal.estado],
+                  ...(modal.motivo_cancelacion
+                    ? [['Motivo cancelación', modal.motivo_cancelacion]]
+                    : []),
+                  ...(modal.salida_fecha_inicio
+                    ? [['Salida (inicio)', formatFecha(modal.salida_fecha_inicio)]]
+                    : []),
+                  ...(modal.salida_fecha_fin
+                    ? [['Salida (fin)', formatFecha(modal.salida_fecha_fin)]]
+                    : []),
+                ]
+                  .filter(([, v]) => v !== undefined && v !== null && v !== '')
+                  .map(([k, v]) => (
+                    <div key={k} className={styles.modalRow}>
+                      <span className={styles.modalKey}>{k}</span>
+                      <span className={styles.modalVal}>{v}</span>
+                    </div>
+                  ))}
+              </>
+            )}
+
             <div style={{ marginTop: '20px' }}>
               <Button text="Cerrar" variant="dark" onClick={() => setModal(null)} />
             </div>

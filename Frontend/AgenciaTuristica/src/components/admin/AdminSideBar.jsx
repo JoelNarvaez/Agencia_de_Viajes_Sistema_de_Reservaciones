@@ -9,8 +9,8 @@ import {
 import styles from './AdminSideBar.module.css'
 
 const NAV_ITEMS = [
-  { to: '/admin/paquetes',      label: 'Paquetes',      Icon: FaBoxOpen     },
-  { to: '/admin/reservaciones', label: 'Reservaciones', Icon: FaCalendarAlt },
+  { to: '/admin/layout/paquetes',      label: 'Paquetes',      Icon: FaBoxOpen     },
+  { to: '/admin/layout/reservaciones', label: 'Reservaciones', Icon: FaCalendarAlt },
 ]
 
 function AdminSideBar() {
@@ -57,4 +57,4 @@ function AdminSideBar() {
   )
 }
 
-export default AdminSideBar;
+export default AdminSideBar

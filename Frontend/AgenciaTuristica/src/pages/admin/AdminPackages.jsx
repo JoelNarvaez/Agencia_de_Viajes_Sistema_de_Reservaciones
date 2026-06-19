@@ -2,42 +2,97 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminTable from '../../components/admin/AdminTable'
 import Button from '../../components/common/Button'
+import useAuth from '../../hooks/useAuth'
+import { packageService } from '../../services/packageService'
+import { toast, confirmarEliminar, confirmarToggle } from '../../utils/swal'
 import styles from './admin.module.css'
-
-const MOCK_PAQUETES = [
-  { id: 1, nombre: 'Cancún Premium',  destino: 'Cancún',       tipo: 'Todo incluido', dias: 7,  noches: 6,  precio: '$14,500', cupos: 20, fechaInicio: '2026-07-15', activo: true  },
-  { id: 2, nombre: 'Europa Clásica',  destino: 'Roma / París',  tipo: 'Cultural',      dias: 14, noches: 13, precio: '$52,000', cupos: 15, fechaInicio: '2026-08-01', activo: true  },
-  { id: 3, nombre: 'Caribe Express',  destino: 'Cancún',        tipo: 'Económico',     dias: 4,  noches: 3,  precio: '$8,200',  cupos: 30, fechaInicio: '2026-07-20', activo: true  },
-  { id: 4, nombre: 'Los Cabos Relax', destino: 'Los Cabos',     tipo: 'Playa',         dias: 5,  noches: 4,  precio: '$11,800', cupos: 10, fechaInicio: '2026-09-05', activo: false },
-  { id: 5, nombre: 'Tulum Aventura',  destino: 'Tulum',         tipo: 'Aventura',      dias: 6,  noches: 5,  precio: '$9,400',  cupos: 12, fechaInicio: '2026-10-10', activo: true  },
-]
 
 function AdminPackages() {
   const navigate = useNavigate()
-  const [paquetes, setPaquetes] = useState([])
-  const [loading, setLoading]   = useState(true)
+  const { token } = useAuth()
+
+  const [paquetes, setPaquetes]   = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [pageError, setPageError] = useState('')
+
+  const cargarPaquetes = async () => {
+    setLoading(true)
+    setPageError('')
+    try {
+      const data = await packageService.getPaquetes()
+      setPaquetes(Array.isArray(data) ? data : [])
+    } catch (err) {
+      setPageError(err.message)
+      toast.error('No se pudieron cargar los paquetes.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const t = setTimeout(() => { setPaquetes(MOCK_PAQUETES); setLoading(false) }, 500)
-    return () => clearTimeout(t)
+    cargarPaquetes()
   }, [])
 
-  const toggleActivo = (id) =>
-    setPaquetes((prev) => prev.map((p) => p.id === id ? { ...p, activo: !p.activo } : p))
+  const toggleActivo = async (paquete) => {
+    const confirmado = await confirmarToggle(paquete.titulo, paquete.activo)
+    if (!confirmado) return
 
-  const eliminar = (id) => {
-    if (window.confirm('¿Eliminar este paquete?'))
-      setPaquetes((prev) => prev.filter((p) => p.id !== id))
+    const nuevoValor = paquete.activo ? 0 : 1
+
+    // Enviamos el payload completo porque actualizarPaqueteModel hace UPDATE de todos los campos
+    const payload = {
+      titulo:              paquete.titulo,
+      destino:             paquete.destino,
+      descripcion:         paquete.descripcion,
+      tipo_experiencia:    paquete.tipo_experiencia,
+      dias:                paquete.dias,
+      noches_minimas:      paquete.noches_minimas,
+      precio:              paquete.precio,
+      direccion_hospedaje: paquete.direccion_hospedaje ?? '',
+      latitud:             paquete.latitud,
+      longitud:            paquete.longitud,
+      imagen_principal:    paquete.imagen_principal,
+      activo:              nuevoValor,
+    }
+
+    try {
+      await packageService.updatePaquete(paquete.id, payload, token)
+      setPaquetes((prev) =>
+        prev.map((p) => (p.id === paquete.id ? { ...p, activo: nuevoValor } : p))
+      )
+      toast.success(nuevoValor ? 'Paquete activado.' : 'Paquete desactivado.')
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
+  const eliminar = async (paquete) => {
+    const confirmado = await confirmarEliminar(paquete.titulo)
+    if (!confirmado) return
+
+    try {
+      await packageService.deletePaquete(paquete.id, token)
+      setPaquetes((prev) =>
+        prev.map((p) => (p.id === paquete.id ? { ...p, activo: 0 } : p))
+      )
+      toast.success('Paquete eliminado correctamente.')
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
 
   const columns = [
-    { key: 'nombre',      label: 'Nombre'      },
-    { key: 'destino',     label: 'Destino'     },
-    { key: 'tipo',        label: 'Tipo'        },
-    { key: 'duracion',    label: 'Duración',   render: (r) => `${r.dias}d / ${r.noches}n` },
-    { key: 'precio',      label: 'Precio'      },
-    { key: 'cupos',       label: 'Cupos'       },
-    { key: 'fechaInicio', label: 'Inicio'      },
+    { key: 'titulo',           label: 'Nombre'  },
+    { key: 'destino',          label: 'Destino' },
+    { key: 'tipo_experiencia', label: 'Tipo'    },
+    {
+      key: 'duracion', label: 'Duración',
+      render: (r) => `${r.dias ?? '—'}d · mín. ${r.noches_minimas ?? '—'}n`,
+    },
+    {
+      key: 'precio', label: 'Precio',
+      render: (r) => `$${Number(r.precio).toLocaleString('es-MX')}`,
+    },
     {
       key: 'activo', label: 'Estado',
       render: (row) => (
@@ -50,9 +105,24 @@ function AdminPackages() {
       key: 'acciones', label: 'Acciones',
       render: (row) => (
         <>
-          <button className={`${styles.actionBtn} ${styles.btnEdit}`}   onClick={() => navigate(`/admin/paquetes/editar/${row.id}`)}>Editar</button>
-          <button className={`${styles.actionBtn} ${styles.btnToggle}`} onClick={() => toggleActivo(row.id)}>{row.activo ? 'Desactivar' : 'Activar'}</button>
-          <button className={`${styles.actionBtn} ${styles.btnDelete}`} onClick={() => eliminar(row.id)}>Eliminar</button>
+          <button
+            className={`${styles.actionBtn} ${styles.btnEdit}`}
+            onClick={() => navigate(`/admin/layout/paquetes/editar/${row.slug}`)}
+          >
+            Editar
+          </button>
+          <button
+            className={`${styles.actionBtn} ${styles.btnToggle}`}
+            onClick={() => toggleActivo(row)}
+          >
+            {row.activo ? 'Desactivar' : 'Activar'}
+          </button>
+          <button
+            className={`${styles.actionBtn} ${styles.btnDelete}`}
+            onClick={() => eliminar(row)}
+          >
+            Eliminar
+          </button>
         </>
       ),
     },
@@ -65,10 +135,21 @@ function AdminPackages() {
           <h1 className={styles.heading}>Paquetes</h1>
           <p className={styles.subheading}>{paquetes.length} paquetes registrados</p>
         </div>
-        <Button text="+ Nuevo paquete" variant="primary" onClick={() => navigate('/admin/paquetes/nuevo')} />
+        <Button
+          text="+ Nuevo paquete"
+          variant="primary"
+          onClick={() => navigate('/admin/layout/paquetes/nuevo')}
+        />
       </div>
 
-      <AdminTable columns={columns} data={paquetes} loading={loading} emptyMessage="No hay paquetes registrados." />
+      {pageError && <p className={styles.formError}>{pageError}</p>}
+
+      <AdminTable
+        columns={columns}
+        data={paquetes}
+        loading={loading}
+        emptyMessage="No hay paquetes registrados."
+      />
     </div>
   )
 }

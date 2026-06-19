@@ -101,8 +101,8 @@ function Navbar({ brand = "LOGO" }) {
                   {role === "admin" && (
                     <>
                       <NavLink to="/admin" onClick={closeUserMenu}>Dashboard</NavLink>
-                      <NavLink to="/admin/packages" onClick={closeUserMenu}>Paquetes</NavLink>
-                      <NavLink to="/admin/reservations" onClick={closeUserMenu}>Reservaciones</NavLink>
+                      <NavLink to="/admin/layout/paquetes" onClick={closeUserMenu}>Paquetes</NavLink>
+                      <NavLink to="/admin/layout/reservaciones" onClick={closeUserMenu}>Reservaciones</NavLink>
                       <div className={styles.divider}></div>
                     </>
                   )}

@@ -3,20 +3,24 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Loader from '../components/common/Loader.jsx'
 import ProtectedRoute from '../components/common/ProtectedRoute.jsx'
 
-const About = lazy(() => import('../pages/public/About.jsx'))
-const AdminDashBoard = lazy(() => import('../pages/admin/AdminDashBoard.jsx'))
-const Checkout = lazy(() => import('../pages/users/Checkout.jsx'))
-const Home = lazy(() => import('../pages/public/Home.jsx'))
-const Login = lazy(() => import('../pages/public/Login.jsx'))
-const MyReservations = lazy(() => import('../pages/users/MyReservations.jsx'))
-const NotFound = lazy(() => import('../pages/public/NotFound.jsx'))
-const PackageDetail = lazy(() => import('../pages/public/PackageDetail.jsx'))
-const Packages = lazy(() => import('../pages/public/Packages.jsx'))
-const Profile = lazy(() => import('../pages/users/Profile.jsx'))
-const Register = lazy(() => import('../pages/public/Register.jsx'))
-const ReservationDetail = lazy(() => import('../pages/users/ReservationDetail.jsx'))
+const About             = lazy(() => import('../pages/public/About.jsx'))
+const AdminDashBoard    = lazy(() => import('../pages/admin/AdminDashBoard.jsx'))
+const AdminLayout       = lazy(() => import('../pages/admin/AdminLayout.jsx'))
+const AdminPackages     = lazy(() => import('../pages/admin/AdminPackages.jsx'))
+const AdminReservations = lazy(() => import('../pages/admin/AdminReservations.jsx'))
+const Checkout          = lazy(() => import('../pages/users/Checkout.jsx'))
+const Home              = lazy(() => import('../pages/public/Home.jsx'))
+const Login             = lazy(() => import('../pages/public/Login.jsx'))
+const MyReservations    = lazy(() => import('../pages/users/MyReservations.jsx'))
+const NotFound          = lazy(() => import('../pages/public/NotFound.jsx'))
+const PackageDetail     = lazy(() => import('../pages/public/PackageDetail.jsx'))
+const PackageForm       = lazy(() => import('../pages/admin/PackageForm.jsx'))
+const Packages          = lazy(() => import('../pages/public/Packages.jsx'))
+const Profile           = lazy(() => import('../pages/users/Profile.jsx'))
+const Register          = lazy(() => import('../pages/public/Register.jsx'))
+const ReservationDetail  = lazy(() => import('../pages/users/ReservationDetail.jsx'))
 const ReservationSuccess = lazy(() => import('../pages/users/ReservationSuccess.jsx'))
-const UserDashboard = lazy(() => import('../pages/users/UserDashboard.jsx'))
+const UserDashboard     = lazy(() => import('../pages/users/UserDashboard.jsx'))
 
 const routeFallback = (
   <main style={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>

@@ -1,35 +1,31 @@
 import PropTypes from "prop-types";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
-function ProtectedRoute({
-  isAuthenticated,
-  role,
-  allowedRoles = [],
-  unauthorizedMessage = "No tienes permisos para acceder.",
-  unauthenticatedMessage = "Debes iniciar sesión.",
-  children,
-}) {
+function ProtectedRoute({ allowedRoles = [], children }) {
+  const location = useLocation();
+  const { isAuthenticated, user } = useAuth();
+  const role = user?.rol === "admin" ? "admin" : isAuthenticated ? "user" : null;
+
   if (!isAuthenticated) {
-    return <h2>{unauthenticatedMessage}</h2>;
+    return (
+      <Navigate
+        replace
+        state={{ from: location.pathname + location.search }}
+        to="/login"
+      />
+    );
   }
 
-  if (
-    allowedRoles.length > 0 &&
-    !allowedRoles.includes(role)
-  ) {
-    return <h2>{unauthorizedMessage}</h2>;
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    return <Navigate replace to="/" />;
   }
 
-  return children;
+  return children ?? <Outlet />;
 }
 
 ProtectedRoute.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  role: PropTypes.string,
-  allowedRoles: PropTypes.arrayOf(
-    PropTypes.string
-  ),
-  unauthorizedMessage: PropTypes.string,
-  unauthenticatedMessage: PropTypes.string,
+  allowedRoles: PropTypes.arrayOf(PropTypes.string),
   children: PropTypes.node,
 };
 

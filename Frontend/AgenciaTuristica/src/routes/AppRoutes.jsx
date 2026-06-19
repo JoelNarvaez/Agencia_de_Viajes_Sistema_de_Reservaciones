@@ -1,37 +1,68 @@
-import { Route, Routes } from 'react-router-dom'
-import AdminDashBoard from '../pages/admin/AdminDashBoard.jsx'
-import Home from '../pages/public/Home.jsx'
-import Login from '../pages/public/Login.jsx'
-import NotFound from '../pages/public/NotFound.jsx'
-import PackageDetail from '../pages/public/PackageDetail.jsx'
-import Packages from '../pages/public/Packages.jsx'
-import Register from '../pages/public/Register.jsx'
-import Checkout from '../pages/users/Checkout.jsx'
-import MyReservations from '../pages/users/MyReservations.jsx'
-import Profile from '../pages/users/Profile.jsx'
-import ReservationDetail from '../pages/users/ReservationDetail.jsx'
-import ReservationSuccess from '../pages/users/ReservationSuccess.jsx'
-import UserDashboard from '../pages/users/UserDashboard.jsx'
-import About from '../pages/public/About.jsx'
+import { lazy, Suspense } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import Loader from '../components/common/Loader.jsx'
+import ProtectedRoute from '../components/common/ProtectedRoute.jsx'
+
+const About = lazy(() => import('../pages/public/About.jsx'))
+const AdminDashBoard = lazy(() => import('../pages/admin/AdminDashBoard.jsx'))
+const Checkout = lazy(() => import('../pages/users/Checkout.jsx'))
+const Home = lazy(() => import('../pages/public/Home.jsx'))
+const Login = lazy(() => import('../pages/public/Login.jsx'))
+const MyReservations = lazy(() => import('../pages/users/MyReservations.jsx'))
+const NotFound = lazy(() => import('../pages/public/NotFound.jsx'))
+const PackageDetail = lazy(() => import('../pages/public/PackageDetail.jsx'))
+const Packages = lazy(() => import('../pages/public/Packages.jsx'))
+const Profile = lazy(() => import('../pages/users/Profile.jsx'))
+const Register = lazy(() => import('../pages/public/Register.jsx'))
+const ReservationDetail = lazy(() => import('../pages/users/ReservationDetail.jsx'))
+const ReservationSuccess = lazy(() => import('../pages/users/ReservationSuccess.jsx'))
+const UserDashboard = lazy(() => import('../pages/users/UserDashboard.jsx'))
+
+const routeFallback = (
+  <main style={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
+    <Loader text="Cargando pagina..." />
+  </main>
+)
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/packages" element={<Packages />} />
-      <Route path="/packages/:packageId" element={<PackageDetail />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/admin" element={<AdminDashBoard />} />
-      <Route path="/user" element={<UserDashboard />} />
-      <Route path="/reservations" element={<MyReservations />} />
-      <Route path="/reservations/checkout" element={<Checkout />} />
-      <Route path="/reservations/success" element={<ReservationSuccess />} />
-      <Route path="/reservations/:reservationId" element={<ReservationDetail />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/about" element={<About />} />
-    </Routes>
+    <Suspense fallback={routeFallback}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/packages" element={<Packages />} />
+        <Route path="/packages/:packageId" element={<PackageDetail />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/admin">
+            <Route index element={<AdminDashBoard />} />
+            <Route path="packages" element={<AdminDashBoard />} />
+            <Route path="reservations" element={<AdminDashBoard />} />
+          </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+          <Route path="/user">
+            <Route index element={<UserDashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="reservations" element={<MyReservations />} />
+          </Route>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/reservations">
+            <Route index element={<MyReservations />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="success" element={<ReservationSuccess />} />
+            <Route path=":reservationId" element={<ReservationDetail />} />
+          </Route>
+        </Route>
+
+        <Route path="/admin/*" element={<Navigate replace to="/admin" />} />
+        <Route path="/user/*" element={<Navigate replace to="/user" />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   )
 }
 

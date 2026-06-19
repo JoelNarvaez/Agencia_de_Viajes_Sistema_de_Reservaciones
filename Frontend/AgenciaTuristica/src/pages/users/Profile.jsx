@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
-import { getUserReservations } from '../../utils/reservationStorage'
+import useReservation from '../../hooks/useReservation'
+import { userService } from '../../services/userService'
 import styles from './UserPage.module.css'
 
 const getInitialProfile = (user) => {
@@ -12,18 +14,44 @@ const getInitialProfile = (user) => {
   return {
     email: user?.email ?? '',
     fullName,
-    phone: user?.phone ?? '',
+    phone: user?.telefono ?? user?.phone ?? '',
     username: user?.username ?? user?.email?.split('@')[0] ?? '',
   }
 }
 
 function Profile() {
-  const { user } = useAuth()
+  const { isAuthenticated, token, updateUser, user } = useAuth()
+  const { reservations } = useReservation({ scope: 'mine' })
   const initialProfile = useMemo(() => getInitialProfile(user), [user])
   const [profileData, setProfileData] = useState(initialProfile)
+  const [error, setError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [savedMessage, setSavedMessage] = useState('')
-  const reservations = getUserReservations(user?.email ?? 'usuario-local')
+
+  useEffect(() => {
+    if (!token) return
+
+    let isMounted = true
+
+    const loadProfile = async () => {
+      try {
+        const profile = await userService.getProfile(token)
+        if (!isMounted) return
+
+        updateUser(profile)
+        setProfileData(getInitialProfile(profile))
+      } catch (loadError) {
+        if (isMounted) setError(loadError.message ?? 'No se pudo cargar el perfil.')
+      }
+    }
+
+    loadProfile()
+
+    return () => {
+      isMounted = false
+    }
+  }, [token, updateUser])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -34,7 +62,7 @@ function Profile() {
     setSavedMessage('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!isEditing) {
@@ -43,8 +71,33 @@ function Profile() {
       return
     }
 
-    setIsEditing(false)
-    setSavedMessage('Cambios guardados de forma local.')
+    setIsSaving(true)
+    setError('')
+
+    try {
+      const [nombre = '', ...apellidoParts] = profileData.fullName.trim().split(/\s+/)
+      const updatedUser = await userService.updateProfile({
+        profile: {
+          apellido: apellidoParts.join(' '),
+          nombre,
+          telefono: profileData.phone,
+        },
+        token,
+      })
+
+      updateUser(updatedUser)
+      setProfileData(getInitialProfile(updatedUser))
+      setIsEditing(false)
+      setSavedMessage('Cambios guardados.')
+    } catch (saveError) {
+      setError(saveError.message ?? 'No se pudo guardar el perfil.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate replace state={{ from: '/profile' }} to="/login" />
   }
 
   return (
@@ -106,11 +159,12 @@ function Profile() {
             <strong>{reservations.length}</strong>
           </div>
 
+          {error && <p className={styles.error}>{error}</p>}
           {savedMessage && <p className={styles.successMessage}>{savedMessage}</p>}
 
           <footer className={styles.profileActions}>
             <button className={styles.saveButton} type="submit">
-              {isEditing ? 'Guardar' : 'Editar'}
+              {isSaving ? 'Guardando...' : isEditing ? 'Guardar' : 'Editar'}
             </button>
           </footer>
         </form>

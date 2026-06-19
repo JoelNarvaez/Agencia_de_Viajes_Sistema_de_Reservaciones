@@ -1,7 +1,8 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import useAuth from '../../hooks/useAuth'
-import { getUserReservations, isReservationPast } from '../../utils/reservationStorage'
+import useReservation from '../../hooks/useReservation'
+import { isReservationPast } from '../../utils/reservationStorage'
 import styles from './UserPage.module.css'
 
 const getStatusClassName = (reservation) => {
@@ -12,14 +13,17 @@ const getStatusClassName = (reservation) => {
 
 const ReservationRow = ({ reservation }) => (
   <article className={styles.reservationRow}>
-    <div>
-      <span className={`${styles.status} ${getStatusClassName(reservation)}`}>
-        {isReservationPast(reservation) && reservation.status !== 'Cancelada'
-          ? 'Pasada'
-          : reservation.status}
-      </span>
-      <h2>{reservation.packageName}</h2>
-      <p>{reservation.destination}</p>
+    <div className={styles.reservationPackage}>
+      <img src={reservation.image || '/images/packages/cancun.jpg'} alt="" />
+      <div>
+        <span className={`${styles.status} ${getStatusClassName(reservation)}`}>
+          {isReservationPast(reservation) && reservation.status !== 'Cancelada'
+            ? 'Pasada'
+            : reservation.status}
+        </span>
+        <h2>{reservation.packageName}</h2>
+        <p>{reservation.destination}</p>
+      </div>
     </div>
 
     <div className={styles.reservationMeta}>
@@ -62,11 +66,8 @@ const ReservationSection = ({ emptyText, reservations, title }) => (
 )
 
 function MyReservations() {
-  const { isAuthenticated, user } = useAuth()
-  const reservations = useMemo(
-    () => getUserReservations(user?.email ?? 'usuario-local'),
-    [user?.email],
-  )
+  const { isAuthenticated } = useAuth()
+  const { error, isLoading, reservations } = useReservation({ scope: 'mine' })
   const groupedReservations = useMemo(
     () => ({
       active: reservations.filter(
@@ -93,7 +94,10 @@ function MyReservations() {
           <p>Consulta tus reservas confirmadas, canceladas o pendientes.</p>
         </header>
 
-        {reservations.length > 0 ? (
+        {isLoading && <p>Cargando reservaciones...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+
+        {!isLoading && reservations.length > 0 ? (
           <>
             <ReservationSection
               emptyText="No tienes reservaciones activas."
@@ -111,7 +115,7 @@ function MyReservations() {
               title="Canceladas"
             />
           </>
-        ) : (
+        ) : !isLoading && (
           <div className={styles.emptyState}>
             <h2>Aun no tienes reservaciones</h2>
             <p>Cuando confirmes una reserva, podras ver su estado, fechas, total y detalles aqui.</p>

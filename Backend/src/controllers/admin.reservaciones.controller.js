@@ -35,6 +35,7 @@ export const listarTodasReservaciones = async (req, res) => {
               u.apellido,
               u.email,
               p.id     AS paquete_id,
+              p.slug   AS paquete_slug,
               p.titulo AS paquete_titulo,
               p.destino
        FROM   reservaciones r
@@ -65,6 +66,7 @@ export const obtenerReservacionAdmin = async (req, res) => {
               u.email,
               u.telefono,
               p.titulo          AS paquete_titulo,
+              p.slug            AS paquete_slug,
               p.destino,
               p.imagen_principal,
               p.modo_reserva,

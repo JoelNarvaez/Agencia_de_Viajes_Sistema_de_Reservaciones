@@ -82,9 +82,8 @@ export const crearReservacion = async (req, res) => {
 
       fechaInicioReserva = toDateStr(salida.fecha_inicio);
       fechaFinReserva    = toDateStr(salida.fecha_fin);
-      // precio: usa el precio de la salida si tiene uno propio, si no el del paquete
-      const precioPorPersona = salida.precio ?? paquete.precio;
-      montoTotal = precioPorPersona * totalHuespedes;
+      // El precio cubre hasta el maximo de huespedes permitido; no se multiplica por persona.
+      montoTotal = salida.precio ?? paquete.precio;
 
     } else {
       // Paquete por noche 
@@ -156,6 +155,7 @@ export const crearReservacion = async (req, res) => {
     const [reservacion] = await db.query(
       `SELECT r.*,
               p.titulo      AS paquete_titulo,
+              p.slug        AS paquete_slug,
               p.destino,
               p.imagen_principal,
               p.modo_reserva,
@@ -193,6 +193,7 @@ export const misReservaciones = async (req, res) => {
               r.fecha_limite_cancelacion,
               r.creado_en,
               p.titulo      AS paquete_titulo,
+              p.slug        AS paquete_slug,
               p.destino,
               p.imagen_principal
        FROM   reservaciones r
@@ -220,6 +221,7 @@ export const obtenerReservacion = async (req, res) => {
     const [reservaciones] = await db.query(
       `SELECT r.*,
               p.titulo           AS paquete_titulo,
+              p.slug             AS paquete_slug,
               p.destino,
               p.imagen_principal,
               p.modo_reserva,

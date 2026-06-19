@@ -4,10 +4,10 @@ import styles from './PackageCard.module.css'
 
 function PackageCard({ travelPackage }) {
   const isNightly = travelPackage.bookingMode === 'nightly'
-  const capacityText = `Hasta ${travelPackage.maxGuests} huespedes`
+  const capacityText = `Hasta ${travelPackage.maxGuests ?? 2} huespedes`
   const detailText = isNightly
-    ? `Fechas flexibles · ${capacityText}`
-    : `${travelPackage.duration} · ${travelPackage.groupSize}`
+    ? `Fechas flexibles - ${capacityText}`
+    : `${travelPackage.duration ?? 'Salida programada'} - ${travelPackage.groupSize ?? capacityText}`
   const priceText = isNightly
     ? `${travelPackage.price} por noche`
     : `${travelPackage.price} en total`
@@ -33,7 +33,6 @@ function PackageCard({ travelPackage }) {
 
         <div className={styles.footer}>
           <strong>{priceText}</strong>
-          <span>★ 4.8 (209)</span>
           <Link to={travelPackage.href}>Ver paquete</Link>
         </div>
       </div>

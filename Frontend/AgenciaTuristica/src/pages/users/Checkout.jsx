@@ -1,12 +1,13 @@
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import useAuth from '../../hooks/useAuth'
+import { reservationService } from '../../services/reservationService'
 import {
   buildReservationFromDraft,
   clearReservationDraft,
   getReservationDraft,
-  saveReservation,
 } from '../../utils/reservationStorage'
+import { getDigits, validatePaymentData } from '../../utils/validations'
 import styles from './UserPage.module.css'
 
 const initialPaymentData = {
@@ -19,11 +20,9 @@ const initialPaymentData = {
   postalCode: '',
 }
 
-const getDigits = (value) => value.replace(/\D/g, '')
-
 function Checkout() {
   const navigate = useNavigate()
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, token, user } = useAuth()
   const [activeStep, setActiveStep] = useState(1)
   const [paymentTiming, setPaymentTiming] = useState('now')
   const [paymentData, setPaymentData] = useState(initialPaymentData)
@@ -49,17 +48,7 @@ function Checkout() {
   }
 
   const validatePayment = () => {
-    const cardDigits = getDigits(paymentData.cardNumber)
-    const cvcDigits = getDigits(paymentData.cvc)
-    const expiryIsValid = /^(0[1-9]|1[0-2])\/\d{2}$/.test(paymentData.expiry)
-
-    if (!paymentData.cardName.trim()) return 'Ingresa el nombre del titular.'
-    if (cardDigits.length !== 16) return 'La tarjeta simulada debe tener 16 digitos.'
-    if (!expiryIsValid) return 'La vigencia debe tener formato MM/AA.'
-    if (cvcDigits.length < 3) return 'El CVC debe tener al menos 3 digitos.'
-    if (!paymentData.postalCode.trim()) return 'Ingresa el codigo postal.'
-
-    return ''
+    return validatePaymentData(paymentData)
   }
 
   const openStep = (step) => {
@@ -101,7 +90,7 @@ function Checkout() {
     setActiveStep(3)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!reservation) return
 
     const validationError = validatePayment()
@@ -113,26 +102,19 @@ function Checkout() {
     setPaymentError('')
     setIsProcessing(true)
 
-    window.setTimeout(() => {
-      const cardDigits = getDigits(paymentData.cardNumber)
-
-      saveReservation({
-        ...reservation,
-        payment: {
-          amount: paymentDueNow,
-          cardLast4: cardDigits.slice(-4),
-          method: paymentData.method,
-          paidAt: new Date().toISOString(),
-          reference: `PAY-${Date.now()}`,
-          scheduledAmount: paymentTiming === 'later' ? reservation.totalAmount : 0,
-          status: paymentTiming === 'now' ? 'Aprobado' : 'Programado',
-          timing: paymentTiming,
-        },
-        status: 'Confirmada',
+    try {
+      const createdReservation = await reservationService.create({
+        draft,
+        reservation,
+        token,
       })
       clearReservationDraft()
-      navigate(`/reservations/success?reservationId=${reservation.id}`, { replace: true })
-    }, 900)
+      navigate(`/reservations/success?reservationId=${createdReservation.id}`, { replace: true })
+    } catch (createError) {
+      setPaymentError(createError.message ?? 'No se pudo crear la reservacion.')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (!isAuthenticated) {

@@ -1,19 +1,26 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import PackageLocationMap from '../../components/packages/PackageLocationMap'
-import { getPackageById, travelPackages } from '../../data/packageData'
 import useAuth from '../../hooks/useAuth'
+import usePublicPackages from '../../hooks/usePublicPackages'
+import { formatCurrency } from '../../utils/formatCurrency'
+import { formatDisplayDate, getDaysBetween } from '../../utils/formatDate'
 import { saveReservationDraft } from '../../utils/reservationStorage'
 import NotFound from './NotFound'
 import styles from './PackageDetail.module.css'
 
 const getMaxGuests = (groupSize) => {
+  if (!groupSize) return 2
+
   const numbers = groupSize.match(/\d+/g)?.map(Number) ?? [2]
   return Math.max(...numbers)
 }
 
 const getAccommodationType = (travelPackage) => {
-  const includes = travelPackage.includeTags.join(' ').toLowerCase()
+  const includes = [
+    ...(travelPackage.includeTags ?? []),
+    ...(travelPackage.includes ?? []),
+  ].join(' ').toLowerCase()
   const title = travelPackage.title.toLowerCase()
 
   if (includes.includes('hospedaje') || title.includes('relax')) return 'Alojamiento incluido'
@@ -135,23 +142,38 @@ const AmenityIcon = ({ type }) => (
 
 const getOfferItems = (travelPackage) => {
   const items = [
-    ...travelPackage.includes,
-    ...travelPackage.highlights,
-    'Soporte de NovaTrips',
-    'Confirmacion de reserva',
-    travelPackage.bookingMode === 'nightly' ? 'Fechas flexibles' : 'Salida programada',
-    travelPackage.bookingMode === 'nightly' ? 'Hospedaje por noche' : 'Ruta coordinada',
+    ...(travelPackage.includeItems ?? []).map((item) => ({
+      iconType: item.iconType ?? 'check',
+      name: item.name,
+    })),
+    ...travelPackage.highlights.map((item) => ({
+      iconType: getAmenityIconType(item),
+      name: item,
+    })),
+    { iconType: 'support', name: 'Soporte de NovaTrips' },
+    { iconType: 'confirm', name: 'Confirmacion de reserva' },
+    {
+      iconType: 'calendar',
+      name: travelPackage.bookingMode === 'nightly' ? 'Fechas flexibles' : 'Salida programada',
+    },
+    {
+      iconType: travelPackage.bookingMode === 'nightly' ? 'stay' : 'guide',
+      name: travelPackage.bookingMode === 'nightly' ? 'Hospedaje por noche' : 'Ruta coordinada',
+    },
   ]
 
-  if (travelPackage.includeTags.includes('Transporte')) items.push('Traslados coordinados')
-  if (travelPackage.includeTags.includes('Hospedaje')) items.push('Hospedaje verificado')
-  if (travelPackage.includeTags.includes('Comidas')) items.push('Opciones de alimentos')
-  if (travelPackage.includeTags.includes('Tours guiados')) items.push('Actividades guiadas')
+  if (travelPackage.includeTags.includes('Transporte')) items.push({ iconType: 'transport', name: 'Traslados coordinados' })
+  if (travelPackage.includeTags.includes('Hospedaje')) items.push({ iconType: 'stay', name: 'Hospedaje verificado' })
+  if (travelPackage.includeTags.includes('Comidas')) items.push({ iconType: 'food', name: 'Opciones de alimentos' })
+  if (travelPackage.includeTags.includes('Actividades')) items.push({ iconType: 'activity', name: 'Actividades guiadas' })
   if (travelPackage.experienceType === 'Naturaleza' || travelPackage.experienceType === 'Aventura') {
-    items.push('Recomendaciones para actividades al aire libre')
+    items.push({ iconType: 'activity', name: 'Recomendaciones para actividades al aire libre' })
   }
 
-  return [...new Set(items)]
+  return items.filter(
+    (item, index, currentItems) =>
+      item.name && currentItems.findIndex((currentItem) => currentItem.name === item.name) === index,
+  )
 }
 
 const formatDateInput = (date) => date.toISOString().slice(0, 10)
@@ -162,26 +184,12 @@ const getDateAfterDays = (days) => {
   return formatDateInput(date)
 }
 
-const getDaysBetween = (startDate, endDate) => {
-  const start = new Date(`${startDate}T00:00:00`)
-  const end = new Date(`${endDate}T00:00:00`)
-  const difference = end.getTime() - start.getTime()
-
-  return Math.max(1, Math.ceil(difference / (1000 * 60 * 60 * 24)))
-}
-
-const formatDisplayDate = (date) =>
-  new Intl.DateTimeFormat('es-MX', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(`${date}T00:00:00`))
-
 function PackageDetail() {
   const { packageId } = useParams()
   const navigate = useNavigate()
   const { isAuthenticated, user } = useAuth()
-  const travelPackage = getPackageById(packageId)
+  const { isLoading, packages } = usePublicPackages()
+  const travelPackage = packages.find((item) => item.id === packageId)
   const [arrivalDate, setArrivalDate] = useState(() => getDateAfterDays(7))
   const [departureDate, setDepartureDate] = useState(() => getDateAfterDays(10))
   const [selectedDepartureId, setSelectedDepartureId] = useState('')
@@ -195,7 +203,7 @@ function PackageDetail() {
     pets: 0,
   })
 
-  const relatedPackages = travelPackages
+  const relatedPackages = packages
     .filter((item) => item.id !== packageId)
     .slice(0, 3)
 
@@ -203,11 +211,22 @@ function PackageDetail() {
     if (!travelPackage) return []
 
     return [
+      ...(travelPackage.galleryImages ?? []),
       travelPackage.heroImage,
       travelPackage.image,
       ...relatedPackages.map((item) => item.image),
     ].slice(0, 5)
   }, [relatedPackages, travelPackage])
+
+  if (!travelPackage && isLoading) {
+    return (
+      <main className={styles.page}>
+        <section className={styles.shell}>
+          <p>Cargando paquete...</p>
+        </section>
+      </main>
+    )
+  }
 
   if (!travelPackage) {
     return <NotFound />
@@ -234,7 +253,7 @@ function PackageDetail() {
   const guestSummary = `${totalGuests} ${totalGuests === 1 ? 'huesped' : 'huespedes'}`
   const priceLabel = travelPackage.priceUnit ?? (isFixedDate ? 'por salida' : 'por noche')
   const detailSummary = isFixedDate
-    ? `${travelPackage.groupSize} - ${travelPackage.duration} - ${travelPackage.experienceType}`
+    ? `Hasta ${maxGuests} huespedes - ${travelPackage.duration} - ${travelPackage.experienceType}`
     : `Hasta ${maxGuests} huespedes - fechas flexibles - ${travelPackage.experienceType}`
   const durationMetric = isFixedDate
     ? { label: 'Dias de viaje', value: travelPackage.days }
@@ -293,6 +312,7 @@ function PackageDetail() {
       departureId: selectedDeparture?.id ?? null,
       guests: guestCounts,
       packageId: travelPackage.id,
+      packageSnapshot: travelPackage,
     })
 
     if (!isAuthenticated) {
@@ -392,9 +412,9 @@ function PackageDetail() {
               <h2>Lo que ofrece este paquete</h2>
               <div>
                 {visibleOfferItems.map((item) => (
-                  <span key={item}>
-                    <AmenityIcon type={getAmenityIconType(item)} />
-                    {item}
+                  <span key={item.name}>
+                    <AmenityIcon type={item.iconType} />
+                    {item.name}
                   </span>
                 ))}
               </div>
@@ -441,9 +461,9 @@ function PackageDetail() {
           <aside className={styles.bookingCard} aria-label="Reservar paquete">
             <p className={styles.price}>
               <span className={styles.originalPrice}>
-                ${new Intl.NumberFormat('es-MX').format(originalPrice)} MXN
+                {formatCurrency(originalPrice)}
               </span>
-              <strong>${new Intl.NumberFormat('es-MX').format(totalPrice)} MXN en total</strong>
+              <strong>{formatCurrency(totalPrice)} en total</strong>
               <em>{travelPackage.price} {priceLabel}</em>
             </p>
 

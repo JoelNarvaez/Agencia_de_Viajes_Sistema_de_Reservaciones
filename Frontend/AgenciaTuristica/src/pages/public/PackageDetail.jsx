@@ -370,16 +370,8 @@ function PackageDetail() {
           <h1 id="package-title">{travelPackage.title}</h1>
         </header>
 
-        <section className={styles.gallery} aria-label="Galeria del paquete">
-          {galleryImages.map((image, index) => (
-            <img
-              className={index === 0 ? styles.mainImage : ''}
-              key={`${image}-${index}`}
-              src={image}
-              alt=""
-            />
-          ))}
-          <button type="button">Mostrar todas las fotos</button>
+        <section className={styles.singleImage} aria-label="Imagen del paquete">
+          <img src={travelPackage.heroImage ?? travelPackage.image} alt={travelPackage.title} />
         </section>
 
         <div className={styles.layout}>

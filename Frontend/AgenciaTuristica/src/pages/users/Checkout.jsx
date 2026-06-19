@@ -1,12 +1,12 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import useAuth from '../../hooks/useAuth'
-import {
-  buildReservationFromDraft,
-  clearReservationDraft,
-  getReservationDraft,
-  saveReservation,
-} from '../../utils/reservationStorage'
+import usePublicPackages from '../../hooks/usePublicPackages'
+import useReservation from '../../hooks/useReservation'
+import { reservationService } from '../../services/reservationService'
+import { formatCurrency } from '../../utils/formatCurrency'
+import { buildReservationFromSelection } from '../../utils/reservationStorage'
+import { getDigits, validatePaymentData } from '../../utils/validations'
 import styles from './UserPage.module.css'
 
 const initialPaymentData = {
@@ -19,23 +19,40 @@ const initialPaymentData = {
   postalCode: '',
 }
 
-const getDigits = (value) => value.replace(/\D/g, '')
-
 function Checkout() {
   const navigate = useNavigate()
-  const { isAuthenticated, user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const { isAuthenticated, token, user } = useAuth()
+  const { isLoading: isLoadingPackages, packages } = usePublicPackages()
+  const { loadMine } = useReservation()
   const [activeStep, setActiveStep] = useState(1)
   const [paymentTiming, setPaymentTiming] = useState('now')
   const [paymentData, setPaymentData] = useState(initialPaymentData)
   const [paymentError, setPaymentError] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
-  const draft = getReservationDraft()
-  const reservation = useMemo(
-    () => (draft ? buildReservationFromDraft(draft, user) : null),
-    [draft, user],
+  const packageId = searchParams.get('packageId') ?? ''
+  const travelPackage = packages.find((item) => item.id === packageId)
+  const selection = useMemo(
+    () => ({
+      arrivalDate: searchParams.get('arrivalDate') ?? '',
+      departureDate: searchParams.get('departureDate') ?? '',
+      departureId: searchParams.get('departureId'),
+      guests: {
+        adults: searchParams.get('adults') ?? 1,
+        babies: searchParams.get('babies') ?? 0,
+        children: searchParams.get('children') ?? 0,
+        pets: searchParams.get('pets') ?? 0,
+      },
+    }),
+    [searchParams],
   )
-  const taxes = reservation ? Math.round(reservation.totalAmount * 0.16) : 0
-  const subtotal = reservation ? reservation.totalAmount - taxes : 0
+  const reservation = useMemo(
+    () => buildReservationFromSelection({ selection, travelPackage, user }),
+    [selection, travelPackage, user],
+  )
+  const priceBreakdown = reservation?.priceBreakdown
+  const taxes = priceBreakdown?.taxes ?? 0
+  const subtotal = priceBreakdown?.subtotal ?? 0
   const originalPrice = reservation ? Math.round(reservation.totalAmount * 1.1) : 0
   const paymentDueNow = paymentTiming === 'now' ? reservation?.totalAmount ?? 0 : 0
   const packageDetailPath = reservation ? `/packages/${reservation.packageId}` : '/packages'
@@ -49,17 +66,7 @@ function Checkout() {
   }
 
   const validatePayment = () => {
-    const cardDigits = getDigits(paymentData.cardNumber)
-    const cvcDigits = getDigits(paymentData.cvc)
-    const expiryIsValid = /^(0[1-9]|1[0-2])\/\d{2}$/.test(paymentData.expiry)
-
-    if (!paymentData.cardName.trim()) return 'Ingresa el nombre del titular.'
-    if (cardDigits.length !== 16) return 'La tarjeta simulada debe tener 16 digitos.'
-    if (!expiryIsValid) return 'La vigencia debe tener formato MM/AA.'
-    if (cvcDigits.length < 3) return 'El CVC debe tener al menos 3 digitos.'
-    if (!paymentData.postalCode.trim()) return 'Ingresa el codigo postal.'
-
-    return ''
+    return validatePaymentData(paymentData)
   }
 
   const openStep = (step) => {
@@ -101,7 +108,7 @@ function Checkout() {
     setActiveStep(3)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!reservation) return
 
     const validationError = validatePayment()
@@ -113,30 +120,37 @@ function Checkout() {
     setPaymentError('')
     setIsProcessing(true)
 
-    window.setTimeout(() => {
-      const cardDigits = getDigits(paymentData.cardNumber)
-
-      saveReservation({
-        ...reservation,
+    try {
+      const createdReservation = await reservationService.create({
         payment: {
-          amount: paymentDueNow,
-          cardLast4: cardDigits.slice(-4),
+          cardLast4: getDigits(paymentData.cardNumber).slice(-4),
           method: paymentData.method,
-          paidAt: new Date().toISOString(),
-          reference: `PAY-${Date.now()}`,
-          scheduledAmount: paymentTiming === 'later' ? reservation.totalAmount : 0,
-          status: paymentTiming === 'now' ? 'Aprobado' : 'Programado',
           timing: paymentTiming,
         },
-        status: 'Confirmada',
+        reservation,
+        token,
       })
-      clearReservationDraft()
-      navigate(`/reservations/success?reservationId=${reservation.id}`, { replace: true })
-    }, 900)
+      await loadMine()
+      navigate(`/reservations/success?reservationId=${createdReservation.id}`, { replace: true })
+    } catch (createError) {
+      setPaymentError(createError.message ?? 'No se pudo crear la reservacion.')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (!isAuthenticated) {
-    return <Navigate replace state={{ from: '/reservations/checkout' }} to="/login" />
+    return <Navigate replace state={{ from: `/reservations/checkout?${searchParams.toString()}` }} to="/login" />
+  }
+
+  if (isLoadingPackages) {
+    return (
+      <main className={styles.page}>
+        <section className={styles.shell}>
+          <p>Cargando reservacion...</p>
+        </section>
+      </main>
+    )
   }
 
   if (!reservation) {
@@ -181,7 +195,7 @@ function Checkout() {
                 <div className={styles.stepBody}>
                   <label className={styles.paymentChoice}>
                     <span>
-                      <strong>Paga ${reservation.totalAmount.toLocaleString()} MXN ahora</strong>
+                      <strong>Paga {formatCurrency(reservation.totalAmount)} ahora</strong>
                     </span>
                     <input
                       checked={paymentTiming === 'now'}
@@ -194,7 +208,7 @@ function Checkout() {
                     <span>
                       <strong>Paga $0 MXN ahora</strong>
                       <small>
-                        ${reservation.totalAmount.toLocaleString()} MXN se cobraran antes del viaje. Sin
+                        {formatCurrency(reservation.totalAmount)} se cobraran antes del viaje. Sin
                         tarifas adicionales.
                       </small>
                     </span>
@@ -333,7 +347,7 @@ function Checkout() {
                   <ul className={styles.detailList}>
                     <li>
                       <span>Pago ahora</span>
-                      <strong>${paymentDueNow.toLocaleString()} MXN</strong>
+                      <strong>{formatCurrency(paymentDueNow)}</strong>
                     </li>
                     <li>
                       <span>Metodo</span>
@@ -341,9 +355,10 @@ function Checkout() {
                     </li>
                     <li>
                       <span>Total</span>
-                      <strong>${reservation.totalAmount.toLocaleString()} MXN</strong>
+                      <strong>{formatCurrency(reservation.totalAmount)}</strong>
                     </li>
                   </ul>
+                  {paymentError && <p className={styles.error}>{paymentError}</p>}
                   <div className={styles.stepActions}>
                     <button disabled={isProcessing} type="button" onClick={handleConfirm}>
                       {isProcessing ? 'Procesando...' : 'Confirmar y pagar'}
@@ -359,8 +374,7 @@ function Checkout() {
               <img src={reservation.image} alt="" />
               <div>
                 <h2>{reservation.packageName}</h2>
-                <p>4.96 (24)</p>
-                <span>Favorito entre huespedes</span>
+                <span>{reservation.destination}</span>
               </div>
             </div>
 
@@ -379,7 +393,7 @@ function Checkout() {
               </div>
               <div>
                 <span>Participantes</span>
-                <strong>{reservation.totalGuests} huespedes</strong>
+                <strong>{reservation.guestBreakdown}</strong>
                 <Link to={packageDetailPath}>Modificar</Link>
               </div>
             </section>
@@ -388,20 +402,27 @@ function Checkout() {
               <h3>Detalles del precio</h3>
               <div>
                 <span>
-                  {reservation.tripDays} {reservation.tripDays === 1 ? 'dia' : 'dias'} x $
-                  {Math.round(subtotal / reservation.tripDays).toLocaleString()} MXN
+                  {priceBreakdown?.units ?? reservation.tripDays}{' '}
+                  {priceBreakdown?.unitType ?? (reservation.tripDays === 1 ? 'dia' : 'dias')} x{' '}
+                  {formatCurrency(priceBreakdown?.unitPrice ?? Math.round(reservation.totalAmount / reservation.tripDays))}
                 </span>
                 <strong>
-                  <del>${originalPrice.toLocaleString()}</del> ${subtotal.toLocaleString()} MXN
+                  <del>{formatCurrency(originalPrice)}</del> {formatCurrency(subtotal)}
                 </strong>
               </div>
               <div>
-                <span>Impuestos</span>
-                <strong>${taxes.toLocaleString()} MXN</strong>
+                <span>Impuestos incluidos</span>
+                <strong>{formatCurrency(taxes)}</strong>
               </div>
+              {reservation.companionGuests > 0 && (
+                <div>
+                  <span>Bebes sin cargo</span>
+                  <strong>{reservation.companionGuests}</strong>
+                </div>
+              )}
               <div className={styles.priceTotal}>
                 <span>Total MXN</span>
-                <strong>${reservation.totalAmount.toLocaleString()} MXN</strong>
+                <strong>{formatCurrency(reservation.totalAmount)}</strong>
               </div>
             </section>
           </aside>

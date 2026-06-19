@@ -1,11 +1,35 @@
 import { Link, useSearchParams } from 'react-router-dom'
-import { getReservationById } from '../../utils/reservationStorage'
+import { useEffect, useState } from 'react'
+import useAuth from '../../hooks/useAuth'
+import { reservationService } from '../../services/reservationService'
 import styles from './UserPage.module.css'
 
 function ReservationSuccess() {
   const [searchParams] = useSearchParams()
+  const { token } = useAuth()
   const reservationId = searchParams.get('reservationId')
-  const reservation = reservationId ? getReservationById(reservationId) : null
+  const [reservation, setReservation] = useState(null)
+
+  useEffect(() => {
+    if (!reservationId || !token) return
+
+    let isMounted = true
+
+    const loadReservation = async () => {
+      try {
+        const reservationDetail = await reservationService.getById(reservationId, token)
+        if (isMounted) setReservation(reservationDetail)
+      } catch {
+        if (isMounted) setReservation(null)
+      }
+    }
+
+    loadReservation()
+
+    return () => {
+      isMounted = false
+    }
+  }, [reservationId, token])
 
   return (
     <main className={styles.page}>

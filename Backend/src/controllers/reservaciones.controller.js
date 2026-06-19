@@ -10,6 +10,13 @@ const restarDias = (fechaStr, dias) => {
   return toDateStr(d);
 };
 
+const toGuestCount = (value, fallback = 0) => {
+  const count = Number(value ?? fallback);
+  return Number.isInteger(count) && count >= 0 ? count : null;
+};
+
+const toMoney = (value) => Number(Number(value).toFixed(2));
+
 export const crearReservacion = async (req, res) => {
   const usuarioId = req.usuario.id;
 
@@ -18,20 +25,30 @@ export const crearReservacion = async (req, res) => {
   const salidaId   = req.body.salidaId   ?? req.body.departureId   ?? null;
   const fechaLlegada = req.body.fechaLlegada ?? req.body.arrivalDate   ?? null;
   const fechaSalida  = req.body.fechaSalida  ?? req.body.departureDate ?? null;
+  const pago = req.body.pago ?? req.body.payment ?? {};
+  const estadoInicial = pago.timing === "now" ? "pagada" : "pendiente";
 
   const huespedes = req.body.huespedes ?? req.body.guests ?? {};
-  const adultos   = huespedes.adultos   ?? huespedes.adults    ?? 1;
-  const ninos     = huespedes.ninos     ?? huespedes.children  ?? 0;
-  const bebes     = huespedes.bebes     ?? huespedes.babies    ?? 0;
-  const mascotas  = huespedes.mascotas  ?? huespedes.pets      ?? 0;
+  const adultos   = toGuestCount(huespedes.adultos   ?? huespedes.adults, 1);
+  const ninos     = toGuestCount(huespedes.ninos     ?? huespedes.children, 0);
+  const bebes     = toGuestCount(huespedes.bebes     ?? huespedes.babies, 0);
+  const mascotas  = toGuestCount(huespedes.mascotas  ?? huespedes.pets, 0);
 
   // Validaciones básicas
   if (!paqueteId) {
     return res.status(400).json({ message: "Falta el ID del paquete" });
   }
 
+  if ([adultos, ninos, bebes, mascotas].some((count) => count === null)) {
+    return res.status(400).json({ message: "Los huespedes deben ser numeros enteros validos" });
+  }
+
   if (mascotas > 0) {
     return res.status(400).json({ message: "No se admiten mascotas" });
+  }
+
+  if (adultos < 1) {
+    return res.status(400).json({ message: "Debe haber al menos un adulto en la reservacion" });
   }
 
   const totalHuespedes = adultos + ninos;
@@ -82,9 +99,8 @@ export const crearReservacion = async (req, res) => {
 
       fechaInicioReserva = toDateStr(salida.fecha_inicio);
       fechaFinReserva    = toDateStr(salida.fecha_fin);
-      // precio: usa el precio de la salida si tiene uno propio, si no el del paquete
-      const precioPorPersona = salida.precio ?? paquete.precio;
-      montoTotal = precioPorPersona * totalHuespedes;
+      // Precio final de la salida: cubre hasta el maximo permitido; no se multiplica por persona.
+      montoTotal = toMoney(salida.precio ?? paquete.precio);
 
     } else {
       // Paquete por noche 
@@ -112,7 +128,8 @@ export const crearReservacion = async (req, res) => {
 
       fechaInicioReserva = toDateStr(llegada);
       fechaFinReserva    = toDateStr(salida);
-      montoTotal = Number(paquete.precio) * noches;
+      // Precio final por noche: cambia por duracion, no por cantidad de huespedes dentro de capacidad.
+      montoTotal = toMoney(Number(paquete.precio) * noches);
     }
 
     // Calcular fecha límite de cancelación 
@@ -126,11 +143,11 @@ export const crearReservacion = async (req, res) => {
       `INSERT INTO reservaciones
          (usuario_id, paquete_id, salida_id, fecha_llegada, fecha_salida,
           total_huespedes, monto_total, estado, fecha_limite_cancelacion)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         usuarioId, paqueteId, salidaId,
         fechaInicioReserva, fechaFinReserva,
-        totalHuespedes, montoTotal.toFixed(2),
+        totalHuespedes, montoTotal.toFixed(2), estadoInicial,
         fechaLimiteCancelacion,
       ]
     );
@@ -156,6 +173,7 @@ export const crearReservacion = async (req, res) => {
     const [reservacion] = await db.query(
       `SELECT r.*,
               p.titulo      AS paquete_titulo,
+              p.slug        AS paquete_slug,
               p.destino,
               p.imagen_principal,
               p.modo_reserva,
@@ -193,10 +211,13 @@ export const misReservaciones = async (req, res) => {
               r.fecha_limite_cancelacion,
               r.creado_en,
               p.titulo      AS paquete_titulo,
+              p.slug        AS paquete_slug,
               p.destino,
-              p.imagen_principal
+              p.imagen_principal,
+              hr.adultos, hr.ninos, hr.bebes, hr.mascotas
        FROM   reservaciones r
        JOIN   paquetes p ON r.paquete_id = p.id
+       LEFT JOIN huespedes_reservacion hr ON hr.reservacion_id = r.id
        WHERE  r.usuario_id = ?
        ORDER BY r.creado_en DESC`,
       [usuarioId]
@@ -220,6 +241,7 @@ export const obtenerReservacion = async (req, res) => {
     const [reservaciones] = await db.query(
       `SELECT r.*,
               p.titulo           AS paquete_titulo,
+              p.slug             AS paquete_slug,
               p.destino,
               p.imagen_principal,
               p.modo_reserva,

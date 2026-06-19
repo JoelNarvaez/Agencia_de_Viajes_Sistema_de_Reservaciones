@@ -19,7 +19,7 @@ function Footer({
 
         <div className={styles.column}>
           <div className={styles.logo}>
-            LOGO
+            <img src="/logo-claro.png" alt="Logo" />
           </div>
 
           <p className={styles.description}>

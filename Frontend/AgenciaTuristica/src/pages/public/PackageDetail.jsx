@@ -1,19 +1,31 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import PackageLocationMap from '../../components/packages/PackageLocationMap'
-import { getPackageById, travelPackages } from '../../data/packageData'
 import useAuth from '../../hooks/useAuth'
-import { saveReservationDraft } from '../../utils/reservationStorage'
+import usePublicPackages from '../../hooks/usePublicPackages'
+import { formatCurrency } from '../../utils/formatCurrency'
+import { formatDisplayDate, getDaysBetween } from '../../utils/formatDate'
+import {
+  calculateReservationPrice,
+  formatGuestBreakdown,
+  getCapacityGuests,
+  getVisibleGuestTotal,
+} from '../../utils/pricing'
 import NotFound from './NotFound'
 import styles from './PackageDetail.module.css'
 
 const getMaxGuests = (groupSize) => {
+  if (!groupSize) return 2
+
   const numbers = groupSize.match(/\d+/g)?.map(Number) ?? [2]
   return Math.max(...numbers)
 }
 
 const getAccommodationType = (travelPackage) => {
-  const includes = travelPackage.includeTags.join(' ').toLowerCase()
+  const includes = [
+    ...(travelPackage.includeTags ?? []),
+    ...(travelPackage.includes ?? []),
+  ].join(' ').toLowerCase()
   const title = travelPackage.title.toLowerCase()
 
   if (includes.includes('hospedaje') || title.includes('relax')) return 'Alojamiento incluido'
@@ -135,23 +147,38 @@ const AmenityIcon = ({ type }) => (
 
 const getOfferItems = (travelPackage) => {
   const items = [
-    ...travelPackage.includes,
-    ...travelPackage.highlights,
-    'Soporte de NovaTrips',
-    'Confirmacion de reserva',
-    travelPackage.bookingMode === 'nightly' ? 'Fechas flexibles' : 'Salida programada',
-    travelPackage.bookingMode === 'nightly' ? 'Hospedaje por noche' : 'Ruta coordinada',
+    ...(travelPackage.includeItems ?? []).map((item) => ({
+      iconType: item.iconType ?? 'check',
+      name: item.name,
+    })),
+    ...travelPackage.highlights.map((item) => ({
+      iconType: getAmenityIconType(item),
+      name: item,
+    })),
+    { iconType: 'support', name: 'Soporte de NovaTrips' },
+    { iconType: 'confirm', name: 'Confirmacion de reserva' },
+    {
+      iconType: 'calendar',
+      name: travelPackage.bookingMode === 'nightly' ? 'Fechas flexibles' : 'Salida programada',
+    },
+    {
+      iconType: travelPackage.bookingMode === 'nightly' ? 'stay' : 'guide',
+      name: travelPackage.bookingMode === 'nightly' ? 'Hospedaje por noche' : 'Ruta coordinada',
+    },
   ]
 
-  if (travelPackage.includeTags.includes('Transporte')) items.push('Traslados coordinados')
-  if (travelPackage.includeTags.includes('Hospedaje')) items.push('Hospedaje verificado')
-  if (travelPackage.includeTags.includes('Comidas')) items.push('Opciones de alimentos')
-  if (travelPackage.includeTags.includes('Tours guiados')) items.push('Actividades guiadas')
+  if (travelPackage.includeTags.includes('Transporte')) items.push({ iconType: 'transport', name: 'Traslados coordinados' })
+  if (travelPackage.includeTags.includes('Hospedaje')) items.push({ iconType: 'stay', name: 'Hospedaje verificado' })
+  if (travelPackage.includeTags.includes('Comidas')) items.push({ iconType: 'food', name: 'Opciones de alimentos' })
+  if (travelPackage.includeTags.includes('Actividades')) items.push({ iconType: 'activity', name: 'Actividades guiadas' })
   if (travelPackage.experienceType === 'Naturaleza' || travelPackage.experienceType === 'Aventura') {
-    items.push('Recomendaciones para actividades al aire libre')
+    items.push({ iconType: 'activity', name: 'Recomendaciones para actividades al aire libre' })
   }
 
-  return [...new Set(items)]
+  return items.filter(
+    (item, index, currentItems) =>
+      item.name && currentItems.findIndex((currentItem) => currentItem.name === item.name) === index,
+  )
 }
 
 const formatDateInput = (date) => date.toISOString().slice(0, 10)
@@ -162,26 +189,12 @@ const getDateAfterDays = (days) => {
   return formatDateInput(date)
 }
 
-const getDaysBetween = (startDate, endDate) => {
-  const start = new Date(`${startDate}T00:00:00`)
-  const end = new Date(`${endDate}T00:00:00`)
-  const difference = end.getTime() - start.getTime()
-
-  return Math.max(1, Math.ceil(difference / (1000 * 60 * 60 * 24)))
-}
-
-const formatDisplayDate = (date) =>
-  new Intl.DateTimeFormat('es-MX', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(`${date}T00:00:00`))
-
 function PackageDetail() {
   const { packageId } = useParams()
   const navigate = useNavigate()
   const { isAuthenticated, user } = useAuth()
-  const travelPackage = getPackageById(packageId)
+  const { isLoading, packages } = usePublicPackages()
+  const travelPackage = packages.find((item) => item.id === packageId)
   const [arrivalDate, setArrivalDate] = useState(() => getDateAfterDays(7))
   const [departureDate, setDepartureDate] = useState(() => getDateAfterDays(10))
   const [selectedDepartureId, setSelectedDepartureId] = useState('')
@@ -195,7 +208,7 @@ function PackageDetail() {
     pets: 0,
   })
 
-  const relatedPackages = travelPackages
+  const relatedPackages = packages
     .filter((item) => item.id !== packageId)
     .slice(0, 3)
 
@@ -203,11 +216,22 @@ function PackageDetail() {
     if (!travelPackage) return []
 
     return [
+      ...(travelPackage.galleryImages ?? []),
       travelPackage.heroImage,
       travelPackage.image,
       ...relatedPackages.map((item) => item.image),
     ].slice(0, 5)
   }, [relatedPackages, travelPackage])
+
+  if (!travelPackage && isLoading) {
+    return (
+      <main className={styles.page}>
+        <section className={styles.shell}>
+          <p>Cargando paquete...</p>
+        </section>
+      </main>
+    )
+  }
 
   if (!travelPackage) {
     return <NotFound />
@@ -218,27 +242,41 @@ function PackageDetail() {
   const departures = travelPackage.departures ?? []
   const selectedDeparture =
     departures.find((departure) => departure.id === selectedDepartureId) ?? departures[0]
-  const maxGuests = isFixedDate
-    ? selectedDeparture?.availableSpots ?? travelPackage.maxGuests ?? getMaxGuests(travelPackage.groupSize)
-    : travelPackage.maxGuests ?? getMaxGuests(travelPackage.groupSize)
-  const billableGuests = guestCounts.adults + guestCounts.children
-  const totalGuests = billableGuests + guestCounts.babies
+  const packageMaxGuests = travelPackage.maxGuests ?? getMaxGuests(travelPackage.groupSize)
+  const availableSpots = selectedDeparture?.availableSpots
+  const maxGuests = isFixedDate && Number.isFinite(availableSpots)
+    ? Math.min(packageMaxGuests, availableSpots)
+    : packageMaxGuests
+  const capacityGuests = getCapacityGuests(guestCounts)
+  const totalGuests = getVisibleGuestTotal(guestCounts)
   const tripDays = isFixedDate
     ? selectedDeparture
       ? getDaysBetween(selectedDeparture.startDate, selectedDeparture.endDate)
       : travelPackage.days
     : getDaysBetween(arrivalDate, departureDate)
-  const totalPrice = isFixedDate ? travelPackage.priceAmount : travelPackage.priceAmount * tripDays
+  const priceBreakdown = calculateReservationPrice({
+    arrivalDate,
+    bookingMode: travelPackage.bookingMode,
+    departureDate,
+    departurePrice: selectedDeparture?.priceAmount,
+    priceAmount: travelPackage.priceAmount,
+  })
+  const totalPrice = priceBreakdown.totalAmount
   const originalPrice = Math.round(totalPrice * 1.12)
   const accommodationType = getAccommodationType(travelPackage)
-  const guestSummary = `${totalGuests} ${totalGuests === 1 ? 'huesped' : 'huespedes'}`
+  const guestSummary = `${totalGuests} ${totalGuests === 1 ? 'participante' : 'participantes'}`
+  const guestBreakdown = formatGuestBreakdown(guestCounts)
   const priceLabel = travelPackage.priceUnit ?? (isFixedDate ? 'por salida' : 'por noche')
   const detailSummary = isFixedDate
-    ? `${travelPackage.groupSize} - ${travelPackage.duration} - ${travelPackage.experienceType}`
-    : `Hasta ${maxGuests} huespedes - fechas flexibles - ${travelPackage.experienceType}`
+    ? `Hasta ${packageMaxGuests} huespedes por reserva - ${travelPackage.duration} - ${travelPackage.experienceType}`
+    : `Hasta ${packageMaxGuests} huespedes - fechas flexibles - ${travelPackage.experienceType}`
   const durationMetric = isFixedDate
     ? { label: 'Dias de viaje', value: travelPackage.days }
     : { label: 'Noches seleccionadas', value: tripDays }
+  const cancellationDays = travelPackage.cancellationDaysBefore ?? 14
+  const cancellationText = cancellationDays > 0
+    ? `Cancelacion gratuita hasta ${cancellationDays} dias antes del inicio del viaje.`
+    : 'Este paquete no permite cancelacion gratuita.'
   const offerItems = getOfferItems(travelPackage)
   const visibleOfferItems = showAllAmenities ? offerItems : offerItems.slice(0, 6)
   const accommodation = travelPackage.accommodation
@@ -287,20 +325,28 @@ function PackageDetail() {
   const handleReserve = () => {
     if (isAdmin) return
 
-    saveReservationDraft({
-      arrivalDate,
+    const checkoutParams = new URLSearchParams({
+      adults: String(guestCounts.adults),
+      babies: String(guestCounts.babies),
+      children: String(guestCounts.children),
       departureDate,
-      departureId: selectedDeparture?.id ?? null,
-      guests: guestCounts,
       packageId: travelPackage.id,
+      pets: String(guestCounts.pets),
+      arrivalDate,
     })
 
+    if (selectedDeparture?.id) {
+      checkoutParams.set('departureId', selectedDeparture.id)
+    }
+
+    const checkoutPath = `/reservations/checkout?${checkoutParams.toString()}`
+
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/reservations/checkout' } })
+      navigate('/login', { state: { from: checkoutPath } })
       return
     }
 
-    navigate('/reservations/checkout')
+    navigate(checkoutPath)
   }
 
   return (
@@ -324,16 +370,8 @@ function PackageDetail() {
           <h1 id="package-title">{travelPackage.title}</h1>
         </header>
 
-        <section className={styles.gallery} aria-label="Galeria del paquete">
-          {galleryImages.map((image, index) => (
-            <img
-              className={index === 0 ? styles.mainImage : ''}
-              key={`${image}-${index}`}
-              src={image}
-              alt=""
-            />
-          ))}
-          <button type="button">Mostrar todas las fotos</button>
+        <section className={styles.singleImage} aria-label="Imagen del paquete">
+          <img src={travelPackage.heroImage ?? travelPackage.image} alt={travelPackage.title} />
         </section>
 
         <div className={styles.layout}>
@@ -352,7 +390,7 @@ function PackageDetail() {
               </div>
               <div>
                 <strong>{maxGuests}</strong>
-                <span>{isFixedDate ? 'Cupos disponibles' : 'Capacidad maxima'}</span>
+                <span>{isFixedDate ? 'Disponibles para reservar' : 'Capacidad maxima'}</span>
               </div>
               <div>
                 <strong>{durationMetric.value}</strong>
@@ -392,9 +430,9 @@ function PackageDetail() {
               <h2>Lo que ofrece este paquete</h2>
               <div>
                 {visibleOfferItems.map((item) => (
-                  <span key={item}>
-                    <AmenityIcon type={getAmenityIconType(item)} />
-                    {item}
+                  <span key={item.name}>
+                    <AmenityIcon type={item.iconType} />
+                    {item.name}
                   </span>
                 ))}
               </div>
@@ -441,11 +479,24 @@ function PackageDetail() {
           <aside className={styles.bookingCard} aria-label="Reservar paquete">
             <p className={styles.price}>
               <span className={styles.originalPrice}>
-                ${new Intl.NumberFormat('es-MX').format(originalPrice)} MXN
+                {formatCurrency(originalPrice)}
               </span>
-              <strong>${new Intl.NumberFormat('es-MX').format(totalPrice)} MXN en total</strong>
-              <em>{travelPackage.price} {priceLabel}</em>
+              <strong>{formatCurrency(totalPrice)} en total</strong>
+              <em>{formatCurrency(priceBreakdown.unitPrice)} {priceLabel}</em>
             </p>
+            <div className={styles.priceBreakdown}>
+              <div>
+                <span>{isFixedDate ? 'Tarifa de la salida' : `${priceBreakdown.units} ${priceBreakdown.unitType}`}</span>
+                <strong>{formatCurrency(priceBreakdown.subtotal)}</strong>
+              </div>
+              <div>
+                <span>Impuestos incluidos</span>
+                <strong>{formatCurrency(priceBreakdown.taxes)}</strong>
+              </div>
+              <p>
+                El precio cubre hasta {packageMaxGuests} huespedes por reserva. Bebes no ocupan cupo ni cambian el precio.
+              </p>
+            </div>
 
             <div className={styles.bookingFields}>
               {isFixedDate ? (
@@ -493,6 +544,7 @@ function PackageDetail() {
                   <span>
                     Huespedes
                     <strong>{guestSummary}</strong>
+                    <small>{guestBreakdown}</small>
                   </span>
                   <span aria-hidden="true">{showGuestSelector ? '^' : 'v'}</span>
                 </button>
@@ -524,7 +576,7 @@ function PackageDetail() {
                       <button
                         disabled={
                           type === 'pets' ||
-                          (['adults', 'children'].includes(type) && billableGuests >= maxGuests)
+                          (['adults', 'children'].includes(type) && capacityGuests >= maxGuests)
                         }
                         type="button"
                         onClick={() => updateGuestCount(type, 1)}
@@ -537,8 +589,8 @@ function PackageDetail() {
 
                 <p className={styles.guestNote}>
                   {isFixedDate
-                    ? `Esta salida tiene ${maxGuests} cupos disponibles, sin incluir bebes. No se admiten mascotas.`
-                    : `En este alojamiento se permiten ${maxGuests} huespedes como maximo, sin incluir bebes. No se admiten mascotas.`}
+                    ? `Esta salida tiene ${availableSpots ?? 0} cupos disponibles y este paquete permite ${packageMaxGuests} huespedes por reserva. Adultos y ninos ocupan cupo; bebes no. No se admiten mascotas.`
+                    : `Este alojamiento permite ${packageMaxGuests} huespedes con cupo. Adultos y ninos cuentan; bebes no. No se admiten mascotas.`}
                 </p>
 
                 <button
@@ -552,18 +604,16 @@ function PackageDetail() {
             )}
 
             <p className={styles.cancellation}>
-              {isFixedDate
-                ? 'La fecha queda sujeta a los cupos disponibles de la salida seleccionada.'
-                : 'Cancelacion gratuita antes del inicio del viaje.'}
+              {cancellationText}
             </p>
 
             <button
               className={styles.reserveButton}
-              disabled={isAdmin}
+              disabled={isAdmin || maxGuests < 1}
               type="button"
               onClick={handleReserve}
             >
-              {isAdmin ? 'Solo usuarios pueden reservar' : 'Reservar'}
+              {isAdmin ? 'Solo usuarios pueden reservar' : maxGuests < 1 ? 'Sin cupos disponibles' : 'Reservar'}
             </button>
             <small>
               {isAdmin

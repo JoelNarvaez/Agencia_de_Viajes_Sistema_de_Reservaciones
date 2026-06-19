@@ -260,7 +260,7 @@
 
 .reservationRow {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) minmax(150px, 1fr) 120px 150px auto;
+  grid-template-columns: minmax(360px, 1.8fr) minmax(150px, 1fr) 120px 150px auto;
   gap: 18px;
   align-items: center;
   border: 1px solid rgba(20, 33, 27, 0.12);
@@ -342,6 +342,56 @@
   text-align: left;
 }
 
+.reservationPackage {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.reservationPackage img {
+  width: 132px;
+  height: 96px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #edf3ef;
+}
+
+.cancellationPanel {
+  display: grid;
+  gap: 22px;
+  padding: 32px;
+  box-shadow: 0 14px 34px rgba(20, 33, 27, 0.06);
+}
+
+.cancellationHeader {
+  border-bottom: 1px solid rgba(20, 33, 27, 0.1);
+  padding-bottom: 16px;
+}
+
+.cancellationHeader span {
+  color: #c98b08;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cancellationHeader h2 {
+  margin: 8px 0 0;
+  color: #14211b;
+  font-size: 26px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.cancellationPanel > p {
+  margin: 0;
+  color: #39463f;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
 .detailPanelHeader {
   display: flex;
   justify-content: space-between;
@@ -379,10 +429,58 @@
   font-weight: 900;
 }
 
+.cancellationNotice {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  border: 1px solid rgba(20, 33, 27, 0.1);
+  border-radius: 14px;
+  padding: 18px;
+  color: #39463f;
+  background: #f8faf8;
+}
+
+.cancellationNotice strong {
+  color: #14211b;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.cancellationNotice p {
+  margin: 0;
+  color: #657068;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.cancellationNotice span {
+  color: #657068;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .form {
   display: grid;
   gap: 16px;
   margin-top: 18px;
+}
+
+.cancellationPanel .form {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.cancellationPanel .form label {
+  min-width: 0;
+}
+
+.cancellationPanel .actions {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.cancellationPanel .actions button {
+  min-width: 198px;
 }
 
 .form label {
@@ -398,6 +496,13 @@
   resize: vertical;
 }
 
+.cancellationPanel .form textarea {
+  box-sizing: border-box;
+  min-height: 120px;
+  max-width: 100%;
+  width: 100%;
+}
+
 .form input,
 .form textarea,
 .form select {
@@ -408,6 +513,14 @@
   color: #14211b;
   background: #fff;
   font: inherit;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  border-color: #1f9d8a;
+  box-shadow: 0 0 0 3px rgba(31, 157, 138, 0.12);
+  outline: 0;
 }
 
 .paymentMethods {
@@ -919,6 +1032,11 @@
 }
 
 @media (max-width: 880px) {
+  .shell {
+    width: min(100% - 32px, 1120px);
+    padding: 48px 0;
+  }
+
   .grid,
   .cardsGrid,
   .reservationRow,
@@ -927,6 +1045,19 @@
   .checkoutLayout,
   .formRow {
     grid-template-columns: 1fr;
+  }
+
+  .cancellationPanel {
+    padding: 24px;
+  }
+
+  .reservationPackage {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
+  .reservationPackage img {
+    width: 108px;
+    height: 84px;
   }
 
   .checkoutSummary {
@@ -944,6 +1075,14 @@
   .profileActions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .cancellationPanel {
+    padding: 22px;
+  }
+
+  .cancellationPanel .actions button {
+    width: 100%;
   }
 
   .profileActions button {

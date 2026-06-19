@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   HomeFAQ,
   FeaturedPackages,
@@ -5,6 +6,7 @@ import {
   HomeTestimonials,
   PopularDestinations,
 } from '../../components/home'
+import usePublicPackages from '../../hooks/usePublicPackages'
 import styles from './Home.module.css'
 
 const featuredDestinations = [
@@ -106,45 +108,6 @@ const featuredDestinations = [
   },
 ]
 
-const featuredPackages = [
-  {
-    title: 'Escapada Huasteca',
-    destination: 'Huasteca Potosina',
-    duration: '5 dias / 4 noches',
-    description:
-      'Rios turquesa, cascadas y traslados organizados para vivir una aventura completa sin complicarte.',
-    image:
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=85',
-    includes: ['Hotel', 'Tours guiados', 'Traslados'],
-    price: '$12,900 MXN',
-    href: '/packages/escapada-huasteca',
-  },
-  {
-    title: 'Ruta Baja Desert',
-    destination: 'Baja California',
-    duration: '4 dias / 3 noches',
-    description:
-      'Atardeceres en dunas, miradores naturales y experiencias locales para viajeros que buscan paisajes amplios.',
-    image:
-      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=85',
-    includes: ['Hospedaje', 'Transporte', 'Experiencias'],
-    price: '$10,800 MXN',
-    href: '/packages/ruta-baja-desert',
-  },
-  {
-    title: 'Colonial y Cultura',
-    destination: 'San Miguel de Allende',
-    duration: '3 dias / 2 noches',
-    description:
-      'Calles historicas, terrazas, gastronomia y recorridos culturales para una salida tranquila y bien planeada.',
-    image:
-      'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?auto=format&fit=crop&w=900&q=85',
-    includes: ['Hotel boutique', 'Guia local', 'Cena'],
-    price: '$8,600 MXN',
-    href: '/packages/colonial-y-cultura',
-  },
-]
-
 const frequentlyAskedQuestions = [
   {
     question: 'Como puedo reservar un paquete?',
@@ -198,10 +161,29 @@ const testimonials = [
 ]
 
 function Home() {
+  const { packages } = usePublicPackages()
+  const homeDestinations = useMemo(
+    () =>
+      packages.map((travelPackage) => ({
+        description: travelPackage.description,
+        duration: travelPackage.duration,
+        heroImage: travelPackage.heroImage,
+        href: travelPackage.href,
+        id: travelPackage.id,
+        image: travelPackage.image,
+        location: travelPackage.destination,
+        priceFrom: travelPackage.price,
+        title: travelPackage.title,
+      })),
+    [packages],
+  )
+  const visibleDestinations = homeDestinations.length > 0 ? homeDestinations : featuredDestinations
+  const featuredPackages = packages.slice(0, 3)
+
   return (
     <main className={styles.page}>
-      <HomeHero destinations={featuredDestinations} />
-      <PopularDestinations destinations={featuredDestinations.slice(0, 7)} />
+      <HomeHero destinations={visibleDestinations} />
+      <PopularDestinations destinations={visibleDestinations.slice(0, 7)} />
       <FeaturedPackages packages={featuredPackages} />
       <HomeTestimonials testimonials={testimonials} />
       <HomeFAQ items={frequentlyAskedQuestions} />

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 import { authService } from '../services/authService'
 import { AUTH_STORAGE_KEY } from '../utils/constants'
@@ -80,6 +80,24 @@ function AuthProvider({ children }) {
     clearStoredAuth()
   }
 
+  const updateUser = useCallback((userData) => {
+    setAuthState((currentAuthState) => {
+      if (!currentAuthState) return currentAuthState
+
+      const nextAuthState = {
+        ...currentAuthState,
+        user: {
+          ...currentAuthState.user,
+          ...userData,
+        },
+      }
+      const storedInLocal = Boolean(localStorage.getItem(AUTH_STORAGE_KEY))
+      const storage = storedInLocal ? localStorage : sessionStorage
+      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextAuthState))
+      return nextAuthState
+    })
+  }, [])
+
   const value = {
     error,
     isAuthenticated: Boolean(authState?.token),
@@ -88,6 +106,7 @@ function AuthProvider({ children }) {
     logout,
     register,
     token: authState?.token ?? null,
+    updateUser,
     user: authState?.user ?? null,
   }
 

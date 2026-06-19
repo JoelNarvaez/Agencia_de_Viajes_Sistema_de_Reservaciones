@@ -1,12 +1,17 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
-import { getUserReservations } from '../../utils/reservationStorage'
+import useReservation from '../../hooks/useReservation'
 import styles from './UserPage.module.css'
 
 function UserDashboard() {
-  const { user } = useAuth()
-  const reservations = getUserReservations(user?.email ?? 'usuario-local')
+  const { isAuthenticated } = useAuth()
+  const { reservations } = useReservation({ scope: 'mine' })
+
   const activeReservations = reservations.filter((reservation) => reservation.status !== 'Cancelada')
+
+  if (!isAuthenticated) {
+    return <Navigate replace state={{ from: '/user' }} to="/login" />
+  }
 
   return (
     <main className={styles.page}>

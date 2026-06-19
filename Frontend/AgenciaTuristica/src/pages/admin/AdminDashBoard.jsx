@@ -1,9 +1,8 @@
-import { travelPackages } from '../../data/packageData'
-import { getReservations, isReservationPast } from '../../utils/reservationStorage'
+import usePublicPackages from '../../hooks/usePublicPackages'
+import useReservation from '../../hooks/useReservation'
+import { formatCurrency } from '../../utils/formatCurrency'
+import { isReservationPast } from '../../utils/reservationStorage'
 import styles from './AdminDashBoard.module.css'
-
-const formatCurrency = (amount) =>
-  `$${new Intl.NumberFormat('es-MX').format(amount)} MXN`
 
 const getReservationStatus = (reservation) => {
   if (reservation.status === 'Cancelada') return 'Cancelada'
@@ -46,11 +45,15 @@ const getDonutStyle = (rows) => {
 }
 
 function AdminDashBoard() {
-  const reservations = getReservations()
+  const { packages: travelPackages } = usePublicPackages()
+  const { error, reservations } = useReservation({ scope: 'admin' })
+
   const activeReservations = reservations.filter((reservation) => getReservationStatus(reservation) === 'Activa')
   const cancelledReservations = reservations.filter((reservation) => reservation.status === 'Cancelada')
   const pastReservations = reservations.filter((reservation) => getReservationStatus(reservation) === 'Pasada')
-  const confirmedReservations = reservations.filter((reservation) => reservation.status === 'Confirmada')
+  const confirmedReservations = reservations.filter((reservation) =>
+    ['Confirmada', 'Pagada', 'Pendiente'].includes(reservation.status),
+  )
   const totalRevenue = sumBy(confirmedReservations, (reservation) => reservation.totalAmount)
   const averageTicket = confirmedReservations.length > 0
     ? Math.round(totalRevenue / confirmedReservations.length)
@@ -94,13 +97,11 @@ function AdminDashBoard() {
           <div>
             <span>Administracion</span>
             <h1>Dashboard</h1>
-            <p>
-              Analisis general de paquetes, reservaciones, ingresos simulados y disponibilidad para tomar
-              decisiones rapidas.
-            </p>
+            <p>Analisis general de paquetes, reservaciones, ingresos y disponibilidad para tomar decisiones rapidas.</p>
           </div>
-          <strong className={styles.updatedAt}>Actualizado con datos locales</strong>
+          <strong className={styles.updatedAt}>Actualizado desde API</strong>
         </header>
+        {error && <p className={styles.empty}>{error}</p>}
 
         <section className={styles.statsGrid} aria-label="Resumen administrativo">
           <article className={styles.statCard}>
@@ -172,7 +173,7 @@ function AdminDashBoard() {
           </section>
         </div>
 
-        <div className={styles.twoColumn}>
+        <div className={styles.analysisGrid}>
           <section className={styles.panel}>
             <h2>Composicion de paquetes</h2>
             <div className={styles.donutWrap}>
@@ -205,8 +206,8 @@ function AdminDashBoard() {
           </section>
         </div>
 
-        <div className={styles.twoColumn}>
-          <section className={styles.panel}>
+        <div className={styles.wideGrid}>
+          <section className={`${styles.panel} ${styles.widePanel}`}>
             <h2>Top por estado</h2>
             <div className={styles.stackedBars}>
               {reservationsByPackage.slice(0, 5).map((item) => {

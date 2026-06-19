@@ -1,47 +1,64 @@
 import { useMemo, useState } from 'react'
 import { PackageCard, PackageMap } from '../../components/packages'
-import { travelPackages } from '../../data/packageData'
+import usePublicPackages from '../../hooks/usePublicPackages'
+import { formatCurrency } from '../../utils/formatCurrency'
 import styles from './Packages.module.css'
 
-const maxPackagePrice = 15000
+const defaultMaxPackagePrice = 25000
+const priceStep = 500
 
 const initialFilters = {
   destination: '',
   duration: 'all',
   experienceTypes: [],
   includes: [],
-  maxPrice: maxPackagePrice,
+  maxPrice: defaultMaxPackagePrice,
   sortBy: 'recommended',
+  travelDate: '',
+  travelers: 2,
 }
-
-const includeOptions = ['Hospedaje', 'Transporte', 'Tours guiados', 'Comidas', 'Guia local']
 
 const getDurationBasis = (travelPackage) =>
   travelPackage.bookingMode === 'nightly'
     ? travelPackage.minimumNights ?? 1
     : travelPackage.days ?? 1
 
-function formatCurrency(value) {
-  return `$${new Intl.NumberFormat('es-MX').format(value)}`
+const isDateInRange = (date, startDate, endDate) => {
+  if (!date || !startDate || !endDate) return true
+
+  return date >= startDate && date <= endDate
 }
 
 function Packages() {
+  const { error, isLoading, packages } = usePublicPackages()
   const [filters, setFilters] = useState(initialFilters)
+  const maxPackagePrice = useMemo(() => {
+    const highestPackagePrice = Math.max(
+      defaultMaxPackagePrice,
+      ...packages.map((travelPackage) => travelPackage.priceAmount ?? 0),
+    )
+
+    return Math.ceil(highestPackagePrice / priceStep) * priceStep
+  }, [packages])
 
   const destinations = useMemo(
-    () => [...new Set(travelPackages.map((travelPackage) => travelPackage.destination))],
-    [],
+    () => [...new Set(packages.map((travelPackage) => travelPackage.destination))],
+    [packages],
   )
   const experienceTypes = useMemo(
-    () => [...new Set(travelPackages.map((travelPackage) => travelPackage.experienceType))],
-    [],
+    () => [...new Set(packages.map((travelPackage) => travelPackage.experienceType))],
+    [packages],
+  )
+  const includeOptions = useMemo(
+    () => [...new Set(packages.flatMap((travelPackage) => travelPackage.includeTags ?? []))],
+    [packages],
   )
 
   const updateFilter = (event) => {
     const { name, value } = event.target
     setFilters((currentFilters) => ({
       ...currentFilters,
-      [name]: name === 'maxPrice' ? Number(value) : value,
+      [name]: ['maxPrice', 'travelers'].includes(name) ? Number(value) : value,
     }))
   }
 
@@ -59,6 +76,13 @@ function Packages() {
     })
   }
 
+  const resetFilters = () => {
+    setFilters({
+      ...initialFilters,
+      maxPrice: maxPackagePrice,
+    })
+  }
+
   const filteredPackages = useMemo(() => {
     const matchesDuration = (travelPackage) => {
       const durationBasis = getDurationBasis(travelPackage)
@@ -70,7 +94,7 @@ function Packages() {
       return true
     }
 
-    return travelPackages
+    return packages
       .filter((travelPackage) => {
         const normalizedDestinationSearch = filters.destination.trim().toLowerCase()
         const matchesDestination =
@@ -85,12 +109,21 @@ function Packages() {
           filters.includes.length === 0 ||
           filters.includes.every((includeItem) => travelPackage.includeTags.includes(includeItem))
         const matchesPrice = travelPackage.priceAmount <= filters.maxPrice
+        const matchesTravelers = (travelPackage.maxGuests ?? 1) >= filters.travelers
+        const matchesDate =
+          !filters.travelDate ||
+          travelPackage.bookingMode === 'nightly' ||
+          (travelPackage.departures ?? []).some((departure) =>
+            isDateInRange(filters.travelDate, departure.startDate, departure.endDate),
+          )
 
         return (
           matchesDestination &&
           matchesExperience &&
           matchesIncludes &&
           matchesPrice &&
+          matchesTravelers &&
+          matchesDate &&
           matchesDuration(travelPackage)
         )
       })
@@ -106,19 +139,21 @@ function Packages() {
 
         return 0
       })
-  }, [filters])
+  }, [filters, packages])
 
   const hasActiveFilters =
     filters.destination.trim() !== '' ||
     filters.duration !== 'all' ||
     filters.experienceTypes.length > 0 ||
     filters.includes.length > 0 ||
-    filters.maxPrice !== maxPackagePrice
+    filters.maxPrice !== maxPackagePrice ||
+    filters.travelDate !== '' ||
+    filters.travelers !== initialFilters.travelers
 
   return (
     <main className={styles.page}>
       <section className={styles.searchSection} aria-label="Busqueda de paquetes">
-        <div className={styles.searchBar}>
+        <form className={styles.searchBar} onSubmit={(event) => event.preventDefault()}>
           <label>
             <span>Destino</span>
             <input
@@ -138,21 +173,33 @@ function Packages() {
           </label>
           <label>
             <span>Fechas</span>
-            <input aria-label="Fecha de viaje" type="date" />
+            <input
+              aria-label="Fecha de viaje"
+              name="travelDate"
+              onChange={updateFilter}
+              type="date"
+              value={filters.travelDate}
+            />
           </label>
           <label>
             <span>Viajeros</span>
-            <select defaultValue="2" aria-label="Numero de viajeros">
+            <select
+              aria-label="Numero de viajeros"
+              name="travelers"
+              onChange={updateFilter}
+              value={filters.travelers}
+            >
               <option value="1">1 persona</option>
               <option value="2">2 personas</option>
               <option value="4">4 personas</option>
               <option value="6">6 personas</option>
+              <option value="8">8 personas</option>
             </select>
           </label>
-          <button className={styles.searchButton} type="button" aria-label="Buscar paquetes">
+          <button className={styles.searchButton} type="submit" aria-label="Buscar paquetes">
             Buscar
           </button>
-        </div>
+        </form>
       </section>
 
       <section className={styles.layout} aria-labelledby="packages-title">
@@ -164,7 +211,7 @@ function Packages() {
             </div>
 
             {hasActiveFilters && (
-              <button type="button" onClick={() => setFilters(initialFilters)}>
+              <button type="button" onClick={resetFilters}>
                 Limpiar
               </button>
             )}
@@ -199,7 +246,7 @@ function Packages() {
 
             <div className={styles.priceRange}>
               <span>$6,000</span>
-              <strong>{formatCurrency(filters.maxPrice)}</strong>
+              <strong>{formatCurrency(filters.maxPrice, { showCurrency: false })}</strong>
             </div>
           </div>
 
@@ -262,8 +309,11 @@ function Packages() {
         <div className={styles.results}>
           <div className={styles.resultsHeader}>
             <span>
-              Encontramos {filteredPackages.length} de {travelPackages.length} paquetes disponibles
+              {isLoading
+                ? 'Cargando paquetes desde el servidor...'
+                : `Encontramos ${filteredPackages.length} de ${packages.length} paquetes disponibles`}
             </span>
+            {error && <span>{error}</span>}
             <div>
               <div>
                 <h1 id="packages-title">Paquetes turisticos</h1>
@@ -291,7 +341,7 @@ function Packages() {
               <div className={styles.emptyState}>
                 <h2>No encontramos paquetes con esos filtros</h2>
                 <p>Prueba quitando algun filtro o cambia el rango de precio.</p>
-                <button type="button" onClick={() => setFilters(initialFilters)}>
+                <button type="button" onClick={resetFilters}>
                   Ver todos los paquetes
                 </button>
               </div>

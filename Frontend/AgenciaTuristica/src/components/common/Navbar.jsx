@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   FaBars,
@@ -14,7 +13,7 @@ import MobileDrawer from "./MobileDrawer";
 import useAuth from "../../hooks/useAuth";
 import styles from "./Navbar.module.css";
 
-function Navbar({ brand = "LOGO" }) {
+function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,8 +45,10 @@ function Navbar({ brand = "LOGO" }) {
       className={`${styles.navbar} ${isLandingPage ? styles.transparent : ""}`}
     >
       <div className={styles.container}>
-        <div className={styles.logo}>{brand}</div>
-
+        <div className={styles.logo}>
+          <img src="/logo-claro.png" alt="Logo" />
+        </div>
+        
         <div className={styles.links}>
           <NavLink to="/" className={styles.link}>
             Inicio
@@ -137,9 +138,5 @@ function Navbar({ brand = "LOGO" }) {
     </nav>
   );
 }
-
-Navbar.propTypes = {
-  brand: PropTypes.string,
-};
 
 export default Navbar;

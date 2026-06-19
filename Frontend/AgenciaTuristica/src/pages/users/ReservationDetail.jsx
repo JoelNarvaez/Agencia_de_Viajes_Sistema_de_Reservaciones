@@ -1,31 +1,44 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import useAuth from '../../hooks/useAuth'
-import {
-  canCancelReservation,
-  getReservationById,
-  updateReservation,
-} from '../../utils/reservationStorage'
+import useReservation from '../../hooks/useReservation'
+import { canCancelReservation } from '../../utils/reservationStorage'
 import styles from './UserPage.module.css'
 
 function ReservationDetail() {
   const { reservationId } = useParams()
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated } = useAuth()
+  const {
+    cancelReservation,
+    error,
+    isLoading,
+    reservation,
+  } = useReservation({ reservationId })
   const [cancelReason, setCancelReason] = useState('')
-  const [reservation, setReservation] = useState(() => getReservationById(reservationId))
+  const [isCancelling, setIsCancelling] = useState(false)
 
   if (!isAuthenticated) {
     return <Navigate replace state={{ from: `/reservations/${reservationId}` }} to="/login" />
   }
 
-  if (!reservation || reservation.userEmail !== (user?.email ?? 'usuario-local')) {
+  if (isLoading) {
+    return (
+      <main className={styles.page}>
+        <section className={styles.shell}>
+          <p>Cargando reservacion...</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (!reservation) {
     return (
       <main className={styles.page}>
         <section className={styles.shell}>
           <header className={styles.header}>
             <span className={styles.eyebrow}>Reservacion</span>
             <h1>No encontrada</h1>
-            <p>No pudimos encontrar esta reservacion en tu cuenta.</p>
+            <p>{error || 'No pudimos encontrar esta reservacion en tu cuenta.'}</p>
           </header>
 
           <div className={styles.actions}>
@@ -38,16 +51,21 @@ function ReservationDetail() {
 
   const canCancel = canCancelReservation(reservation)
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (!canCancel) return
 
-    const updatedReservation = updateReservation(reservation.id, (currentReservation) => ({
-      ...currentReservation,
-      cancellationReason: cancelReason.trim() || 'Cancelada por el usuario',
-      cancelledAt: new Date().toISOString(),
-      status: 'Cancelada',
-    }))
-    setReservation(updatedReservation)
+    setIsCancelling(true)
+
+    try {
+      await cancelReservation({
+        reason: cancelReason.trim() || 'Cancelada por el usuario',
+        reservationId: reservation.id,
+      })
+    } catch {
+      // useReservation already exposes the error message.
+    } finally {
+      setIsCancelling(false)
+    }
   }
 
   return (
@@ -84,7 +102,11 @@ function ReservationDetail() {
               </li>
               <li>
                 <span>Huespedes</span>
-                <strong>{reservation.totalGuests}</strong>
+                <strong>{reservation.guestBreakdown}</strong>
+              </li>
+              <li>
+                <span>Cupos usados</span>
+                <strong>{reservation.capacityGuests}</strong>
               </li>
               <li>
                 <span>Total</span>
@@ -124,22 +146,40 @@ function ReservationDetail() {
             </div>
           </article>
 
-          <aside className={styles.detailPanel}>
-            <h2>Cancelacion</h2>
+          <aside className={`${styles.detailPanel} ${styles.cancellationPanel}`}>
+            <div className={styles.cancellationHeader}>
+              <span>Politica</span>
+              <h2>Cancelacion</h2>
+            </div>
             {reservation.status === 'Cancelada' ? (
-              <p>Esta reservacion fue cancelada.</p>
+              <div className={styles.cancellationNotice}>
+                <strong>Reservacion cancelada</strong>
+                <p>Esta reservacion ya fue cancelada y no requiere ninguna accion adicional.</p>
+                {reservation.cancellationReason && <span>Motivo: {reservation.cancellationReason}</span>}
+              </div>
+            ) : !canCancel ? (
+              <div className={styles.cancellationNotice}>
+                <strong>Cancelacion no disponible</strong>
+                <p>
+                  La fecha limite para cancelar fue el {reservation.cancellationDeadline}. Si necesitas
+                  ayuda, contacta a soporte para revisar alternativas.
+                </p>
+                <div className={styles.actions}>
+                  <Link className={styles.secondary} to="/reservations">
+                    Volver a mis reservaciones
+                  </Link>
+                </div>
+              </div>
             ) : (
               <>
                 <p>
-                  {canCancel
-                    ? 'Puedes cancelar esta reservacion porque aun esta dentro del plazo permitido.'
-                    : 'Ya no se puede cancelar desde la app porque paso la fecha limite.'}
+                  Puedes cancelar esta reservacion hasta el {reservation.cancellationDeadline}. Esta accion
+                  libera tus lugares y cambia el estado de la reserva.
                 </p>
                 <div className={styles.form}>
                   <label>
                     Motivo opcional
                     <textarea
-                      disabled={!canCancel}
                       onChange={(event) => setCancelReason(event.target.value)}
                       placeholder="Ej. Cambio de planes"
                       value={cancelReason}
@@ -147,13 +187,14 @@ function ReservationDetail() {
                   </label>
                 </div>
                 <div className={styles.actions}>
+                  {error && <p className={styles.error}>{error}</p>}
                   <button
                     className={styles.danger}
-                    disabled={!canCancel}
+                    disabled={isCancelling}
                     type="button"
                     onClick={handleCancel}
                   >
-                    Cancelar reservacion
+                    {isCancelling ? 'Cancelando...' : 'Cancelar reservacion'}
                   </button>
                 </div>
               </>

@@ -27,12 +27,12 @@ function useReservation({ reservationId, scope } = {}) {
   useEffect(() => {
     if (!token) return
 
-    if (scope === 'mine' && !loadedScopes.mine) {
+    if (scope === 'mine' && loadedScopes.mine !== token) {
       loadMine()
       return
     }
 
-    if (scope === 'admin' && !loadedScopes.admin) {
+    if (scope === 'admin' && loadedScopes.admin !== token) {
       loadAdmin()
       return
     }
@@ -43,9 +43,9 @@ function useReservation({ reservationId, scope } = {}) {
   }, [loadAdmin, loadById, loadMine, loadedScopes.admin, loadedScopes.mine, reservationById, reservationId, scope, token])
 
   const reservations = useMemo(() => {
-    if (scope === 'admin') return adminReservations
-    return myReservations
-  }, [adminReservations, myReservations, scope])
+    if (scope === 'admin') return loadedScopes.admin === token ? adminReservations : []
+    return loadedScopes.mine === token ? myReservations : []
+  }, [adminReservations, loadedScopes.admin, loadedScopes.mine, myReservations, scope, token])
 
   return {
     cancelReservation,

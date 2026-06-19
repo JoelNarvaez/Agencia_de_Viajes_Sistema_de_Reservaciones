@@ -173,7 +173,7 @@ function AdminDashBoard() {
           </section>
         </div>
 
-        <div className={styles.twoColumn}>
+        <div className={styles.analysisGrid}>
           <section className={styles.panel}>
             <h2>Composicion de paquetes</h2>
             <div className={styles.donutWrap}>
@@ -206,8 +206,8 @@ function AdminDashBoard() {
           </section>
         </div>
 
-        <div className={styles.twoColumn}>
-          <section className={styles.panel}>
+        <div className={styles.wideGrid}>
+          <section className={`${styles.panel} ${styles.widePanel}`}>
             <h2>Top por estado</h2>
             <div className={styles.stackedBars}>
               {reservationsByPackage.slice(0, 5).map((item) => {

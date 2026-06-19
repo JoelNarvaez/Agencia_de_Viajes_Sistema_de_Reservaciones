@@ -4,14 +4,15 @@ import usePublicPackages from '../../hooks/usePublicPackages'
 import { formatCurrency } from '../../utils/formatCurrency'
 import styles from './Packages.module.css'
 
-const maxPackagePrice = 15000
+const defaultMaxPackagePrice = 25000
+const priceStep = 500
 
 const initialFilters = {
   destination: '',
   duration: 'all',
   experienceTypes: [],
   includes: [],
-  maxPrice: maxPackagePrice,
+  maxPrice: defaultMaxPackagePrice,
   sortBy: 'recommended',
   travelDate: '',
   travelers: 2,
@@ -31,6 +32,14 @@ const isDateInRange = (date, startDate, endDate) => {
 function Packages() {
   const { error, isLoading, packages } = usePublicPackages()
   const [filters, setFilters] = useState(initialFilters)
+  const maxPackagePrice = useMemo(() => {
+    const highestPackagePrice = Math.max(
+      defaultMaxPackagePrice,
+      ...packages.map((travelPackage) => travelPackage.priceAmount ?? 0),
+    )
+
+    return Math.ceil(highestPackagePrice / priceStep) * priceStep
+  }, [packages])
 
   const destinations = useMemo(
     () => [...new Set(packages.map((travelPackage) => travelPackage.destination))],
@@ -64,6 +73,13 @@ function Packages() {
         ...currentFilters,
         [filterName]: nextValues,
       }
+    })
+  }
+
+  const resetFilters = () => {
+    setFilters({
+      ...initialFilters,
+      maxPrice: maxPackagePrice,
     })
   }
 
@@ -195,7 +211,7 @@ function Packages() {
             </div>
 
             {hasActiveFilters && (
-              <button type="button" onClick={() => setFilters(initialFilters)}>
+              <button type="button" onClick={resetFilters}>
                 Limpiar
               </button>
             )}
@@ -325,7 +341,7 @@ function Packages() {
               <div className={styles.emptyState}>
                 <h2>No encontramos paquetes con esos filtros</h2>
                 <p>Prueba quitando algun filtro o cambia el rango de precio.</p>
-                <button type="button" onClick={() => setFilters(initialFilters)}>
+                <button type="button" onClick={resetFilters}>
                   Ver todos los paquetes
                 </button>
               </div>

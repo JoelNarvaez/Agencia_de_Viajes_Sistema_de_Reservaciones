@@ -37,10 +37,12 @@ export const listarTodasReservaciones = async (req, res) => {
               p.id     AS paquete_id,
               p.slug   AS paquete_slug,
               p.titulo AS paquete_titulo,
-              p.destino
+              p.destino,
+              hr.adultos, hr.ninos, hr.bebes, hr.mascotas
        FROM   reservaciones r
        JOIN   usuarios u ON r.usuario_id = u.id
        JOIN   paquetes  p ON r.paquete_id = p.id
+       LEFT JOIN huespedes_reservacion hr ON hr.reservacion_id = r.id
        ${whereClause}
        ORDER BY r.creado_en DESC`,
       params

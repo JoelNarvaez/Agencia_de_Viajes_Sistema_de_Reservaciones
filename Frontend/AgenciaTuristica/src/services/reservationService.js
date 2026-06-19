@@ -1,5 +1,12 @@
 import { API_BASE_URL } from '../config/api'
 import { formatDisplayDate, getDaysBetween, toDateInput } from '../utils/formatDate'
+import {
+  formatGuestBreakdown,
+  getCapacityGuests,
+  getCompanionGuests,
+  getVisibleGuestTotal,
+  normalizeGuestCounts,
+} from '../utils/pricing'
 
 const getToken = (token) => token ?? ''
 
@@ -29,15 +36,31 @@ const normalizeStatus = (status) => {
   return 'Pendiente'
 }
 
+const normalizePayment = (status, payment = {}) => {
+  const normalizedStatus = normalizeStatus(status)
+
+  return {
+    cardLast4: payment.cardLast4 ?? payment.ultimos4 ?? null,
+    method: payment.method ?? payment.metodo ?? 'Tarjeta',
+    reference: payment.reference ?? payment.referencia ?? null,
+    status: normalizedStatus === 'Pagada' ? 'Aprobado' : 'Pendiente',
+  }
+}
+
 export const normalizeReservation = (reservation) => {
   const arrivalDate = toDateInput(reservation.fecha_llegada ?? reservation.arrivalDate)
   const departureDate = toDateInput(reservation.fecha_salida ?? reservation.departureDate)
-  const adults = Number(reservation.adultos ?? reservation.guests?.adults ?? 1)
-  const children = Number(reservation.ninos ?? reservation.guests?.children ?? 0)
-  const babies = Number(reservation.bebes ?? reservation.guests?.babies ?? 0)
-  const pets = Number(reservation.mascotas ?? reservation.guests?.pets ?? 0)
+  const guests = normalizeGuestCounts({
+    adults: reservation.adultos ?? reservation.guests?.adults,
+    babies: reservation.bebes ?? reservation.guests?.babies,
+    children: reservation.ninos ?? reservation.guests?.children,
+    pets: reservation.mascotas ?? reservation.guests?.pets,
+  })
   const totalAmount = Number(reservation.monto_total ?? reservation.totalAmount ?? 0)
   const packageId = reservation.paquete_slug ?? reservation.slug ?? reservation.packageId ?? reservation.paquete_id
+  const capacityGuests = Number(reservation.total_huespedes ?? getCapacityGuests(guests))
+  const companionGuests = getCompanionGuests(guests)
+  const status = normalizeStatus(reservation.estado ?? reservation.status)
 
   return {
     arrivalDate,
@@ -50,20 +73,21 @@ export const normalizeReservation = (reservation) => {
     departureDate,
     departureId: reservation.salida_id ? String(reservation.salida_id) : null,
     destination: reservation.destino ?? reservation.destination ?? '',
-    guests: {
-      adults,
-      babies,
-      children,
-      pets,
-    },
+    guests,
+    guestBreakdown: formatGuestBreakdown(guests),
+    capacityGuests,
+    companionGuests,
     id: String(reservation.id),
     image: reservation.imagen_principal ?? reservation.image ?? '',
     packageBackendId: reservation.paquete_id ?? reservation.packageBackendId ?? null,
     packageId: String(packageId),
     packageName: reservation.paquete_titulo ?? reservation.packageName ?? '',
-    status: normalizeStatus(reservation.estado ?? reservation.status),
+    payment: normalizePayment(reservation.estado ?? reservation.status, reservation.payment),
+    status,
     totalAmount,
-    totalGuests: Number(reservation.total_huespedes ?? adults + children + babies),
+    totalGuests: reservation.total_huespedes
+      ? capacityGuests + companionGuests
+      : getVisibleGuestTotal(guests),
     travelDate: arrivalDate && departureDate
       ? `${formatDisplayDate(arrivalDate)} - ${formatDisplayDate(departureDate)}`
       : '',
@@ -72,18 +96,21 @@ export const normalizeReservation = (reservation) => {
   }
 }
 
-export const createReservation = async ({ draft, reservation, token }) => {
-  const packageBackendId = draft.packageSnapshot?.backendId ?? reservation.packageBackendId
+export const createReservation = async ({ payment, reservation, token }) => {
+  const packageBackendId = reservation.packageBackendId
   if (!packageBackendId) {
     throw new Error('Este paquete no esta vinculado con la base de datos.')
   }
+
+  const departureId = reservation.departureId ?? null
 
   const response = await request('/reservaciones', {
     body: {
       arrivalDate: reservation.arrivalDate,
       departureDate: reservation.departureDate,
-      departureId: reservation.departureId,
+      departureId,
       guests: reservation.guests,
+      payment,
       packageId: packageBackendId,
     },
     method: 'POST',

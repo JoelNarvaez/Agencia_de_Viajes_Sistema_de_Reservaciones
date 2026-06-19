@@ -1,15 +1,15 @@
 .page {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, #f7fbf8 0%, #ffffff 34%),
+    linear-gradient(180deg, #f7fbf8 0%, #ffffff 42%),
     #fff;
   color: #14211b;
 }
 
 .shell {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1280px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 64px 0;
+  padding: 52px 0 72px;
 }
 
 .header {
@@ -56,9 +56,9 @@
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 16px;
-  margin-bottom: 26px;
+  margin-bottom: 22px;
 }
 
 .statCard,
@@ -72,7 +72,8 @@
 .statCard {
   position: relative;
   overflow: hidden;
-  padding: 20px;
+  min-height: 132px;
+  padding: 22px;
 }
 
 .statCard::before {
@@ -106,7 +107,7 @@
   display: block;
   margin-top: 10px;
   color: #14211b;
-  font-size: 30px;
+  font-size: clamp(24px, 2.4vw, 34px);
   line-height: 1;
   font-weight: 900;
 }
@@ -120,12 +121,14 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(340px, 0.9fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.95fr);
   gap: 22px;
+  align-items: stretch;
 }
 
 .panel {
-  padding: 24px;
+  min-width: 0;
+  padding: 26px;
 }
 
 .panel h2 {
@@ -155,7 +158,10 @@
 
 .barList {
   display: grid;
-  gap: 16px;
+  gap: 15px;
+  max-height: 430px;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .barRow {
@@ -175,6 +181,7 @@
 
 .barMeta span:last-child {
   color: #657068;
+  white-space: nowrap;
 }
 
 .barTrack {
@@ -193,9 +200,10 @@
 
 .donutWrap {
   display: grid;
-  grid-template-columns: 210px 1fr;
-  gap: 26px;
+  grid-template-columns: minmax(170px, 210px) 1fr;
+  gap: 24px;
   align-items: center;
+  min-height: 250px;
 }
 
 .donut {
@@ -264,6 +272,7 @@
   gap: 10px;
   border: 1px solid rgba(20, 33, 27, 0.1);
   border-radius: 16px;
+  min-height: 132px;
   padding: 18px;
   background: linear-gradient(180deg, #fff, #f8fafc);
 }
@@ -345,11 +354,21 @@
   border-radius: 50%;
 }
 
-.twoColumn {
+.analysisGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
   gap: 22px;
-  margin-top: 24px;
+  align-items: stretch;
+  margin-top: 22px;
+}
+
+.wideGrid {
+  display: grid;
+  margin-top: 22px;
+}
+
+.widePanel {
+  min-height: 260px;
 }
 
 .empty {
@@ -370,7 +389,7 @@
 
   .statsGrid,
   .layout,
-  .twoColumn {
+  .analysisGrid {
     grid-template-columns: 1fr;
   }
 
@@ -387,6 +406,16 @@
 
   .stackedRow {
     grid-template-columns: 1fr;
+  }
+
+  .barMeta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .barMeta span:last-child {
+    white-space: normal;
   }
 
   .donutWrap {

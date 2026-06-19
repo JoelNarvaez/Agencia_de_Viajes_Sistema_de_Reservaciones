@@ -365,6 +365,35 @@
   font-weight: 800;
 }
 
+.priceBreakdown {
+  display: grid;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f8faf8;
+}
+
+.priceBreakdown div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #657068;
+  font-size: 13px;
+}
+
+.priceBreakdown strong {
+  color: #14211b;
+  white-space: nowrap;
+  font-weight: 900;
+}
+
+.priceBreakdown p {
+  margin: 2px 0 0;
+  color: #657068;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .originalPrice,
 .bookingCard small {
   color: #657068;
@@ -448,6 +477,13 @@
 .guestToggle strong {
   color: #14211b;
   font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.guestToggle small {
+  color: #657068;
+  font-size: 12px;
   font-weight: 700;
   text-transform: none;
 }

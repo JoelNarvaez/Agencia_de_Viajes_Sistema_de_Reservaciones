@@ -10,8 +10,8 @@ function ReservationProvider({ children }) {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [loadedScopes, setLoadedScopes] = useState({
-    admin: false,
-    mine: false,
+    admin: null,
+    mine: null,
   })
   const [myReservations, setMyReservations] = useState([])
   const [reservationById, setReservationById] = useState({})
@@ -29,13 +29,13 @@ function ReservationProvider({ children }) {
     try {
       const reservations = await reservationService.getMine(token)
       setMyReservations(reservations)
-      setLoadedScopes((currentScopes) => ({ ...currentScopes, mine: true }))
+      setLoadedScopes((currentScopes) => ({ ...currentScopes, mine: token }))
       return reservations
     } catch (loadError) {
       const message = loadError.message ?? 'No se pudieron cargar tus reservaciones.'
       setError(message)
       setMyReservations([])
-      setLoadedScopes((currentScopes) => ({ ...currentScopes, mine: false }))
+      setLoadedScopes((currentScopes) => ({ ...currentScopes, mine: null }))
       return []
     } finally {
       setIsLoading(false)
@@ -51,13 +51,13 @@ function ReservationProvider({ children }) {
     try {
       const reservations = await reservationService.getAdmin(token)
       setAdminReservations(reservations)
-      setLoadedScopes((currentScopes) => ({ ...currentScopes, admin: true }))
+      setLoadedScopes((currentScopes) => ({ ...currentScopes, admin: token }))
       return reservations
     } catch (loadError) {
       const message = loadError.message ?? 'No se pudieron cargar las reservaciones.'
       setError(message)
       setAdminReservations([])
-      setLoadedScopes((currentScopes) => ({ ...currentScopes, admin: false }))
+      setLoadedScopes((currentScopes) => ({ ...currentScopes, admin: null }))
       return []
     } finally {
       setIsLoading(false)

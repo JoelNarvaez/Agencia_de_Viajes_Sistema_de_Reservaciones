@@ -73,8 +73,8 @@
 .searchButton {
   min-width: 92px;
   border-right: 0;
-  color: #fff !important;
-  background: #d24728 !important;
+  color: #152016 !important;
+  background: #f8b229 !important;
   text-align: center !important;
 }
 
@@ -171,12 +171,12 @@
   flex: 1;
   height: var(--bar-height);
   border-radius: 4px 4px 0 0;
-  background: #d24728;
+  background: #f8b229;
 }
 
 .priceSlider {
   width: 100%;
-  accent-color: #d24728;
+  accent-color: #f8b229;
 }
 
 .priceRange {
@@ -211,7 +211,7 @@
 .checkboxList input {
   width: 18px;
   height: 18px;
-  accent-color: #d24728;
+  accent-color: #f8b229;
 }
 
 .chipGrid {

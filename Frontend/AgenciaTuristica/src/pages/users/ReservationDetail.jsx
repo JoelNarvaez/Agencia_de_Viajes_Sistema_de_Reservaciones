@@ -102,7 +102,11 @@ function ReservationDetail() {
               </li>
               <li>
                 <span>Huespedes</span>
-                <strong>{reservation.totalGuests}</strong>
+                <strong>{reservation.guestBreakdown}</strong>
+              </li>
+              <li>
+                <span>Cupos usados</span>
+                <strong>{reservation.capacityGuests}</strong>
               </li>
               <li>
                 <span>Total</span>

@@ -1,37 +1,19 @@
 import {
-  RESERVATION_DRAFT_STORAGE_KEY,
-} from './constants'
-import {
   formatDisplayDate,
   getDateBeforeDays,
   getDaysBetween,
   isPastDate,
 } from './formatDate'
+import {
+  calculateReservationPrice,
+  formatGuestBreakdown,
+  getCapacityGuests,
+  getCompanionGuests,
+  getVisibleGuestTotal,
+  normalizeGuestCounts,
+} from './pricing'
 
 const DEFAULT_CANCELLATION_DAYS = 14
-
-const parseStorageItem = (key, fallback) => {
-  try {
-    return JSON.parse(localStorage.getItem(key) ?? JSON.stringify(fallback))
-  } catch {
-    return fallback
-  }
-}
-
-const saveStorageItem = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value))
-}
-
-export const saveReservationDraft = (draft) => {
-  saveStorageItem(RESERVATION_DRAFT_STORAGE_KEY, draft)
-}
-
-export const getReservationDraft = () =>
-  parseStorageItem(RESERVATION_DRAFT_STORAGE_KEY, null)
-
-export const clearReservationDraft = () => {
-  localStorage.removeItem(RESERVATION_DRAFT_STORAGE_KEY)
-}
 
 export const canCancelReservation = (reservation) => {
   if (!reservation || reservation.status === 'Cancelada') return false
@@ -47,18 +29,27 @@ export const isReservationPast = (reservation) => {
   return isPastDate(reservation?.departureDate)
 }
 
-export const buildReservationFromDraft = (draft, user) => {
-  const travelPackage = draft.packageSnapshot
+export const buildReservationFromSelection = ({ selection, travelPackage, user }) => {
   if (!travelPackage) return null
 
   const isFixedDate = travelPackage.bookingMode === 'fixed-date'
-  const departure = travelPackage.departures?.find((item) => item.id === draft.departureId)
-  const arrivalDate = isFixedDate ? departure?.startDate ?? draft.arrivalDate : draft.arrivalDate
-  const departureDate = isFixedDate ? departure?.endDate ?? draft.departureDate : draft.departureDate
+  const departure =
+    travelPackage.departures?.find((item) => item.id === selection.departureId) ??
+    (isFixedDate ? travelPackage.departures?.[0] : null)
+  const arrivalDate = isFixedDate ? departure?.startDate ?? selection.arrivalDate : selection.arrivalDate
+  const departureDate = isFixedDate ? departure?.endDate ?? selection.departureDate : selection.departureDate
+  const priceBreakdown = calculateReservationPrice({
+    arrivalDate,
+    bookingMode: travelPackage.bookingMode,
+    departureDate,
+    departurePrice: departure?.priceAmount,
+    priceAmount: travelPackage.priceAmount,
+  })
   const tripDays = getDaysBetween(arrivalDate, departureDate)
-  const totalAmount = isFixedDate ? travelPackage.priceAmount : travelPackage.priceAmount * tripDays
-  const guests = draft.guests ?? { adults: 1, babies: 0, children: 0, pets: 0 }
-  const totalGuests = guests.adults + guests.children + guests.babies
+  const guests = normalizeGuestCounts(selection.guests)
+  const capacityGuests = getCapacityGuests(guests)
+  const companionGuests = getCompanionGuests(guests)
+  const totalGuests = getVisibleGuestTotal(guests)
   const cancellationDays = travelPackage.cancellationDaysBefore ?? DEFAULT_CANCELLATION_DAYS
 
   return {
@@ -69,12 +60,17 @@ export const buildReservationFromDraft = (draft, user) => {
     departureId: departure?.id ?? null,
     destination: travelPackage.destination,
     guests,
+    guestBreakdown: formatGuestBreakdown(guests),
+    capacityGuests,
+    companionGuests,
     id: `res-${Date.now()}`,
     image: travelPackage.image,
+    packageBackendId: travelPackage.backendId,
     packageId: travelPackage.id,
     packageName: travelPackage.title,
+    priceBreakdown,
     status: 'Pendiente',
-    totalAmount,
+    totalAmount: priceBreakdown.totalAmount,
     totalGuests,
     travelDate: `${formatDisplayDate(arrivalDate)} - ${formatDisplayDate(departureDate)}`,
     tripDays,

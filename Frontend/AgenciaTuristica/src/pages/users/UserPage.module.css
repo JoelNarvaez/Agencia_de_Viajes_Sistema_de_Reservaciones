@@ -359,8 +359,8 @@
 
 .cancellationPanel {
   display: grid;
-  gap: 18px;
-  padding: 28px;
+  gap: 22px;
+  padding: 32px;
   box-shadow: 0 14px 34px rgba(20, 33, 27, 0.06);
 }
 
@@ -467,6 +467,20 @@
 
 .cancellationPanel .form {
   margin-top: 0;
+  min-width: 0;
+}
+
+.cancellationPanel .form label {
+  min-width: 0;
+}
+
+.cancellationPanel .actions {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.cancellationPanel .actions button {
+  min-width: 198px;
 }
 
 .form label {
@@ -483,7 +497,10 @@
 }
 
 .cancellationPanel .form textarea {
+  box-sizing: border-box;
   min-height: 120px;
+  max-width: 100%;
+  width: 100%;
 }
 
 .form input,
@@ -1031,7 +1048,7 @@
   }
 
   .cancellationPanel {
-    padding: 22px;
+    padding: 24px;
   }
 
   .reservationPackage {
@@ -1058,6 +1075,14 @@
   .profileActions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .cancellationPanel {
+    padding: 22px;
+  }
+
+  .cancellationPanel .actions button {
+    width: 100%;
   }
 
   .profileActions button {

@@ -1,0 +1,24 @@
+.map {
+  width: 100%;
+  min-height: 360px;
+  height: 100%;
+}
+
+.locationMarker {
+  width: 36px !important;
+  height: 36px !important;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #14211b;
+  box-shadow: 0 8px 24px rgba(20, 33, 27, 0.28);
+}
+
+.locationMarker span {
+  width: 14px;
+  height: 14px;
+  display: block;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #f8b229;
+}

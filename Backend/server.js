@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./src/routes/auth.routes.js";
 import usuariosRoutes from "./src/routes/usuarios.routes.js";
+import paquetesRoutes from "./src/routes/paquetes.routes.js";
+import salidasRoutes from "./src/routes/salidas.routes.js";
 
 dotenv.config({ override: true });
 
@@ -19,6 +21,9 @@ app.use(express.json());
 // ──────────────────────────────────────────────
 app.use("/api/auth",     authRoutes);
 app.use("/api/usuarios", usuariosRoutes);
+
+app.use("/api/paquetes", paquetesRoutes);
+app.use("/api/salidas", salidasRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend - Agencia de Viajes funcionando ✓");

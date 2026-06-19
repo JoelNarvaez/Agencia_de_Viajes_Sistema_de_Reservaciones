@@ -13,14 +13,36 @@ export const destinationPropType = PropTypes.shape({
 })
 
 export const packagePropType = PropTypes.shape({
+  accommodation: PropTypes.shape({
+    address: PropTypes.string.isRequired,
+    coordinates: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+    }).isRequired,
+    name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  }),
   description: PropTypes.string.isRequired,
   destination: PropTypes.string.isRequired,
+  bookingMode: PropTypes.oneOf(['fixed-date', 'nightly']),
+  days: PropTypes.number,
+  departures: PropTypes.arrayOf(
+    PropTypes.shape({
+      availableSpots: PropTypes.number.isRequired,
+      endDate: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      startDate: PropTypes.string.isRequired,
+    }),
+  ),
   duration: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
   id: PropTypes.string,
   image: PropTypes.string.isRequired,
   includes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  maxGuests: PropTypes.number,
+  minimumNights: PropTypes.number,
   price: PropTypes.string.isRequired,
+  priceUnit: PropTypes.string,
   title: PropTypes.string.isRequired,
 })
 

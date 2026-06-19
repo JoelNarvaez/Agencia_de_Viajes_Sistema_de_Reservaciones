@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaCalendarAlt,
@@ -15,6 +15,7 @@ import styles from "./Navbar.module.css";
 
 function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { pathname } = useLocation();
@@ -34,6 +35,7 @@ function Navbar() {
     logout();
     setIsMenuOpen(false);
     setIsMobileMenuOpen(false);
+    navigate('/login')
   };
 
   const closeUserMenu = () => {

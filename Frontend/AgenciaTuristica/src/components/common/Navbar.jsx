@@ -46,8 +46,10 @@ function Navbar({ brand = "LOGO" }) {
       className={`${styles.navbar} ${isLandingPage ? styles.transparent : ""}`}
     >
       <div className={styles.container}>
-        <div className={styles.logo}>{brand}</div>
-
+        <div className={styles.logo}>
+          <img src="/logo-claro.png" alt="Logo" />
+        </div>
+        
         <div className={styles.links}>
           <NavLink to="/" className={styles.link}>
             Inicio

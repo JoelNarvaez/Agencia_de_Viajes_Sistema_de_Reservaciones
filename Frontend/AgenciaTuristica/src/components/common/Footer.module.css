@@ -27,7 +27,7 @@
 }
 
 .logo {
-  width: 180px;
+  /*width: 180px;
   height: 60px;
 
   display: flex;
@@ -41,12 +41,18 @@
     0.25
   );
 
-  border-radius: 12px;
+  border-radius: 12px;*/
 
   margin-bottom: 22px;
-
+/*
   font-weight: 700;
-  color: white;
+  color: white;*/
+}
+
+.logo img {
+  height: 50px;   
+  width: auto;
+  object-fit: contain;
 }
 
 .description {

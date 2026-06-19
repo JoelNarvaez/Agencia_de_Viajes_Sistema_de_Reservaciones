@@ -83,7 +83,8 @@ export const crearReservacion = async (req, res) => {
       fechaInicioReserva = toDateStr(salida.fecha_inicio);
       fechaFinReserva    = toDateStr(salida.fecha_fin);
       // El precio cubre hasta el maximo de huespedes permitido; no se multiplica por persona.
-      montoTotal = salida.precio ?? paquete.precio;
+      //montoTotal = salida.precio ?? paquete.precio;
+      montoTotal = Number(salida.precio ?? paquete.precio);
 
     } else {
       // Paquete por noche 

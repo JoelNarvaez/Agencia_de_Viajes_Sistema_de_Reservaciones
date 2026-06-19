@@ -1,16 +1,83 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useMemo } from 'react'
-import ReservationCard from '../../components/reservations/ReservationCard'
 import useAuth from '../../hooks/useAuth'
-import { getUserReservations } from '../../utils/reservationStorage'
+import { getUserReservations, isReservationPast } from '../../utils/reservationStorage'
 import styles from './UserPage.module.css'
 
+const getStatusClassName = (reservation) => {
+  if (reservation.status === 'Cancelada') return styles.statusCancelled
+  if (isReservationPast(reservation)) return styles.statusPast
+  return ''
+}
+
+const ReservationRow = ({ reservation }) => (
+  <article className={styles.reservationRow}>
+    <div>
+      <span className={`${styles.status} ${getStatusClassName(reservation)}`}>
+        {isReservationPast(reservation) && reservation.status !== 'Cancelada'
+          ? 'Pasada'
+          : reservation.status}
+      </span>
+      <h2>{reservation.packageName}</h2>
+      <p>{reservation.destination}</p>
+    </div>
+
+    <div className={styles.reservationMeta}>
+      <span>Fecha</span>
+      <strong>{reservation.travelDate}</strong>
+    </div>
+
+    <div className={styles.reservationMeta}>
+      <span>Huespedes</span>
+      <strong>{reservation.totalGuests}</strong>
+    </div>
+
+    <div className={styles.reservationMeta}>
+      <span>Total</span>
+      <strong>${reservation.totalAmount.toLocaleString()} MXN</strong>
+    </div>
+
+    <Link className={styles.detailButton} to={`/reservations/${reservation.id}`}>
+      Ver detalle
+    </Link>
+  </article>
+)
+
+const ReservationSection = ({ emptyText, reservations, title }) => (
+  <section className={styles.reservationSection}>
+    <div className={styles.reservationSectionHeader}>
+      <h2>{title}</h2>
+      <span>{reservations.length}</span>
+    </div>
+    {reservations.length > 0 ? (
+      <div className={styles.reservationList}>
+        {reservations.map((reservation) => (
+          <ReservationRow key={reservation.id} reservation={reservation} />
+        ))}
+      </div>
+    ) : (
+      <p className={styles.sectionEmpty}>{emptyText}</p>
+    )}
+  </section>
+)
+
 function MyReservations() {
-  const navigate = useNavigate()
   const { isAuthenticated, user } = useAuth()
   const reservations = useMemo(
     () => getUserReservations(user?.email ?? 'usuario-local'),
     [user?.email],
+  )
+  const groupedReservations = useMemo(
+    () => ({
+      active: reservations.filter(
+        (reservation) => reservation.status !== 'Cancelada' && !isReservationPast(reservation),
+      ),
+      cancelled: reservations.filter((reservation) => reservation.status === 'Cancelada'),
+      past: reservations.filter(
+        (reservation) => reservation.status !== 'Cancelada' && isReservationPast(reservation),
+      ),
+    }),
+    [reservations],
   )
 
   if (!isAuthenticated) {
@@ -27,21 +94,23 @@ function MyReservations() {
         </header>
 
         {reservations.length > 0 ? (
-          <div className={styles.cardsGrid}>
-            {reservations.map((reservation) => (
-              <ReservationCard
-                destination={reservation.destination}
-                image={reservation.image}
-                key={reservation.id}
-                packageName={reservation.packageName}
-                people={reservation.totalGuests}
-                status={reservation.status}
-                total={reservation.totalAmount}
-                travelDate={reservation.travelDate}
-                onViewDetail={() => navigate(`/reservations/${reservation.id}`)}
-              />
-            ))}
-          </div>
+          <>
+            <ReservationSection
+              emptyText="No tienes reservaciones activas."
+              reservations={groupedReservations.active}
+              title="Activas"
+            />
+            <ReservationSection
+              emptyText="No tienes reservaciones pasadas."
+              reservations={groupedReservations.past}
+              title="Pasadas"
+            />
+            <ReservationSection
+              emptyText="No tienes reservaciones canceladas."
+              reservations={groupedReservations.cancelled}
+              title="Canceladas"
+            />
+          </>
         ) : (
           <div className={styles.emptyState}>
             <h2>Aun no tienes reservaciones</h2>

@@ -78,6 +78,16 @@ export const canCancelReservation = (reservation) => {
   return today <= deadline
 }
 
+export const isReservationPast = (reservation) => {
+  if (!reservation?.departureDate) return false
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const departureDate = new Date(`${reservation.departureDate}T00:00:00`)
+  return departureDate < today
+}
+
 export const buildReservationFromDraft = (draft, user) => {
   const travelPackage = getPackageById(draft.packageId)
   if (!travelPackage) return null

@@ -21,6 +21,7 @@ function Profile() {
   const { user } = useAuth()
   const initialProfile = useMemo(() => getInitialProfile(user), [user])
   const [profileData, setProfileData] = useState(initialProfile)
+  const [isEditing, setIsEditing] = useState(false)
   const [savedMessage, setSavedMessage] = useState('')
   const reservations = getUserReservations(user?.email ?? 'usuario-local')
 
@@ -33,13 +34,16 @@ function Profile() {
     setSavedMessage('')
   }
 
-  const handleCancel = () => {
-    setProfileData(initialProfile)
-    setSavedMessage('')
-  }
-
-  const handleSave = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
+
+    if (!isEditing) {
+      setIsEditing(true)
+      setSavedMessage('')
+      return
+    }
+
+    setIsEditing(false)
     setSavedMessage('Cambios guardados de forma local.')
   }
 
@@ -52,10 +56,11 @@ function Profile() {
           <p>Administra tus datos personales para tus proximas reservaciones.</p>
         </header>
 
-        <form className={styles.profileCard} onSubmit={handleSave}>
+        <form className={styles.profileCard} onSubmit={handleSubmit}>
           <label className={styles.profileField}>
             <span>Full Name</span>
             <input
+              disabled={!isEditing}
               name="fullName"
               onChange={handleChange}
               placeholder="Tu nombre completo"
@@ -65,34 +70,30 @@ function Profile() {
 
           <label className={styles.profileField}>
             <span>Email</span>
-            <div className={styles.verifiedField}>
-              <input
-                name="email"
-                onChange={handleChange}
-                placeholder="correo@ejemplo.com"
-                type="email"
-                value={profileData.email}
-              />
-              <strong aria-label="Correo verificado">✓</strong>
-            </div>
+            <input
+              disabled
+              name="email"
+              placeholder="correo@ejemplo.com"
+              type="email"
+              value={profileData.email}
+            />
           </label>
 
           <label className={styles.profileField}>
             <span>Username</span>
-            <div className={styles.verifiedField}>
-              <input
-                name="username"
-                onChange={handleChange}
-                placeholder="usuario"
-                value={profileData.username}
-              />
-              <strong aria-label="Usuario disponible">✓</strong>
-            </div>
+            <input
+              disabled={!isEditing}
+              name="username"
+              onChange={handleChange}
+              placeholder="usuario"
+              value={profileData.username}
+            />
           </label>
 
           <label className={styles.profileField}>
             <span>Phone Number</span>
             <input
+              disabled={!isEditing}
               name="phone"
               onChange={handleChange}
               placeholder="+52 449 000 0000"
@@ -108,17 +109,9 @@ function Profile() {
           {savedMessage && <p className={styles.successMessage}>{savedMessage}</p>}
 
           <footer className={styles.profileActions}>
-            <button className={styles.deleteAccountButton} type="button">
-              Eliminar cuenta
+            <button className={styles.saveButton} type="submit">
+              {isEditing ? 'Guardar' : 'Editar'}
             </button>
-            <div>
-              <button className={styles.cancelButton} type="button" onClick={handleCancel}>
-                Cancelar
-              </button>
-              <button className={styles.saveButton} type="submit">
-                Guardar
-              </button>
-            </div>
           </footer>
         </form>
       </section>

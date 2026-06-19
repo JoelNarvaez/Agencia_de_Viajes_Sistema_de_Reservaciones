@@ -19,10 +19,6 @@ function PackageCard({ travelPackage }) {
       </Link>
 
       <div className={styles.content}>
-        <button type="button" aria-label={`Guardar ${travelPackage.title}`}>
-          &#9825;
-        </button>
-
         <div className={styles.meta}>
           <span>{travelPackage.experienceType}</span>
           <span>{isNightly ? 'Por noche' : 'Salida fija'}</span>

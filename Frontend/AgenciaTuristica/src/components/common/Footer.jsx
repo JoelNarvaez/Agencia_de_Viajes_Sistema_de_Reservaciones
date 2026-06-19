@@ -33,7 +33,6 @@ function Footer({
 
           <a href="#">Inicio</a>
           <a href="#">Paquetes</a>
-          <a href="#">Promociones</a>
           <a href="#">Contacto</a>
         </div>
 

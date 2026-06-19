@@ -10,7 +10,6 @@ import {
   FaTimes,
   FaUser,
   FaUserCircle,
-  FaUsers,
 } from "../../icons/fa";
 
 import styles from "./MobileDrawer.module.css";
@@ -78,10 +77,6 @@ function MobileDrawer({ isAuthenticated, role, userName, onClose, onLogout }) {
             <NavLink to="/admin" onClick={onClose}>
               <FaTachometerAlt />
               Dashboard
-            </NavLink>
-            <NavLink to="/admin/users" onClick={onClose}>
-              <FaUsers />
-              Usuarios
             </NavLink>
             <NavLink to="/admin/packages" onClick={onClose}>
               <FaBoxOpen />

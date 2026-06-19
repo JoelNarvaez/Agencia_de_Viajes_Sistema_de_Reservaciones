@@ -180,7 +180,7 @@ const formatDisplayDate = (date) =>
 function PackageDetail() {
   const { packageId } = useParams()
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const travelPackage = getPackageById(packageId)
   const [arrivalDate, setArrivalDate] = useState(() => getDateAfterDays(7))
   const [departureDate, setDepartureDate] = useState(() => getDateAfterDays(10))
@@ -214,6 +214,7 @@ function PackageDetail() {
   }
 
   const isFixedDate = travelPackage.bookingMode === 'fixed-date'
+  const isAdmin = user?.rol === 'admin'
   const departures = travelPackage.departures ?? []
   const selectedDeparture =
     departures.find((departure) => departure.id === selectedDepartureId) ?? departures[0]
@@ -284,6 +285,8 @@ function PackageDetail() {
   }
 
   const handleReserve = () => {
+    if (isAdmin) return
+
     saveReservationDraft({
       arrivalDate,
       departureDate,
@@ -554,10 +557,19 @@ function PackageDetail() {
                 : 'Cancelacion gratuita antes del inicio del viaje.'}
             </p>
 
-            <button className={styles.reserveButton} type="button" onClick={handleReserve}>
-              Reservar
+            <button
+              className={styles.reserveButton}
+              disabled={isAdmin}
+              type="button"
+              onClick={handleReserve}
+            >
+              {isAdmin ? 'Solo usuarios pueden reservar' : 'Reservar'}
             </button>
-            <small>Aun no se te cobrara nada.</small>
+            <small>
+              {isAdmin
+                ? 'Como administrador solo puedes consultar el detalle del paquete.'
+                : 'Aun no se te cobrara nada.'}
+            </small>
           </aside>
         </div>
       </section>

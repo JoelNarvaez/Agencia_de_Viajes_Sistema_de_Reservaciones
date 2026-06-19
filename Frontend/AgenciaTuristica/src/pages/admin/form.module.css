@@ -1,0 +1,145 @@
+.page {
+  flex: 1;
+  padding: 36px 32px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.card {
+  background: linear-gradient(180deg, #fff 0%, #f7faf8 100%);
+  border: 1px solid rgba(20, 33, 27, 0.1);
+  border-top: 4px solid #f8b229;
+  border-radius: 10px;
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+}
+
+.heading {
+  font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #101712;
+  margin: 0 0 28px;
+  letter-spacing: -0.3px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 22px 20px;
+  align-items: start;       /* clave: cada celda se alinea arriba, sin estirarse a la más alta */
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* Cada campo (Input, Select, Textarea) usa este wrapper para tener
+   exactamente el mismo alto de "bloque" sin importar si tiene error o no. */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Reserva espacio fijo para el mensaje de error, así nunca empuja
+   al campo de abajo cuando aparece o desaparece. */
+.errorSlot {
+  min-height: 16px;
+  margin-top: 2px;
+}
+
+.fieldError {
+  color: #c0392b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Select con estilo consistente al Input del equipo */
+.select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(21, 32, 22, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #152016;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select:hover  { border-color: rgba(248, 178, 41, 0.4); }
+.select:focus  { outline: none; border-color: #f8b229; box-shadow: 0 0 0 4px rgba(248, 178, 41, 0.15); }
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #152016;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Textarea */
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(21, 32, 22, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #152016;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  resize: vertical;
+  min-height: 90px;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.textarea:hover { border-color: rgba(248, 178, 41, 0.4); }
+.textarea:focus { outline: none; border-color: #f8b229; box-shadow: 0 0 0 4px rgba(248, 178, 41, 0.15); }
+
+.btnRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.loading {
+  color: #6b7a72;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.coordinatesRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .btnRow {
+    flex-direction: column;
+  }
+}
+
+/* Neutraliza el margin-bottom que Input.module.css aplica a su propio
+   div contenedor. No podemos apuntar a ".container" porque CSS Modules
+   hashea ese nombre (ej. Input_container__xY3z2), así que en vez de
+   pelear con el nombre de clase, apuntamos por estructura: el div
+   contenedor de Input siempre es el único hijo directo de .field. */
+.field > div {
+  margin-bottom: 0;
+}

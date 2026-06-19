@@ -11,6 +11,7 @@ function Input({
   error,
   required = false,
   disabled = false,
+  step,
 }) {
   return (
     <div className={styles.container}>
@@ -29,6 +30,7 @@ function Input({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        step={step}
       />
 
       {error && (
@@ -50,6 +52,10 @@ Input.propTypes = {
   error: PropTypes.string,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
+  step: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };
 
 export default Input;

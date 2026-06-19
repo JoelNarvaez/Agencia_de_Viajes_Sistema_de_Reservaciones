@@ -1,77 +1,22 @@
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
+import styles from './AdminTable.module.css'
 
-const tableWrapperStyle = {
-  width: '100%',
-  overflowX: 'auto',
-  background: '#fff',
-  border: '1px solid #e2e8f0',
-  borderRadius: '8px',
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  fontSize: '14px',
-};
-
-const thStyle = {
-  padding: '12px 16px',
-  textAlign: 'left',
-  fontSize: '12px',
-  fontWeight: '600',
-  color: '#64748b',
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-  background: '#f8fafc',
-  borderBottom: '1px solid #e2e8f0',
-};
-
-const tdStyle = {
-  padding: '12px 16px',
-  color: '#374151',
-  borderBottom: '1px solid #f1f5f9',
-  verticalAlign: 'middle',
-};
-
-const emptyStyle = {
-  padding: '40px',
-  textAlign: 'center',
-  color: '#94a3b8',
-  fontSize: '14px',
-};
-
-const loadingStyle = {
-  padding: '40px',
-  textAlign: 'center',
-  color: '#94a3b8',
-  fontSize: '14px',
-};
-
-/**
- * AdminTable - tabla reutilizable para el panel admin.
- *
- * Props:
- *   columns: [{ key, label, render? }]
- *   data: array of objects
- *   loading: bool
- *   emptyMessage: string
- */
 function AdminTable({ columns, data, loading, emptyMessage }) {
   if (loading) {
     return (
-      <div style={tableWrapperStyle}>
-        <p style={loadingStyle}>Cargando...</p>
+      <div className={styles.wrapper}>
+        <p className={styles.loading}>Cargando...</p>
       </div>
-    );
+    )
   }
 
   return (
-    <div style={tableWrapperStyle}>
-      <table style={tableStyle}>
+    <div className={styles.wrapper}>
+      <table className={styles.table}>
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.key} style={thStyle}>
+              <th key={col.key} className={styles.th}>
                 {col.label}
               </th>
             ))}
@@ -80,19 +25,16 @@ function AdminTable({ columns, data, loading, emptyMessage }) {
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} style={emptyStyle}>
+              <td colSpan={columns.length} className={styles.empty}>
                 {emptyMessage || 'Sin registros'}
               </td>
             </tr>
           ) : (
-            data.map((row, rowIndex) => (
-              <tr
-                key={row.id ?? rowIndex}
-                style={{ background: rowIndex % 2 === 0 ? '#fff' : '#fafafa' }}
-              >
+            data.map((row, i) => (
+              <tr key={row.id ?? i} className={styles.tr}>
                 {columns.map((col) => (
-                  <td key={col.key} style={tdStyle}>
-                    {col.render ? col.render(row) : row[col.key] ?? '—'}
+                  <td key={col.key} className={styles.td}>
+                    {col.render ? col.render(row) : (row[col.key] ?? '—')}
                   </td>
                 ))}
               </tr>
@@ -101,7 +43,7 @@ function AdminTable({ columns, data, loading, emptyMessage }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 AdminTable.propTypes = {
@@ -115,11 +57,11 @@ AdminTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool,
   emptyMessage: PropTypes.string,
-};
+}
 
 AdminTable.defaultProps = {
   loading: false,
   emptyMessage: 'Sin registros',
-};
+}
 
-export default AdminTable;
+export default AdminTable

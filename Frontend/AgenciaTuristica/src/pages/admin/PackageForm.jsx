@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import styles from './form.module.css'
-import { packageService } from '../../services/packageService'
+import { packageService } from '../../services/adminPackageService'
 import { toast } from '../../utils/swal'
 import useAuth from '../../hooks/useAuth'
 

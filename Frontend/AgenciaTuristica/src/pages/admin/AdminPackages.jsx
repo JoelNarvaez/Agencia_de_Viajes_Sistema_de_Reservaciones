@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import AdminTable from '../../components/admin/AdminTable'
 import Button from '../../components/common/Button'
 import useAuth from '../../hooks/useAuth'
-import { packageService } from '../../services/packageService'
+import { packageService } from '../../services/adminPackageService'
 import { toast, confirmarEliminar, confirmarToggle } from '../../utils/swal'
 import styles from './admin.module.css'
 

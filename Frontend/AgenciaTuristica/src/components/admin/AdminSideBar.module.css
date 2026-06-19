@@ -1,0 +1,117 @@
+.sidebar {
+  width: 230px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fff 0%, #f7faf8 100%);
+  border-right: 1px solid rgba(20, 33, 27, 0.1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.brand {
+  padding: 26px 22px 22px;
+  border-bottom: 1px solid rgba(20, 33, 27, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandIcon {
+  font-size: 20px;
+  color: #fff;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  background: #f8b229;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandName {
+  font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #101712;
+  margin: 0 0 2px;
+  letter-spacing: -0.3px;
+}
+
+.brandSub {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7a72;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 12px;
+  flex: 1;
+  gap: 2px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 14px;
+  color: #33443b;
+  text-decoration: none;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.link:hover {
+  color: #101712;
+  background: rgba(20, 33, 27, 0.04);
+}
+
+.linkActive {
+  color: #b66f12;
+  background: rgba(248, 178, 41, 0.15);
+}
+
+.linkActive:hover {
+  color: #b66f12;
+  background: rgba(248, 178, 41, 0.18);
+}
+
+.icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 16px 22px;
+  color: #c0392b;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(20, 33, 27, 0.08);
+  cursor: pointer;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.logoutBtn:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #a93226;
+}

@@ -155,7 +155,7 @@ const getOfferItems = (travelPackage) => {
       iconType: getAmenityIconType(item),
       name: item,
     })),
-    { iconType: 'support', name: 'Soporte de NovaTrips' },
+    { iconType: 'support', name: 'Soporte de Atlani Tours' },
     { iconType: 'confirm', name: 'Confirmacion de reserva' },
     {
       iconType: 'calendar',
@@ -388,7 +388,7 @@ function PackageDetail() {
                 NT
               </div>
               <div>
-                <h3>Organizado por NovaTrips</h3>
+                <h3>Organizado por Atlani Tours</h3>
                 <p>Equipo local - Hospedaje y actividades coordinadas</p>
               </div>
             </section>

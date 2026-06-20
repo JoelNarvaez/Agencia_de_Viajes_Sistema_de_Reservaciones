@@ -26,7 +26,7 @@ function AboutCTA() {
         </p>
 
         <Button
-          text="Explorar Destinos"
+          text="Explorar Paquetes"
           onClick={() =>
             navigate("/packages")
           }

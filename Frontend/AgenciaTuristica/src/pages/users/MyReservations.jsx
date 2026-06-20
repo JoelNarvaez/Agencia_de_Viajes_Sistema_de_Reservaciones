@@ -118,7 +118,7 @@ function MyReservations() {
         ) : !isLoading && (
           <div className={styles.emptyState}>
             <h2>Aun no tienes reservaciones</h2>
-            <p>Cuando confirmes una reserva, podras ver su estado, fechas, total y detalles aqui.</p>
+            <p>Cuando confirmes una reserva, podrás ver su estado, fechas, total y detalles aquí.</p>
             <div className={styles.actions}>
               <Link to="/packages">Ver paquetes</Link>
             </div>

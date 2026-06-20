@@ -38,6 +38,8 @@ const normalizeGalleryImages = (apiPackage, localPackage) => {
       localPackage.heroImage,
       localPackage.image,
     ].filter(Boolean)
+    /*const fallback = apiPackage.imagen_principal ?? apiPackage.imagen_hero
+    return fallback ? [fallback] : []*/
   }
 
   return apiImages

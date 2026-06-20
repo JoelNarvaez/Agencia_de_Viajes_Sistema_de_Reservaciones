@@ -11,29 +11,29 @@ import styles from './Home.module.css'
 
 const frequentlyAskedQuestions = [
   {
-    question: 'Como puedo reservar un paquete?',
+    question: '¿Cómo puedo reservar un paquete?',
     answer:
-      'Elige el paquete o destino que te interese, revisa los detalles y continua al formulario de reserva. Desde ahi podras confirmar fechas, viajeros y datos de contacto.',
+      'Elige el paquete o destino que te interese, revisa los detalles y continúa al formulario de reserva. Desde ahí podrás confirmar fechas, viajeros y datos de contacto.',
   },
   {
-    question: 'Los paquetes incluyen transporte y hospedaje?',
+    question: '¿Los paquetes incluyen transporte y hospedaje?',
     answer:
       'Depende del paquete. En cada card mostramos los servicios incluidos, como hotel, traslados, tours guiados o experiencias locales.',
   },
   {
-    question: 'Puedo cambiar la fecha de mi viaje?',
+    question: '¿Puedo cambiar la fecha de mi viaje?',
     answer:
-      'Si, puedes solicitar un cambio de fecha sujeto a disponibilidad del destino, hotel y actividades incluidas en tu paquete.',
+      'Sí, puedes solicitar un cambio de fecha sujeto a disponibilidad del destino, hotel y actividades incluidas en tu paquete.',
   },
   {
-    question: 'Como se realizan los pagos?',
+    question: '¿Cómo se realizan los pagos?',
     answer:
-      'La reserva puede avanzar desde el flujo de pago del sitio. El detalle final del monto y estado de pago se consulta desde tu reservacion.',
+      'La reserva puede avanzar desde el flujo de pago del sitio. El detalle final del monto y estado de pago se consulta desde tu reservación.',
   },
   {
-    question: 'Puedo viajar en grupo o personalizar un paquete?',
+    question: '¿Puedo viajar en grupo o personalizar un paquete?',
     answer:
-      'Si. Para grupos o experiencias personalizadas se pueden ajustar fechas, numero de viajeros y actividades segun disponibilidad.',
+      'Sí. Para grupos o experiencias personalizadas se pueden ajustar fechas, número de viajeros y actividades según disponibilidad.',
   },
 ]
 

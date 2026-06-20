@@ -27,7 +27,7 @@ const INITIAL = {
   salida_cupos:        '',
 }
 
-function validate(form, isEdit) {
+function validate(form) {
   const e = {}
 
   if (!form.titulo.trim())
@@ -38,7 +38,7 @@ function validate(form, isEdit) {
     e.tipo_experiencia = 'Selecciona el tipo de experiencia.'
   if (!form.dias || Number(form.dias) < 1)
     e.dias = 'Ingresa una duración en días válida.'
-  if (!form.noches_minimas || Number(form.noches_minimas) < 0)
+  if (form.noches_minimas === '' || Number(form.noches_minimas) < 0)
     e.noches_minimas = 'Ingresa las noches mínimas.'
   if (!form.precio || Number(form.precio) <= 0)
     e.precio = 'Ingresa un precio válido.'
@@ -47,19 +47,27 @@ function validate(form, isEdit) {
   if (form.longitud === '' || Number(form.longitud) < -180 || Number(form.longitud) > 180)
     e.longitud = 'Longitud inválida (entre -180 y 180).'
 
-  if (!isEdit) {
-    if (!form.salida_fecha_inicio)
-      e.salida_fecha_inicio = 'La fecha de inicio es requerida.'
-    if (!form.salida_fecha_fin)
-      e.salida_fecha_fin = 'La fecha de fin es requerida.'
-    if (!form.salida_cupos || Number(form.salida_cupos) < 1)
-      e.salida_cupos = 'Ingresa los cupos disponibles.'
-    if (
-      form.salida_fecha_inicio &&
-      form.salida_fecha_fin &&
-      form.salida_fecha_fin <= form.salida_fecha_inicio
-    )
-      e.salida_fecha_fin = 'La fecha de fin debe ser posterior a la de inicio.'
+  if (!form.salida_fecha_inicio)
+    e.salida_fecha_inicio = 'La fecha de inicio es requerida.'
+  if (!form.salida_fecha_fin)
+    e.salida_fecha_fin = 'La fecha de fin es requerida.'
+  if (!form.salida_cupos || Number(form.salida_cupos) < 1)
+    e.salida_cupos = 'Ingresa los cupos disponibles.'
+  
+  if (
+    form.salida_fecha_inicio &&
+    form.salida_fecha_fin &&
+    form.salida_fecha_fin <= form.salida_fecha_inicio
+  ) {
+    e.salida_fecha_fin = 'La fecha de fin debe ser posterior a la de inicio.'
+  } else if (form.salida_fecha_inicio && form.salida_fecha_fin && form.dias) {
+    const start = new Date(form.salida_fecha_inicio + 'T00:00:00')
+    const end = new Date(form.salida_fecha_fin + 'T00:00:00')
+    const diffTime = end - start
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1
+    if (diffDays !== Number(form.dias)) {
+      e.salida_fecha_fin = `La diferencia de días (${diffDays}) debe coincidir con la duración del paquete (${form.dias} días).`
+    }
   }
 
   return e
@@ -101,6 +109,7 @@ function PackageForm() {
   const [saving, setSaving]           = useState(false)
   const [loadingData, setLoadingData] = useState(isEdit)
   const [paqueteId, setPaqueteId]     = useState(null)
+  const [salidaId, setSalidaId]       = useState(null)
 
   useEffect(() => {
     if (!isEdit) return
@@ -109,6 +118,18 @@ function PackageForm() {
       try {
         const paquete = await packageService.getPaqueteBySlug(slug)
         setPaqueteId(paquete.id)
+
+        let salidaInicial = {}
+        try {
+          const salidas = await packageService.getSalidasByPaquete(paquete.id)
+          if (salidas && salidas.length > 0) {
+            salidaInicial = salidas[0]
+            setSalidaId(salidaInicial.id)
+          }
+        } catch (err) {
+          console.error('[PackageForm] Error al cargar salidas:', err)
+        }
+
         setForm((prev) => ({
           ...prev,
           titulo:              paquete.titulo             ?? '',
@@ -123,6 +144,9 @@ function PackageForm() {
           longitud:            paquete.longitud           ?? '',
           imagen_principal:    paquete.imagen_principal   ?? '',
           activo:              paquete.activo ?? 1,
+          salida_fecha_inicio: salidaInicial.fecha_inicio ? String(salidaInicial.fecha_inicio).slice(0, 10) : '',
+          salida_fecha_fin:    salidaInicial.fecha_fin ? String(salidaInicial.fecha_fin).slice(0, 10) : '',
+          salida_cupos:        salidaInicial.cupos_totales ?? '',
         }))
       } catch (error) {
         console.error('[PackageForm] Error al cargar paquete:', error)
@@ -137,17 +161,47 @@ function PackageForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    setErrors((prev) => ({ ...prev, [name]: '' }))
+    setForm((prev) => {
+      const updated = { ...prev, [name]: value }
+
+      // 1. Si cambia 'dias', calcular automáticamente noches_minimas (dias - 1, min 0)
+      if (name === 'dias') {
+        const numDias = Number(value)
+        if (!isNaN(numDias) && numDias > 0) {
+          updated.noches_minimas = String(numDias - 1)
+        } else {
+          updated.noches_minimas = ''
+        }
+      }
+
+      // 2. Si cambia 'salida_fecha_inicio', calcular automáticamente salida_fecha_fin
+      if (name === 'salida_fecha_inicio' && value && updated.dias) {
+        const startDate = new Date(value + 'T00:00:00')
+        const daysToAdd = Math.max(0, Number(updated.dias) - 1)
+        startDate.setDate(startDate.getDate() + daysToAdd)
+        const yyyy = startDate.getFullYear()
+        const mm = String(startDate.getMonth() + 1).padStart(2, '0')
+        const dd = String(startDate.getDate()).padStart(2, '0')
+        updated.salida_fecha_fin = `${yyyy}-${mm}-${dd}`
+      }
+
+      return updated
+    })
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: '',
+      ...(name === 'dias' ? { noches_minimas: '' } : {}),
+      ...(name === 'salida_fecha_inicio' ? { salida_fecha_fin: '' } : {}),
+    }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const errs = validate(form, isEdit)
+    const errs = validate(form)
     if (Object.keys(errs).length) {
       setErrors(errs)
-      // Toast de advertencia para que el usuario note que hay errores
       toast.warning('Revisa los campos marcados en rojo.')
       return
     }
@@ -172,6 +226,24 @@ function PackageForm() {
     try {
       if (isEdit) {
         await packageService.updatePaquete(paqueteId, paqueteData, token)
+        if (salidaId) {
+          const salidaData = {
+            fecha_inicio:  form.salida_fecha_inicio,
+            fecha_fin:     form.salida_fecha_fin,
+            cupos_totales: Number(form.salida_cupos),
+            precio:        Number(form.precio),
+          }
+          await packageService.updateSalida(salidaId, salidaData, token)
+        } else if (form.salida_fecha_inicio && form.salida_fecha_fin && form.salida_cupos) {
+          const salidaData = {
+            paquete_id:    paqueteId,
+            fecha_inicio:  form.salida_fecha_inicio,
+            fecha_fin:     form.salida_fecha_fin,
+            cupos_totales: Number(form.salida_cupos),
+            precio:        Number(form.precio),
+          }
+          await packageService.createSalida(salidaData, token)
+        }
         toast.success('Paquete actualizado correctamente.')
       } else {
         const salidaData = {
@@ -351,48 +423,44 @@ function PackageForm() {
               </div>
             </div>
 
-            {/* Salida inicial — solo al crear */}
-            {!isEdit && (
-              <>
-                <div className={styles.fullWidth}>
-                  <p className={styles.sectionTitle}>Salida inicial</p>
-                </div>
+            {/* Salida inicial */}
+            <div className={styles.fullWidth}>
+              <p className={styles.sectionTitle}>Salida inicial</p>
+            </div>
 
-                <div className={styles.field}>
-                  <Input
-                    label="Fecha de inicio *"
-                    name="salida_fecha_inicio"
-                    type="date"
-                    value={form.salida_fecha_inicio}
-                    onChange={handleChange}
-                    error={errors.salida_fecha_inicio}
-                  />
-                </div>
+            <div className={styles.field}>
+              <Input
+                label="Fecha de inicio *"
+                name="salida_fecha_inicio"
+                type="date"
+                value={form.salida_fecha_inicio}
+                onChange={handleChange}
+                error={errors.salida_fecha_inicio}
+              />
+            </div>
 
-                <div className={styles.field}>
-                  <Input
-                    label="Fecha de fin *"
-                    name="salida_fecha_fin"
-                    type="date"
-                    value={form.salida_fecha_fin}
-                    onChange={handleChange}
-                    error={errors.salida_fecha_fin}
-                  />
-                </div>
+            <div className={styles.field}>
+              <Input
+                label="Fecha de fin *"
+                name="salida_fecha_fin"
+                type="date"
+                value={form.salida_fecha_fin}
+                onChange={handleChange}
+                error={errors.salida_fecha_fin}
+              />
+            </div>
 
-                <div className={styles.field}>
-                  <Input
-                    label="Cupos disponibles *"
-                    name="salida_cupos"
-                    type="number"
-                    value={form.salida_cupos}
-                    onChange={handleChange}
-                    placeholder="Ej. 20"
-                    error={errors.salida_cupos}
-                  />
-                </div>
-              </>
-            )}
+            <div className={styles.field}>
+              <Input
+                label="Cupos disponibles *"
+                name="salida_cupos"
+                type="number"
+                value={form.salida_cupos}
+                onChange={handleChange}
+                placeholder="Ej. 20"
+                error={errors.salida_cupos}
+              />
+            </div>
           </div>
 
           <div className={styles.btnRow}>

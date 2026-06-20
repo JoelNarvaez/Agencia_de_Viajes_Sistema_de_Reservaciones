@@ -97,15 +97,12 @@ const completarPaquetes = async (paquetes) => {
   return agregarIncluidosAPaquetes(paquetesConImagenes);
 };
 
-export const obtenerPaquetesModel = async () => {
+export const obtenerPaquetesModel = async (incluirInactivos = false) => {
+  const queryStr = incluirInactivos
+    ? "SELECT * FROM paquetes ORDER BY id ASC"
+    : "SELECT * FROM paquetes WHERE activo = 1 ORDER BY id ASC";
 
-  const [rows] = await db.query(`
-    SELECT *
-    FROM paquetes
-    WHERE activo = 1
-    ORDER BY id ASC
-  `);
-
+  const [rows] = await db.query(queryStr);
   return completarPaquetes(rows);
 };
 
@@ -199,12 +196,11 @@ export const actualizarPaqueteModel = async (id, datos) => {
 };
 
 export const eliminarPaqueteModel = async (id) => {
-
-  const [resultado] = await db.query(`
-    UPDATE paquetes
-    SET activo = 0
-    WHERE id = ?
-  `, [id]);
-
+  // Eliminar relaciones primero para no violar restricciones de FK
+  await db.query("DELETE FROM incluye_paquete WHERE paquete_id = ?", [id]);
+  await db.query("DELETE FROM imagenes_paquete WHERE paquete_id = ?", [id]);
+  await db.query("DELETE FROM salidas WHERE paquete_id = ?", [id]);
+  
+  const [resultado] = await db.query("DELETE FROM paquetes WHERE id = ?", [id]);
   return resultado;
 };

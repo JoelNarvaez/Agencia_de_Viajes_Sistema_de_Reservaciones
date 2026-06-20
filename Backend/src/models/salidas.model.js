@@ -46,11 +46,13 @@ export const actualizarSalidaModel = async (id, datos) => {
       fecha_inicio = ?,
       fecha_fin = ?,
       cupos_totales = ?,
+      cupos_disponibles = ?,
       precio = ?
     WHERE id = ?
   `, [
     datos.fecha_inicio,
     datos.fecha_fin,
+    datos.cupos_totales,
     datos.cupos_totales,
     datos.precio,
     id

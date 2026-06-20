@@ -19,7 +19,7 @@ function AdminPackages() {
     setLoading(true)
     setPageError('')
     try {
-      const data = await packageService.getPaquetes()
+      const data = await packageService.getPaquetes(token)
       setPaquetes(Array.isArray(data) ? data : [])
     } catch (err) {
       setPageError(err.message)
@@ -30,10 +30,10 @@ function AdminPackages() {
   }
 
   useEffect(() => {
-    queueMicrotask(() => {
+    if (token) {
       cargarPaquetes()
-    })
-  }, [])
+    }
+  }, [token])
 
   const toggleActivo = async (paquete) => {
     const confirmado = await confirmarToggle(paquete.titulo, paquete.activo)
@@ -74,9 +74,7 @@ function AdminPackages() {
 
     try {
       await packageService.deletePaquete(paquete.id, token)
-      setPaquetes((prev) =>
-        prev.map((p) => (p.id === paquete.id ? { ...p, activo: 0 } : p))
-      )
+      setPaquetes((prev) => prev.filter((p) => p.id !== paquete.id))
       toast.success('Paquete eliminado correctamente.')
     } catch (err) {
       toast.error(err.message)

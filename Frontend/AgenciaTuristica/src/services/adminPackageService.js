@@ -1,10 +1,11 @@
 import { apiRequest } from './apiClient'
 
 // CRUD de paquetes usado por el panel de administrador.
-// Obtiene todos los paquetes para la tabla del admin.
-const getPaquetes = async () =>
-  apiRequest('/paquetes', {
+// Obtiene todos los paquetes para la tabla del admin (incluyendo inactivos).
+const getPaquetes = async (token) =>
+  apiRequest('/paquetes?todos=true', {
     fallbackMessage: 'No se pudieron obtener los paquetes.',
+    token,
   })
 
 // Obtiene un paquete por slug para cargar el formulario de edicion.

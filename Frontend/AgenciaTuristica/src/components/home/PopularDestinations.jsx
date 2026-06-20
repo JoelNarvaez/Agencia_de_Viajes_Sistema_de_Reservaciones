@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import styles from './PopularDestinations.module.css'
 import { destinationPropType } from '../../utils/homePropTypes'
@@ -42,9 +43,9 @@ function PopularDestinations({ destinations }) {
                       <span className={styles.priceLabel}>Desde</span>
                       <strong>{destination.priceFrom}</strong>
                     </div>
-                    <a className={styles.cardLink} href="/packages" aria-label="Ver paquetes">
+                    <Link className={styles.cardLink} to="/packages" aria-label="Ver paquetes">
                       <span aria-hidden="true">&gt;</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </article>
@@ -63,7 +64,7 @@ function PopularDestinations({ destinations }) {
 
         <div className={styles.closing}>
           <h3>Encuentra la experiencia que encaja con tu forma de viajar</h3>
-          <a href="/packages">Explorar paquetes</a>
+          <Link to="/packages">Explorar paquetes</Link>
         </div>
       </div>
     </section>

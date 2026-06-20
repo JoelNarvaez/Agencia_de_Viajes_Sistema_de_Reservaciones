@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import styles from './HomeHero.module.css'
 import { destinationPropType } from '../../utils/homePropTypes'
@@ -79,9 +80,9 @@ function HomeHero({ destinations }) {
               {activeDestination?.description ??
                 'Viajes curados para descubrir montanas, playas, selvas y pueblos con reservas simples y acompanamiento local.'}
             </p>
-            <a className={styles.cta} href="/packages">
+            <Link className={styles.cta} to="/packages">
               Ver paquetes
-            </a>
+            </Link>
           </div>
         </div>
 

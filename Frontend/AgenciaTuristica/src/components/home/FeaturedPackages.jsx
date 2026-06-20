@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import styles from './FeaturedPackages.module.css'
 import { packagePropType } from '../../utils/homePropTypes'
 
@@ -15,9 +16,9 @@ function FeaturedPackages({ packages }) {
       <div className={styles.grid}>
         {packages.map((travelPackage) => (
           <article className={styles.card} key={travelPackage.title}>
-            <a className={styles.imageLink} href={travelPackage.href} aria-label={`Ver ${travelPackage.title}`}>
+            <Link className={styles.imageLink} to={travelPackage.href} aria-label={`Ver ${travelPackage.title}`}>
               <img src={travelPackage.image} alt="" />
-            </a>
+            </Link>
 
             <div className={styles.content}>
               <div className={styles.meta}>
@@ -39,7 +40,7 @@ function FeaturedPackages({ packages }) {
                   <span>Desde</span>
                   <strong>{travelPackage.price}</strong>
                 </div>
-                <a href={travelPackage.href}>Ver paquete</a>
+                <Link to={travelPackage.href}>Ver paquete</Link>
               </div>
             </div>
           </article>
@@ -47,7 +48,7 @@ function FeaturedPackages({ packages }) {
       </div>
 
       <div className={styles.actions}>
-        <a href="/packages">Explorar paquetes</a>
+        <Link to="/packages">Explorar paquetes</Link>
       </div>
     </section>
   )

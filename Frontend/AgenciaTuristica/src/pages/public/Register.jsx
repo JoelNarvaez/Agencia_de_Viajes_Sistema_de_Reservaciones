@@ -33,16 +33,16 @@ function Register({ onRegisterSuccess }) {
 
   const validateForm = () => {
     if (!formData.fullName.trim()) return 'Ingresa tu nombre completo.'
-    if (!formData.email.trim()) return 'Ingresa tu correo electronico.'
-    if (!formData.phone.trim()) return 'Ingresa tu telefono.'
+    if (!formData.email.trim()) return 'Ingresa tu correo electrónico.'
+    if (!formData.phone.trim()) return 'Ingresa tu teléfono.'
     if (formData.password.length < 8) {
-      return 'La contrasena debe tener al menos 8 caracteres.'
+      return 'La contraseña debe tener al menos 8 caracteres.'
     }
     if (formData.password !== formData.confirmPassword) {
-      return 'Las contrasenas no coinciden.'
+      return 'Las contraseñas no coinciden.'
     }
     if (!formData.termsAccepted) {
-      return 'Acepta los terminos para crear tu cuenta.'
+      return 'Acepta los términos para crear tu cuenta.'
     }
 
     return ''
@@ -177,15 +177,15 @@ function Register({ onRegisterSuccess }) {
 
             {showTerms && (
               <div className={styles.termsBox}>
-                <h2>Terminos y condiciones</h2>
+                <h2>Términos y condiciones</h2>
                 <ul>
-                  <li>La informacion registrada debe ser real y estar actualizada.</li>
+                  <li>La información registrada debe ser real y estar actualizada.</li>
                   <li>El usuario es responsable de mantener segura su cuenta.</li>
-                  <li>Las reservaciones estan sujetas a disponibilidad del servicio.</li>
+                  <li>Las reservaciones están sujetas a disponibilidad del servicio.</li>
                   <li>Los cambios o cancelaciones pueden depender de cada paquete.</li>
                   <li>
-                    Los datos personales se usaran solo para gestionar la cuenta,
-                    reservaciones y comunicacion del servicio.
+                    Los datos personales se usarán solo para gestionar la cuenta,
+                    reservaciones y comunicación del servicio.
                   </li>
                 </ul>
               </div>
@@ -201,7 +201,7 @@ function Register({ onRegisterSuccess }) {
           </form>
 
           <p className={styles.loginText}>
-            Ya tienes cuenta? <a href="/login">Iniciar sesion</a>
+            ¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a>
           </p>
         </div>
       </section>

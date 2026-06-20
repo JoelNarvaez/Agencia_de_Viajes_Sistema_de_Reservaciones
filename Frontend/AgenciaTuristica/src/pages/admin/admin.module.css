@@ -146,8 +146,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 9999;
   backdrop-filter: blur(3px);
+  padding: 20px;
 }
 
 .modalBox {
@@ -159,6 +160,8 @@
   min-width: 340px;
   max-width: 480px;
   width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
   box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18);
 }
 
@@ -174,7 +177,8 @@
 .modalRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(20, 33, 27, 0.06);
@@ -189,9 +193,12 @@
 .modalKey {
   color: #6b7a72;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .modalVal {
   color: #101712;
   font-weight: 700;
+  text-align: right;
+  word-break: break-word;
 }

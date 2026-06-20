@@ -63,7 +63,7 @@ function Login({ onLoginSuccess }) {
         <div className={styles.formShell}>
           <div className={styles.header}>
             <span>Bienvenido de vuelta</span>
-            <h2 id="login-title">Iniciar sesion</h2>
+            <h2 id="login-title">Iniciar sesión</h2>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -120,7 +120,6 @@ function Login({ onLoginSuccess }) {
                 <span>Recordar sesion</span>
               </label>
 
-              <a href="/forgot-password">Olvide mi contrasena</a>
             </div>
 
             {(formError || authError) && (
@@ -133,7 +132,7 @@ function Login({ onLoginSuccess }) {
           </form>
 
           <p className={styles.registerText}>
-            No tienes cuenta? <a href="/register">Crear cuenta</a>
+            ¿No tienes cuenta? <a href="/register">Crear cuenta</a>
           </p>
         </div>
       </section>

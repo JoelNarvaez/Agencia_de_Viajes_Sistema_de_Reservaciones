@@ -198,9 +198,9 @@ export const confirmarToggle = (nombre, activoActual) =>
 /** Confirma antes de cerrar la sesion actual */
 export const confirmarCerrarSesion = () =>
   confirmar({
-    titulo: 'Cerrar sesion',
-    texto: 'Tu sesion actual se cerrara en este dispositivo.',
-    textoConfirmar: 'Cerrar sesion',
+    titulo: 'Cerrar sesión',
+    texto: 'Tu sesión actual se cerrará en este dispositivo.',
+    textoConfirmar: 'Cerrar sesión',
     textoCancelar: 'Cancelar',
     variante: 'red',
   })

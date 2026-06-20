@@ -35,7 +35,7 @@ function AdminSideBar() {
           <FaPlane />
         </span>
         <div>
-          <p className={styles.brandName}>NovaTrips</p>
+          <p className={styles.brandName}>Atlani Tours</p>
           <p className={styles.brandSub}>Panel Admin</p>
         </div>
       </div>

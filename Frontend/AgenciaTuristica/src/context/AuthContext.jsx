@@ -47,7 +47,7 @@ function AuthProvider({ children }) {
     } catch (loginError) {
       const message =
         loginError.message ??
-        'No se pudo iniciar sesion. Intenta de nuevo mas tarde.'
+        'No se pudo iniciar sesión. Intenta de nuevo más tarde.'
       setError(message)
       throw loginError
     } finally {

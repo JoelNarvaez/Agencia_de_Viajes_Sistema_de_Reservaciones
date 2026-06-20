@@ -1,0 +1,204 @@
+/* ── Layout base de cada página admin ─────────────────────────────────── */
+.page {
+  flex: 1;
+  padding: 36px 32px;
+  background: #f8fafc;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.heading {
+  font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #101712;
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+
+.subheading {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+  color: #6b7a72;
+  margin: 0;
+}
+
+/* ── Tarjetas de stats (Dashboard) ────────────────────────────────────── */
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+/* ── Sección con título ───────────────────────────────────────────────── */
+.sectionTitle {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7a72;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 14px;
+}
+
+/* ── Badges de estado ─────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.badgeActive    { background: rgba(34, 153, 84, 0.12);  color: #1f8a4c; }
+.badgeInactive  { background: rgba(220, 38, 38, 0.1);   color: #c0392b; }
+.badgePending   { background: rgba(248, 178, 41, 0.18); color: #b66f12; }
+.badgeConfirmed { background: rgba(34, 153, 84, 0.12);  color: #1f8a4c; }
+.badgePaid      { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+.badgeCancelled { background: rgba(220, 38, 38, 0.1);   color: #c0392b; }
+.badgeAdmin     { background: rgba(124, 58, 237, 0.12); color: #7c3aed; }
+.badgeUser      { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+
+/* ── Botones de acción dentro de la tabla ─────────────────────────────── */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s, transform 0.15s;
+  margin-right: 6px;
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.actionBtn:hover { opacity: 0.85; transform: translateY(-1px); }
+.actionBtn:active { transform: translateY(0); }
+
+.btnEdit    { background: rgba(59, 130, 246, 0.1);  color: #2563eb; }
+.btnToggle  { background: rgba(248, 178, 41, 0.18); color: #b66f12; }
+.btnDelete  { background: rgba(220, 38, 38, 0.1);   color: #c0392b; }
+.btnConfirm { background: rgba(34, 153, 84, 0.12);  color: #1f8a4c; }
+.btnCancel  { background: rgba(220, 38, 38, 0.1);   color: #c0392b; }
+.btnPay     { background: rgba(59, 130, 246, 0.1);  color: #2563eb; }
+.btnView    { background: rgba(20, 33, 27, 0.06);   color: #33443b; }
+.btnRole    { background: rgba(124, 58, 237, 0.1);  color: #7c3aed; }
+
+/* ── Filtros ──────────────────────────────────────────────────────────── */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7a72;
+}
+
+.filterSelect {
+  padding: 9px 30px 9px 14px;
+  background: #fff;
+  border: 1px solid rgba(20, 33, 27, 0.12);
+  border-radius: 999px;
+  color: #101712;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(20,33,27,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.filterSelect:hover  { border-color: rgba(248, 178, 41, 0.5); }
+.filterSelect:focus  { outline: none; border-color: #f8b229; box-shadow: 0 0 0 3px rgba(248, 178, 41, 0.15); }
+
+/* ── Modal ────────────────────────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 23, 18, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+  padding: 20px;
+}
+
+.modalBox {
+  background: linear-gradient(180deg, #fff 0%, #f7faf8 100%);
+  border: 1px solid rgba(20, 33, 27, 0.1);
+  border-top: 4px solid #f8b229;
+  border-radius: 14px;
+  padding: 28px;
+  min-width: 340px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18);
+}
+
+.modalTitle {
+  font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #101712;
+  margin: 0 0 20px;
+  letter-spacing: -0.2px;
+}
+
+.modalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(20, 33, 27, 0.06);
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.modalRow:last-of-type {
+  border-bottom: none;
+}
+
+.modalKey {
+  color: #6b7a72;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.modalVal {
+  color: #101712;
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}

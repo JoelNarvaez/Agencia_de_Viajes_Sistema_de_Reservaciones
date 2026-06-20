@@ -1,0 +1,30 @@
+.carousel {
+  display: grid;
+  grid-auto-columns: 210px;
+  grid-auto-flow: column;
+  gap: 24px;
+  align-items: end;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: min(100%, 1010px);
+  justify-self: end;
+  padding: 6px 6px 14px;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  scroll-padding-inline: 6px;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  min-width: 0;
+}
+
+@media (max-width: 560px) {
+  .carousel {
+    grid-auto-columns: minmax(170px, 73vw);
+    width: 100%;
+  }
+}

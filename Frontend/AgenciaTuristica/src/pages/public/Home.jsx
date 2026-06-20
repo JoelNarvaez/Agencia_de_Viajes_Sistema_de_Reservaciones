@@ -9,105 +9,6 @@ import {
 import usePublicPackages from '../../hooks/usePublicPackages'
 import styles from './Home.module.css'
 
-const featuredDestinations = [
-  {
-    title: 'Selva Maya',
-    location: 'Chiapas',
-    description:
-      'Camina entre cascadas, pueblos llenos de color y senderos rodeados por vegetacion tropical.',
-    duration: '4 dias',
-    image:
-      'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$8,400 MXN',
-  },
-  {
-    title: 'Dunas Doradas',
-    location: 'Baja California',
-    description:
-      'Recorre paisajes deserticos, miradores naturales y atardeceres que cambian todo el horizonte.',
-    duration: '3 dias',
-    image:
-      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$7,900 MXN',
-  },
-  {
-    title: 'Cascada Azul',
-    location: 'Huasteca Potosina',
-    description:
-      'Descubre rios turquesa, saltos de agua y rutas perfectas para una escapada de aventura.',
-    duration: '5 dias',
-    image:
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$9,200 MXN',
-  },
-  {
-    title: 'Cumbres Andinas',
-    location: 'Sudamerica',
-    description:
-      'Vive caminos de altura, pueblos remotos y panoramas de montana pensados para viajeros curiosos.',
-    duration: '6 dias',
-    image:
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$13,500 MXN',
-  },
-  {
-    title: 'Costa Esmeralda',
-    location: 'Veracruz',
-    description:
-      'Playas tranquilas, gastronomia costera y recorridos relajados frente al Golfo de Mexico.',
-    duration: '3 dias',
-    image:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$6,800 MXN',
-  },
-  {
-    title: 'Pueblo Magico',
-    location: 'San Miguel de Allende',
-    description:
-      'Calles coloniales, terrazas con vista y experiencias culturales para viajar con calma.',
-    duration: '2 dias',
-    image:
-      'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$5,900 MXN',
-  },
-  {
-    title: 'Laguna Rosa',
-    location: 'Yucatan',
-    description:
-      'Un paisaje salino de tonos rosados, aves migratorias y rutas cercanas a la costa yucateca.',
-    duration: '4 dias',
-    image:
-      'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$8,700 MXN',
-  },
-  {
-    title: 'Bosque Nublado',
-    location: 'Oaxaca',
-    description:
-      'Senderos frescos, miradores verdes y comunidades serranas con sabores tradicionales.',
-    duration: '4 dias',
-    image:
-      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=500&q=80',
-    heroImage:
-      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1800&q=85',
-    priceFrom: '$7,500 MXN',
-  },
-]
-
 const frequentlyAskedQuestions = [
   {
     question: 'Como puedo reservar un paquete?',
@@ -177,13 +78,12 @@ function Home() {
       })),
     [packages],
   )
-  const visibleDestinations = homeDestinations.length > 0 ? homeDestinations : featuredDestinations
   const featuredPackages = packages.slice(0, 3)
 
   return (
     <main className={styles.page}>
-      <HomeHero destinations={visibleDestinations} />
-      <PopularDestinations destinations={visibleDestinations.slice(0, 7)} />
+      <HomeHero destinations={homeDestinations} />
+      <PopularDestinations destinations={homeDestinations.slice(0, 7)} />
       <FeaturedPackages packages={featuredPackages} />
       <HomeTestimonials testimonials={testimonials} />
       <HomeFAQ items={frequentlyAskedQuestions} />

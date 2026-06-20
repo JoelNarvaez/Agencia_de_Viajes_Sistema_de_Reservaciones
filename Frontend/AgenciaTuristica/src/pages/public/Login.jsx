@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import Loader from '../../components/common/Loader'
+import { mostrarLoginExitoso } from '../../utils/swal'
 import styles from './Login.module.css'
 
 const initialFormData = {
@@ -45,6 +46,11 @@ function Login({ onLoginSuccess }) {
       })
 
       onLoginSuccess?.(authData)
+      mostrarLoginExitoso(
+        [authData.user?.nombre, authData.user?.apellido].filter(Boolean).join(' ') ||
+          authData.user?.email ||
+          'usuario',
+      )
       navigate(location.state?.from ?? '/', { replace: true })
     } catch {
       // AuthContext already exposes the API error for the UI.

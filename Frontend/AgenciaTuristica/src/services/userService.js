@@ -1,23 +1,6 @@
-import { API_BASE_URL } from '../config/api'
+import { apiRequest } from './apiClient'
 
-const request = async (path, { body, method = 'GET', token } = {}) => {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-      Authorization: `Bearer ${token}`,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  })
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message ?? 'No se pudo completar la solicitud de usuario.')
-  }
-
-  return data
-}
-
+// Mantiene el perfil con las propiedades que consume la UI.
 export const normalizeUser = (user) => ({
   apellido: user.apellido ?? '',
   email: user.email ?? '',
@@ -29,13 +12,19 @@ export const normalizeUser = (user) => ({
 })
 
 export const getProfile = async (token) => {
-  const response = await request('/usuarios/perfil', { token })
+  // Consulta los datos del usuario autenticado.
+  const response = await apiRequest('/usuarios/perfil', {
+    fallbackMessage: 'No se pudo completar la solicitud de usuario.',
+    token,
+  })
   return normalizeUser(response.usuario)
 }
 
 export const updateProfile = async ({ profile, token }) => {
-  const response = await request('/usuarios/perfil', {
+  // Guarda cambios permitidos del perfil y normaliza la respuesta actualizada.
+  const response = await apiRequest('/usuarios/perfil', {
     body: profile,
+    fallbackMessage: 'No se pudo completar la solicitud de usuario.',
     method: 'PUT',
     token,
   })

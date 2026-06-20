@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import Loader from '../../components/common/Loader'
+import { mostrarLoginExitoso } from '../../utils/swal'
 import styles from './Register.module.css'
 
 const initialFormData = {
@@ -68,6 +69,13 @@ function Register({ onRegisterSuccess }) {
       })
 
       onRegisterSuccess?.(authData)
+      mostrarLoginExitoso(
+        [authData.user?.nombre, authData.user?.apellido].filter(Boolean).join(' ') ||
+          authData.user?.email ||
+          formData.fullName.trim() ||
+          'usuario',
+        'Cuenta creada',
+      )
       navigate(authData?.token ? '/' : '/login')
     } catch {
       // AuthContext exposes the API error for rendering.

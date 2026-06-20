@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaCalendarAlt,
@@ -11,10 +11,12 @@ import {
 
 import MobileDrawer from "./MobileDrawer";
 import useAuth from "../../hooks/useAuth";
+import { confirmarCerrarSesion } from "../../utils/swal";
 import styles from "./Navbar.module.css";
 
 function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { pathname } = useLocation();
@@ -30,10 +32,14 @@ function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const confirmado = await confirmarCerrarSesion();
+    if (!confirmado) return;
+
     logout();
     setIsMenuOpen(false);
     setIsMobileMenuOpen(false);
+    navigate('/login')
   };
 
   const closeUserMenu = () => {
@@ -101,9 +107,7 @@ function Navbar() {
 
                   {role === "admin" && (
                     <>
-                      <NavLink to="/admin" onClick={closeUserMenu}>Dashboard</NavLink>
-                      <NavLink to="/admin/packages" onClick={closeUserMenu}>Paquetes</NavLink>
-                      <NavLink to="/admin/reservations" onClick={closeUserMenu}>Reservaciones</NavLink>
+                      <NavLink to="/admin/layout/metricas" onClick={closeUserMenu}>Dashboard</NavLink>
                       <div className={styles.divider}></div>
                     </>
                   )}

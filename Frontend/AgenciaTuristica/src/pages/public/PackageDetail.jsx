@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import PackageLocationMap from '../../components/packages/PackageLocationMap'
 import useAuth from '../../hooks/useAuth'
 import usePublicPackages from '../../hooks/usePublicPackages'
@@ -207,21 +207,6 @@ function PackageDetail() {
     children: 0,
     pets: 0,
   })
-
-  const relatedPackages = packages
-    .filter((item) => item.id !== packageId)
-    .slice(0, 3)
-
-  const galleryImages = useMemo(() => {
-    if (!travelPackage) return []
-
-    return [
-      ...(travelPackage.galleryImages ?? []),
-      travelPackage.heroImage,
-      travelPackage.image,
-      ...relatedPackages.map((item) => item.image),
-    ].slice(0, 5)
-  }, [relatedPackages, travelPackage])
 
   if (!travelPackage && isLoading) {
     return (

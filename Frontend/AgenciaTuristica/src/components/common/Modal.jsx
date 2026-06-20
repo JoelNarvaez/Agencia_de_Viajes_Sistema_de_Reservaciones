@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { createPortal } from "react-dom";
 
 import {
   FaTimes,
@@ -28,7 +29,7 @@ function Modal({
     info: <FaInfoCircle />,
   };
 
-  return (
+  return createPortal(
     <div
       className={styles.overlay}
       onClick={onClose}
@@ -68,7 +69,8 @@ function Modal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

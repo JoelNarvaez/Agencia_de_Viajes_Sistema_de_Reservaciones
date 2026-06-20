@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import styles from "./Footer.module.css";
 
 function Footer({
-  companyName = "NovaTrips",
+  companyName = "Atlani Tours",
   year = new Date().getFullYear(),
 }) {
   return (
@@ -51,7 +51,7 @@ function Footer({
 
   <p>
     <FaEnvelope className={styles.icon} />
-    contacto@novatrips.com
+    atlani.tours@gmail.com
   </p>
 
   <div className={styles.socials}>

@@ -63,30 +63,6 @@ function AboutStory() {
 
       </div>
 
-      <div className={styles.stats}>
-
-        <div className={styles.stat}>
-          <strong>5000+</strong>
-          <span>Viajeros Felices</span>
-        </div>
-
-        <div className={styles.stat}>
-          <strong>120+</strong>
-          <span>Destinos</span>
-        </div>
-
-        <div className={styles.stat}>
-          <strong>15+</strong>
-          <span>Años de Experiencia</span>
-        </div>
-
-        <div className={styles.stat}>
-          <strong>98%</strong>
-          <span>Satisfacción</span>
-        </div>
-
-      </div>
-
     </section>
   );
 }

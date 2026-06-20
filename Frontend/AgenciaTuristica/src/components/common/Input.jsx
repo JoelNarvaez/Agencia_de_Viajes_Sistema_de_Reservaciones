@@ -1,7 +1,8 @@
+import { forwardRef } from "react";
 import PropTypes from "prop-types";
 import styles from "./Input.module.css";
 
-function Input({
+const Input = forwardRef(({
   label,
   type = "text",
   name,
@@ -11,7 +12,7 @@ function Input({
   error,
   required = false,
   disabled = false,
-}) {
+}, ref) => {
   return (
     <div className={styles.container}>
       {label && (
@@ -21,6 +22,7 @@ function Input({
       )}
 
       <input
+        ref={ref}
         className={styles.input}
         type={type}
         name={name}
@@ -38,7 +40,9 @@ function Input({
       )}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";
 
 Input.propTypes = {
   label: PropTypes.string,
